@@ -1,0 +1,128 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { IoNotificationsOutline } from "react-icons/io5";
+import { HiOutlineLogout } from "react-icons/hi";
+import { LuLayoutDashboard, LuUser } from "react-icons/lu";
+import { LuFolderOpenDot } from "react-icons/lu";
+import { TbFileInvoice } from "react-icons/tb";
+import { Logo } from "../../assets/export";
+import { styles } from "../../styles/styles";
+import { LiaDumbbellSolid } from "react-icons/lia";
+import { MdOutlineNoMeals } from "react-icons/md";
+import { PiUsers } from "react-icons/pi";
+import { PiUsersThreeBold } from "react-icons/pi";
+import { BiSupport } from "react-icons/bi";
+
+const Sidebar = () => {
+  const navigate = useNavigate();
+  const [activeLink, setActiveLink] = useState("Dashboard");
+
+  const navigateToLink = (link, name) => {
+    navigate(link);
+    setActiveLink(name);
+  };
+
+  return (
+    <div className="w-full py-6 px-2 lg:px-6 flex flex-col items-center gap-y-6">
+      <div className="">
+        <img src={Logo} alt="" className="w-16" />
+      </div>
+      <ul className="w-full flex flex-col gap-y-2">
+        <li className={`w-full text-black`}>
+          <button
+            onClick={() => navigateToLink("/dashboard", "Dashboard")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Dashboard"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <LuLayoutDashboard className="text-lg" /> Dashboard
+          </button>
+        </li>
+        <li className="w-full ">
+          <button
+            onClick={() => navigateToLink("/workout-plans", "WorkoutPlans")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "WorkoutPlans"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <LiaDumbbellSolid className="text-xl" /> Workout Plans
+          </button>
+        </li>
+        <li className="w-full ">
+          <button
+            onClick={() => navigateToLink("/meal-plans", "MealPlans")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "MealPlans"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <MdOutlineNoMeals className="text-lg" /> Meal Plans
+          </button>
+        </li>
+        <li className="w-full">
+          <button
+            onClick={() => navigateToLink("/users", "Users")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Users"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <PiUsers className="text-xl" /> Users
+          </button>
+        </li>
+        <li className="w-full ">
+          <button
+            onClick={() => navigateToLink("/revenue", "revenue")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "revenue"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <TbFileInvoice className="text-lg" /> Revenue
+          </button>
+        </li>
+        <li className=" w-full">
+          <button
+            onClick={() => navigateToLink("/push-notifications", "Notifications")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Notifications"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <IoNotificationsOutline className="text-lg" /> Notifications
+          </button>
+        </li>
+        <li className=" w-full">
+          <button
+            onClick={() => navigateToLink("/help-and-support", "Chat")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Chat"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <BiSupport className="text-lg" /> Help and Support
+          </button>
+        </li>
+        <li className={`w-full  text-white`}>
+          <button
+            onClick={() => navigate("/login")}
+            className="text-sm font-medium w-full py-3 px-6 flex items-center gap-3 text-black rounded-lg hover:bg-[#64B5AC] hover:text-white transition-all duration-300"
+          >
+            <HiOutlineLogout className="text-lg" /> Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+export default Sidebar;
