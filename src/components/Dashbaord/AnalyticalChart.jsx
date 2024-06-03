@@ -81,7 +81,7 @@ const AnalyticalChart = () => {
         </div>
       </div>
 
-      <div className="w-full h-[30vh] md:h-[60vh] mt-3">
+      <div className="w-full h-[30vh] md:h-[50vh] mt-3">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             width={'100%'}
