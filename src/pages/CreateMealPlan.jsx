@@ -260,43 +260,6 @@ const CreateMealPlan = () => {
             </div>
             <div className="col-span-2 md:col-span-1"></div>
           </div>
-          {/* list and ingredients */}
-          {/* {instructions.length > 0 || ingredients.length > 0 ? (
-            <div className="w-full grid grid-cols-1 md:grid-cols-2">
-              <div className="col-span-2 md:col-span-1">
-                <h3 className="text-sm font-medium">Ingredients:</h3>
-                <ul className="list-disc px-4 mt-2">
-                  {instructions.map((instruction, index) => (
-                    <li
-                      className="text-xs mb-1 font-normal text-gray-400"
-                      key={index}
-                    >
-                      {instruction}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              {instructions.length > 0 ? (
-                <div className="col-span-2 md:col-span-1">
-                  <h3 className="text-sm font-medium">Instructions:</h3>
-                  <ul className="list-disc px-4 mt-2">
-                    {ingredients.map((ingredient, index) => (
-                      <li
-                        className="text-xs mb-1 font-normal text-gray-400"
-                        key={index}
-                      >
-                        {ingredient}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <></>
-              )}
-            </div>
-          ) : (
-            <></>
-          )} */}
           <div className="w-full flex items-center justify-end gap-4">
             <button
               className={`text-sm font-medium text-white ${styles.bgColor} rounded-lg px-4 py-2`}
