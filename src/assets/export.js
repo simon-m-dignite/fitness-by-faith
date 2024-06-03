@@ -1,5 +1,5 @@
 import Logo from "./logo.png";
-import Workout from "./workout.png";
+import Workout from "./workout3.jpg";
 import MealImage from "./meal.png";
 import NotificationIcon from "./notification-icon.png";
 import LoginImage from "./login.png";
