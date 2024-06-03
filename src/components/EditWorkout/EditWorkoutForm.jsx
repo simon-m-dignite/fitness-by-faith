@@ -3,13 +3,14 @@ import { styles } from "../../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
 import { Link } from "react-router-dom";
 
-const EditWorkoutForm = () => {
+const EditWorkoutForm = ({editable, setEditable}) => {
   const [workoutCategory, setWorkoutCategory] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [calorieBurn, setCalorieBurn] = useState("");
   const [totalExercises, setTotalExercises] = useState("");
+
 
   const [exerciseList, setExerciseList] = useState([
     { title: "", sets: "", reps: "", restBetweenSets: "", image: null },
@@ -72,20 +73,6 @@ const EditWorkoutForm = () => {
     setRestBetweenSets("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you can handle form submission, e.g., send data to server
-    console.log({
-      workoutCategory,
-      workoutTitle,
-      workoutDescription,
-      duration,
-      calorieBurn,
-      totalExercises,
-      exerciseList,
-    });
-  };
-
   // image uploading and image preview
   const [image, setImage] = useState(null);
   const fileInputRef = useRef(null);
@@ -126,6 +113,20 @@ const EditWorkoutForm = () => {
     });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here you can handle form submission, e.g., send data to server
+    console.log({
+      workoutCategory,
+      workoutTitle,
+      workoutDescription,
+      duration,
+      calorieBurn,
+      totalExercises,
+      exerciseList,
+    });
+  };
+
   return (
     <div className="w-full bg-white rounded-xl p-6">
       <form
@@ -139,7 +140,7 @@ const EditWorkoutForm = () => {
           >
             <input
               ref={fileInputRef}
-              disabled
+              disabled={!editable}
               id="cat-image-add"
               className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
               type="file"
@@ -167,7 +168,7 @@ const EditWorkoutForm = () => {
             <label className="text-sm font-medium">Workout Category</label>
             <input
               type="text"
-              disabled
+              disabled={!editable}
               placeholder="Yoga"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               value={workoutTitle}
@@ -189,7 +190,7 @@ const EditWorkoutForm = () => {
             <label className="text-sm font-medium">Workout Title</label>
             <input
               type="text"
-              disabled
+              disabled={!editable}
               placeholder="Title"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               value={workoutTitle}
@@ -204,7 +205,7 @@ const EditWorkoutForm = () => {
             className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             value={workoutDescription}
             rows={"5"}
-            disabled
+            disabled={!editable}
             placeholder="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
             onChange={(e) => setWorkoutDescription(e.target.value)}
           ></textarea>
@@ -219,7 +220,7 @@ const EditWorkoutForm = () => {
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               value={calorieBurn}
-              disabled
+              disabled={!editable}
               placeholder="500"
               onChange={(e) => setCalorieBurn(e.target.value)}
             />
@@ -232,7 +233,7 @@ const EditWorkoutForm = () => {
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               value={duration}
-              disabled
+              disabled={!editable}
               placeholder="10 min"
               onChange={(e) => setDuration(e.target.value)}
             />
@@ -245,7 +246,7 @@ const EditWorkoutForm = () => {
             type="number"
             className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             value={totalExercises}
-            disabled
+            disabled={!editable}
             placeholder="6"
             onChange={(e) => setTotalExercises(e.target.value)}
           />
@@ -273,7 +274,7 @@ const EditWorkoutForm = () => {
                   type="text"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                   value={exercise.title}
-                  disabled
+                  disabled={!editable}
                   placeholder="Exercise Title"
                   onChange={(e) =>
                     handleExerciseChange(index, "title", e.target.value)
@@ -286,7 +287,7 @@ const EditWorkoutForm = () => {
                   type="number"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                   value={exercise.sets}
-                  disabled
+                  disabled={!editable}
                   placeholder="3"
                   onChange={(e) =>
                     handleExerciseChange(index, "sets", e.target.value)
@@ -302,7 +303,7 @@ const EditWorkoutForm = () => {
                   type="number"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                   value={exercise.reps}
-                  disabled
+                  disabled={!editable}
                   placeholder="12"
                   onChange={(e) =>
                     handleExerciseChange(index, "reps", e.target.value)
@@ -315,7 +316,7 @@ const EditWorkoutForm = () => {
                   type="text"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                   value={exercise.restBetweenSets}
-                  disabled
+                  disabled={!editable}
                   placeholder="1 min"
                   onChange={(e) =>
                     handleExerciseChange(
@@ -334,7 +335,7 @@ const EditWorkoutForm = () => {
               </label>
               <input
                 type="file"
-                disabled
+                disabled={!editable}
                 accept="image/*"
                 className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                 onChange={(e) => handleImageChange(index, e)}

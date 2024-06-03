@@ -5,6 +5,7 @@ import CreateWorkout from "../pages/CreateWorkout";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import MealDetails from "../pages/MealDetails";
+import MealDetailsPage from "../pages/MealDetailsPage";
 import MealPlans from "../pages/MealPlans";
 import Notifications from "../pages/Notifications";
 import ResetPassword from "../pages/ResetPassword";
@@ -62,7 +63,7 @@ export const routes = [
   {
     title: "Meal Plan Details Page",
     url: "/meal/1234",
-    page: <Layout pages={<MealDetails />} />,
+    page: <Layout pages={<MealDetailsPage />} />,
   },
   {
     title: "Dashboard Page",

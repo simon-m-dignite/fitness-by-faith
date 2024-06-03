@@ -13,13 +13,13 @@ const CreateWorkout = () => {
         <div className="flex items-start justify-end gap-3">
           <button
             onClick={() => setImageBasedWorkout(false)}
-            className={imageBasedWorkout ? 'text-[10px] font-medium border-2 border-[#64B5AC] bg-gray-50 rounded-lg px-3 py-2 text-[#64B5AC]': `text-[10px] rounded-lg px-3 py-2.5 font-medium text-white ${styles.bgColor}`}
+            className={imageBasedWorkout ? 'text-xs font-medium border-2 border-[#64B5AC] bg-gray-50 rounded-lg px-3 py-2 text-[#64B5AC]': `text-xs rounded-lg px-3 py-2.5 font-medium text-white ${styles.bgColor}`}
           >
             Video Based Workout
           </button>
           <button
             onClick={() => setImageBasedWorkout(true)}
-            className={imageBasedWorkout ? `text-[10px] rounded-lg px-3 py-2.5 font-medium text-white ${styles.bgColor}`: 'text-[10px] font-medium border-2 border-[#64B5AC] rounded-lg px-3 py-2 text-[#64B5AC] bg-gray-50'}
+            className={imageBasedWorkout ? `text-xs rounded-lg px-3 py-2.5 font-medium text-white ${styles.bgColor}`: 'text-xs font-medium border-2 border-[#64B5AC] rounded-lg px-3 py-2 text-[#64B5AC] bg-gray-50'}
           >
             Images Based Workout
           </button>
