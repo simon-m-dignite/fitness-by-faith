@@ -264,7 +264,7 @@ const CreateMealPlan = () => {
             <button
               className={`text-sm font-medium text-white ${styles.bgColor} rounded-lg px-4 py-2`}
             >
-              Create
+              Create Meal
             </button>
             <button
               className={`text-sm font-medium text-white bg-red-600 rounded-lg px-4 py-2`}

@@ -5,7 +5,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 
 const ChatBox = () => {
   return (
-    <div className="flex-1  justify-between flex flex-col h-[85vh] bg-white rounded-xl">
+    <div className="flex-1 justify-between flex flex-col h-[85vh] bg-white rounded-xl">
       <div className="flex items-center justify-start gap-2 py-3 px-4 border-b border-gray-200">
         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" className="w-9 h-9 rounded-full" />
         <h1 className="text-sm font-medium">John Doe</h1>
