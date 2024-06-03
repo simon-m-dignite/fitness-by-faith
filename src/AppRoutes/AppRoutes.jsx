@@ -23,7 +23,7 @@ export const routes = [
   {
     title: "Initial Page",
     url: "/",
-    page: <Layout pages={<Dashboard />}/>,
+    page: <Auth />,
   },
   {
     title: "Dashboard Page",
