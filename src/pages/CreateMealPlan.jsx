@@ -9,6 +9,8 @@ const CreateMealPlan = () => {
   const fileInputRef = useRef(null);
 
   const [instructions, setInstructions] = useState([]);
+  const [ingredients, setIngredients] = useState([]);
+  const [ingredient, setIngredient] = useState("");
   const [inputValue, setInputValue] = useState("");
 
   const handleProfileImg = () => {
@@ -52,7 +54,9 @@ const CreateMealPlan = () => {
     // Add new instruction to the list
     if (inputValue.trim() !== "") {
       setInstructions([...instructions, inputValue]);
-      setInputValue(""); 
+      setIngredients([...ingredients, ingredient]);
+      setInputValue("");
+      setIngredient("")
     }
   };
 
@@ -189,13 +193,16 @@ const CreateMealPlan = () => {
             </div>
             <div className="col-span-2 md:col-span-1">
               <label htmlFor="Ingredient" className="text-sm font-medium">
-                Enter Ingredient: <span className="text-xs text-gray-400 ml-1">(Press Enter to Add More)</span>
+                Enter Ingredient:{" "}
+                <span className="text-xs text-gray-400 ml-1">
+                  (Press Enter to Add More)
+                </span>
               </label>
               <input
                 type="text"
                 id="Ingredient"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                value={ingredient}
+                onChange={(e) => setIngredient(e.target.value)}
                 placeholder="Enter an ingredient..."
                 className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               />
@@ -204,7 +211,10 @@ const CreateMealPlan = () => {
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
               <label htmlFor="instructionInput" className="text-sm font-medium">
-                Enter Instructions: <span className="text-xs text-gray-400 ml-1">(Press Enter to Add More)</span>
+                Enter Instructions:{" "}
+                <span className="text-xs text-gray-400 ml-1">
+                  (Press Enter to Add More)
+                </span>
               </label>
               <input
                 type="text"
@@ -218,22 +228,47 @@ const CreateMealPlan = () => {
             <div className="col-span-2 md:col-span-1"></div>
           </div>
           {/* list and ingredients */}
-          {/* <div className="">
-            <h3 className="text-sm font-medium">Ingredients List:</h3>
-            <ul className="list-disc px-4 mt-2">
-              {instructions.map((instruction, index) => (
-                <li
-                  className="text-xs mb-1 font-normal text-gray-400"
-                  key={index}
-                >
-                  {instruction}
-                </li>
-              ))}
-            </ul>
-          </div> */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-2">
+            <div className="col-span-2 md:col-span-1">
+              <h3 className="text-sm font-medium">Ingredients:</h3>
+              <ul className="list-disc px-4 mt-2">
+                {instructions.map((instruction, index) => (
+                  <li
+                    className="text-xs mb-1 font-normal text-gray-400"
+                    key={index}
+                  >
+                    {instruction}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="col-span-2 md:col-span-1">
+            <h3 className="text-sm font-medium">Instructions:</h3>
+              <ul className="list-disc px-4 mt-2">
+                {ingredients.map((instruction, index) => (
+                  <li
+                    className="text-xs mb-1 font-normal text-gray-400"
+                    key={index}
+                  >
+                    {instruction}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
           <div className="w-full flex items-center justify-end gap-4">
-            <button className={`text-sm font-medium text-white ${styles.bgColor} rounded-lg px-4 py-2`}>Create</button>
-            <button className={`text-sm font-medium text-white bg-red-600 rounded-lg px-4 py-2`}>Cancel</button>
+            <button
+              type="submit"
+              className={`text-sm font-medium text-white ${styles.bgColor} rounded-lg px-4 py-2`}
+            >
+              Create
+            </button>
+            <button
+              type="submit"
+              className={`text-sm font-medium text-white bg-red-600 rounded-lg px-4 py-2`}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </form>
