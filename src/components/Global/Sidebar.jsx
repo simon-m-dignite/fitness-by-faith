@@ -12,6 +12,7 @@ import { MdOutlineNoMeals } from "react-icons/md";
 import { PiUsers } from "react-icons/pi";
 import { PiUsersThreeBold } from "react-icons/pi";
 import { BiSupport } from "react-icons/bi";
+import { FiLock } from "react-icons/fi";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -110,6 +111,18 @@ const Sidebar = () => {
             }`}
           >
             <BiSupport className="text-lg" /> Help and Support
+          </button>
+        </li>
+        <li className=" w-full">
+          <button
+            onClick={() => navigateToLink("/update-password", "Password")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Password"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <FiLock className="text-lg" /> Update Password
           </button>
         </li>
         <li className={`w-full  text-white`}>

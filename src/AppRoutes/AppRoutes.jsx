@@ -1,4 +1,5 @@
 import Layout from "../components/Global/Layout";
+import ChangePassword from "../pages/ChangePassword";
 import Chat from "../pages/Chat";
 import CreateMealPlan from "../pages/CreateMealPlan";
 import CreateWorkout from "../pages/CreateWorkout";
@@ -84,6 +85,11 @@ export const routes = [
     title: "Dashboard Page",
     url: "/push-notifications",
     page: <Layout pages={<Notifications />} />,
+  },
+  {
+    title: "Update Password Page",
+    url: "/update-password",
+    page: <Layout pages={<ChangePassword />} />,
   },
   {
     title: "Help & Support Page",
