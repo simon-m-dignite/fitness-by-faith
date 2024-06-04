@@ -129,6 +129,78 @@ const TicketsList = () => {
             </p>
           </div>
         </div>
+        <div className="bg-white rounded-lg p-4">
+          <div className="w-full flex items-center gap-3">
+            <img
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+              className="block w-14 h-14 rounded-full"
+            />
+            <div className="flex flex-col">
+              <h1 className="font-semibold">John Doe</h1>
+              <p className="text-sm font-normal text-gray-400">
+                johndoe@gmail.com
+              </p>
+            </div>
+          </div>
+          <div className="w-full pt-4">
+            <p className="text-sm font-semibold mb-1.5">Request title</p>
+            <p className="text-sm">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Obcaecati delectus dicta ut excepturi at vero placeat laborum
+              ipsum tenetur necessitatibus quasi optio minus nobis qui, harum
+              ducimus nesciunt modi omnis?
+            </p>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg p-4">
+          <div className="w-full flex items-center gap-3">
+            <img
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+              className="block w-14 h-14 rounded-full"
+            />
+            <div className="flex flex-col">
+              <h1 className="font-semibold">John Doe</h1>
+              <p className="text-sm font-normal text-gray-400">
+                johndoe@gmail.com
+              </p>
+            </div>
+          </div>
+          <div className="w-full pt-4">
+            <p className="text-sm font-semibold mb-1.5">Request title</p>
+            <p className="text-sm">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Obcaecati delectus dicta ut excepturi at vero placeat laborum
+              ipsum tenetur necessitatibus quasi optio minus nobis qui, harum
+              ducimus nesciunt modi omnis?
+            </p>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg p-4">
+          <div className="w-full flex items-center gap-3">
+            <img
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+              className="block w-14 h-14 rounded-full"
+            />
+            <div className="flex flex-col">
+              <h1 className="font-semibold">John Doe</h1>
+              <p className="text-sm font-normal text-gray-400">
+                johndoe@gmail.com
+              </p>
+            </div>
+          </div>
+          <div className="w-full pt-4">
+            <p className="text-sm font-semibold mb-1.5">Request title</p>
+            <p className="text-sm">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Obcaecati delectus dicta ut excepturi at vero placeat laborum
+              ipsum tenetur necessitatibus quasi optio minus nobis qui, harum
+              ducimus nesciunt modi omnis?
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
