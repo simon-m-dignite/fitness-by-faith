@@ -3,14 +3,13 @@ import { styles } from "../../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
 import { Link } from "react-router-dom";
 
-const EditWorkoutForm = ({editable, setEditable}) => {
+const EditWorkoutForm = ({ editable, setEditable }) => {
   const [workoutCategory, setWorkoutCategory] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [calorieBurn, setCalorieBurn] = useState("");
   const [totalExercises, setTotalExercises] = useState("");
-
 
   const [exerciseList, setExerciseList] = useState([
     { title: "", sets: "", reps: "", restBetweenSets: "", image: null },
@@ -134,33 +133,41 @@ const EditWorkoutForm = ({editable, setEditable}) => {
         className="w-full flex flex-col items-start gap-4"
       >
         <div className="w-full">
-          <div
-            onClick={handleProfileImg}
-            className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
-          >
-            <input
-              ref={fileInputRef}
-              disabled={!editable}
-              id="cat-image-add"
-              className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
-              type="file"
-              accept="image/png, image/jpeg"
-              onChange={(e) => handleProfileChange(e)}
-            />
-            {image ? (
-              <img
-                src={`data:image/webp;base64,${image && image}`}
-                className="w-full h-full rounded-xl object-contain"
+          {editable ? (
+            <div
+              onClick={handleProfileImg}
+              className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+            >
+              <input
+                ref={fileInputRef}
+                disabled={!editable}
+                id="cat-image-add"
+                className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleProfileChange(e)}
               />
-            ) : (
-              <div className="w-auto flex flex-col gap-3 justify-center items-center">
-                <LuImagePlus className="text-4xl font-medium text-gray-400" />
-                <span className="text-sm font-normal text-gray-400">
-                  Please upload workout  thumbnail.
-                </span>
-              </div>
-            )}
-          </div>
+              {image ? (
+                <img
+                  src={`data:image/webp;base64,${image && image}`}
+                  className="w-full h-full rounded-xl object-contain"
+                />
+              ) : (
+                <div className="w-auto flex flex-col gap-3 justify-center items-center">
+                  <LuImagePlus className="text-4xl font-medium text-gray-400" />
+                  <span className="text-sm font-normal text-gray-400">
+                    Please upload workout thumbnail.
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <img
+              src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="workout-image"
+              className="lg:h-[50vh] rounded-2xl mb-4 brightness-75"
+            />
+          )}
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -330,9 +337,7 @@ const EditWorkoutForm = ({editable, setEditable}) => {
             </div>
 
             <div className="w-full flex flex-col gap-1 items-start">
-              <label className="text-sm font-medium">
-                Exercise Image
-              </label>
+              <label className="text-sm font-medium">Exercise Image</label>
               <input
                 type="file"
                 disabled={!editable}
@@ -361,7 +366,8 @@ const EditWorkoutForm = ({editable, setEditable}) => {
           >
             Update Workout
           </button>
-          <Link to="/workout-plans"
+          <Link
+            to="/workout-plans"
             className={`bg-red-500 text-white font-medium text-sm px-4 py-2 rounded-lg`}
           >
             Cancel
