@@ -11,6 +11,8 @@ import MealPlans from "../pages/MealPlans";
 import Notifications from "../pages/Notifications";
 import ResetPassword from "../pages/ResetPassword";
 import Revenue from "../pages/Revenue";
+import TicketDescription from "../pages/TicketDescription";
+import Tickets from "../pages/Tickets";
 import UserDetails from "../pages/UserDetails";
 import Users from "../pages/Users";
 import VerifyEmail from "../pages/VerifyEmail";
@@ -90,6 +92,16 @@ export const routes = [
     title: "Update Password Page",
     url: "/update-password",
     page: <Layout pages={<ChangePassword />} />,
+  },
+  {
+    title: "Tickets Page",
+    url: "/support-requests",
+    page: <Layout pages={<Tickets />} />,
+  },
+  {
+    title: "Ticket description Page",
+    url: "/support-requests/12345",
+    page: <Layout pages={<TicketDescription />} />,
   },
   {
     title: "Help & Support Page",

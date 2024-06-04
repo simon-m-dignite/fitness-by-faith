@@ -13,6 +13,7 @@ import { PiUsers } from "react-icons/pi";
 import { PiUsersThreeBold } from "react-icons/pi";
 import { BiSupport } from "react-icons/bi";
 import { FiLock } from "react-icons/fi";
+import { MdOutlineContactSupport } from "react-icons/md";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -99,6 +100,18 @@ const Sidebar = () => {
             }`}
           >
             <IoNotificationsOutline className="text-lg" /> Notifications
+          </button>
+        </li>
+        <li className=" w-full">
+          <button
+            onClick={() => navigateToLink("/support-requests", "Tickets")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Tickets"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <MdOutlineContactSupport className="text-lg" /> Support Tickets
           </button>
         </li>
         <li className=" w-full">

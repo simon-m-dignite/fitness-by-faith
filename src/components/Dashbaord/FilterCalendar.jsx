@@ -1,12 +1,29 @@
 import React, { useState } from "react";
-import { Card, Calendar } from "react-rainbow-components";
+import { Card, Calendar, Application } from "react-rainbow-components";
 import { IoCloseOutline } from "react-icons/io5";
+import { styles } from "../../styles/styles";
 
-const initialState = { range: [new Date(2019, 0, 3), new Date(2019, 0, 15)] };
+const initialState = { range: [new Date(2024, 1, 1), new Date(2024, 1, 15)] };
 
 const calendarContainerStyles = {
   width: "28rem",
   height: "27rem",
+  borderRadius:"20px",
+  backgroundColor:"white",
+  border:"none",
+  padding:"10px",
+  boxShadow:"none"
+};
+
+const theme = {
+  rainbow: {
+    palette: {
+      brand: "#64B5AC",
+    },
+    shadows: {
+      brand: "none",
+    },
+  },
 };
 
 const FilterCalendar = ({ showCalendar, onclick }) => {
@@ -20,8 +37,9 @@ const FilterCalendar = ({ showCalendar, onclick }) => {
         >
           <IoCloseOutline className="w-full h-full text-gray-500" />
         </button>
-        <div className="w-auto h-auto bg-white flex items-center justify-center">
-          <div className="w-full h-full rainbow-align-content_center rainbow-p-vertical_xx-large rainbow-p-horizontal_medium">
+        <div className="w-[300px] md:w-auto h-auto bg-transparent flex items-center justify-center">
+          <div className="w-[300px] md:w-full h-full rainbow-align-content_center rainbow-p-vertical_xx-large rainbow-p-horizontal_medium">
+            <Application theme={theme}>
             <Card
               style={calendarContainerStyles}
               className="rainbow-p-around_large w-full h-full rounded-xl"
@@ -33,7 +51,12 @@ const FilterCalendar = ({ showCalendar, onclick }) => {
                 onChange={(value) => setState({ range: value })}
                 // disabledDays={["2019/01/23"]}
               />
+              <div className="w-full pt-10 flex items-center justify-end gap-4">
+                <button className={`text-xs font-medium px-4 py-2 bg-red-500 text-white rounded-lg`} onClick={onclick}>Cancel</button>
+                <button className={`text-xs font-medium px-4 py-2 ${styles.bgColor} text-white rounded-lg`} onClick={onclick}>Apply Filter</button>
+              </div>
             </Card>
+            </Application>
           </div>
         </div>
       </div>
