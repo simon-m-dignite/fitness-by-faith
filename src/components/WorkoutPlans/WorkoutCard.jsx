@@ -14,11 +14,6 @@ const WorkoutCard = () => {
             The most soothing yoga exercise to make your body feel warm and
             fresh in morning. You can do this workout any where and every where.
           </p>
-          {/* <div className="w-full flex gap-2">
-            <Link to="/workout/update/12344" className={`text-xs ${styles.bgColor} text-white font-medium px-3 py-1.5 rounded-md`}>Edit</Link>
-            <Link to="/workout/update/12344" className={`text-xs ${styles.bgColor} text-white font-medium px-3 py-1.5 rounded-md`}>Edit</Link>
-            <button className={`text-xs bg-red-500 text-white font-medium px-3 py-1.5 rounded-md`}>Delete</button>
-          </div> */}
         </div>
       </div>
     </Link>
@@ -26,3 +21,4 @@ const WorkoutCard = () => {
 };
 
 export default WorkoutCard;
+ 
