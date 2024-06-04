@@ -1,0 +1,44 @@
+import React, { useState } from "react";
+import { Card, Calendar } from "react-rainbow-components";
+import { IoCloseOutline } from "react-icons/io5";
+
+const initialState = { range: [new Date(2019, 0, 3), new Date(2019, 0, 15)] };
+
+const calendarContainerStyles = {
+  width: "28rem",
+  height: "27rem",
+};
+
+const FilterCalendar = ({ showCalendar, onclick }) => {
+  const [state, setState] = useState(initialState);
+  return (
+    showCalendar && (
+      <div className="w-screen h-screen z-50 fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+        <button
+          className="w-9 h-9 bg-slate-300 absolute top-4 right-5 opacity-75 p-1"
+          onClick={onclick}
+        >
+          <IoCloseOutline className="w-full h-full text-gray-500" />
+        </button>
+        <div className="w-auto h-auto bg-white flex items-center justify-center">
+          <div className="w-full h-full rainbow-align-content_center rainbow-p-vertical_xx-large rainbow-p-horizontal_medium">
+            <Card
+              style={calendarContainerStyles}
+              className="rainbow-p-around_large w-full h-full rounded-xl"
+            >
+              <Calendar
+                id="calendar-7"
+                selectionType="range"
+                value={state.range}
+                onChange={(value) => setState({ range: value })}
+                // disabledDays={["2019/01/23"]}
+              />
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+  );
+};
+
+export default FilterCalendar;
