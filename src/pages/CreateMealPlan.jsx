@@ -2,35 +2,21 @@ import React, { useRef, useState } from "react";
 import { LuImagePlus } from "react-icons/lu";
 import TextField from "../components/Global/TextField";
 import { styles } from "../styles/styles";
+import { FiMinus, FiPlus, FiTrash } from "react-icons/fi";
 
 const CreateMealPlan = () => {
   // Image:
   const [image, setImage] = useState(null);
   const fileInputRef = useRef(null);
 
-  const [instructions, setInstructions] = useState([]);
-  const [ingredients, setIngredients] = useState([]);
-
-  const [ingredient, setIngredient] = useState("");
-  const [inputValue, setInputValue] = useState("");
-
-  const handleAddInstructions = () => {
-    if (inputValue.trim() !== "") {
-      setInstructions((prevInstructions) => [...prevInstructions, inputValue]);
-      setInputValue("");
-    }
-  };
-
-  const handleAddIngredients = () => {
-    if (ingredient.trim() !== "") {
-      setIngredients((prevIngredients) => [...prevIngredients, ingredient]);
-      setIngredient("");
-    }
-  };
+  const [instructions, setInstructions] = useState([
+    { title: "", content: "" },
+  ]);
 
   const handleProfileImg = () => {
     fileInputRef.current.click();
   };
+
   const handleProfileChange = async (e) => {
     const file = e.target.files[0];
 
@@ -72,6 +58,41 @@ const CreateMealPlan = () => {
       setInputValue("");
       setIngredient("");
     }
+  };
+
+  const handleInstructionChange = (index, field, value) => {
+    const updatedInstructions = [...instructions];
+    updatedInstructions[index][field] = value;
+    setInstructions(updatedInstructions);
+  };
+
+  const addInstructionField = () => {
+    setInstructions([...instructions, { title: "", content: "" }]);
+  };
+
+  const removeInstructionField = (index) => {
+    const updatedInstructions = [...instructions];
+    updatedInstructions.splice(index, 1);
+    setInstructions(updatedInstructions);
+  };
+
+  //
+  const [ingredients, setIngredients] = useState([{ title: "", content: "" }]);
+
+  const handleIngredientChange = (index, field, value) => {
+    const updatedInstructions = [...ingredients];
+    updatedInstructions[index][field] = value;
+    setIngredients(updatedInstructions);
+  };
+
+  const addIngredientField = () => {
+    setIngredients([...ingredients, { title: "", content: "" }]);
+  };
+
+  const removeIngredientField = (index) => {
+    const updatedInstructions = [...ingredients];
+    updatedInstructions.splice(index, 1);
+    setIngredients(updatedInstructions);
   };
 
   return (
@@ -197,69 +218,92 @@ const CreateMealPlan = () => {
               />
             </div>
           </div>
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="col-span-2 md:col-span-1">
+          <div className="w-full">
+            <div className="w-full">
               <TextField
                 inputType={"text"}
                 label={"Enter Calories"}
                 placeholder={"31.1g"}
               />
             </div>
-            <div className="col-span-2 md:col-span-1">
-              <div className="w-full flex items-center justify-between">
-                <label htmlFor="Ingredient" className="text-sm font-medium">
-                  Enter Ingredient:{" "}
-                  <span className="text-xs text-gray-400 ml-1">
-                    (Press Enter to Add More)
-                  </span>
-                </label>
-                <button
-                  onClick={() => handleAddIngredients()}
-                  className="text-xs font-medium underline"
-                >
-                  Add ingredient {ingredients.length + 1}
-                </button>
-              </div>
-              <input
-                type="text"
-                id="ingredient"
-                value={ingredient}
-                onChange={(e) => setIngredient(e.target.value)}
-                placeholder="Enter an ingredient..."
-                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              />
-            </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="col-span-2 md:col-span-1">
+            <div className="w-full flex flex-col items-start gap-1">
               <div className="w-full flex items-center justify-between">
-                <label
-                  htmlFor="instructionInput"
-                  className="text-sm font-medium"
-                >
-                  Enter Instructions:{" "}
-                  <span className="text-xs text-gray-400 ml-1">
-                    (Press Enter to Add More)
-                  </span>
-                </label>
+                <label className="text-sm font-medium">Instructions</label>
                 <button
-                  onClick={() => handleAddInstructions()}
-                  className="text-xs font-medium underline"
+                  type="button"
+                  className={`text-xs font-medium underline`}
+                  onClick={addInstructionField}
                 >
-                  Add instruction {instructions.length + 1}
+                  Add Instruction
                 </button>
               </div>
-              <input
-                type="text"
-                id="instructionInput"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Enter an instruction..."
-                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              />
+              {instructions.map((instruction, index) => (
+                <div
+                  key={index}
+                  className="w-full flex items-center justify-between gap-6 lg:gap-3"
+                >
+                  <input
+                    type="text"
+                    placeholder="Instruction"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={instruction.content}
+                    onChange={(e) =>
+                      handleInstructionChange(index, "content", e.target.value)
+                    }
+                  />
+                  <div>
+                    <button
+                      type="button"
+                      className="bg-red-100 text-white font-medium py-3 px-4 text-sm rounded-lg"
+                      onClick={() => removeInstructionField(index)}
+                    >
+                      <FiTrash className="text-lg text-red-600" />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="col-span-2 md:col-span-1"></div>
+            <div className="w-full flex flex-col items-start gap-1">
+              <div className="w-full flex items-center justify-between">
+                <label className="text-sm font-medium">Ingredients</label>
+                <button
+                  type="button"
+                  className={`text-xs font-medium underline`}
+                  onClick={addIngredientField}
+                >
+                  Add Ingredient
+                </button>
+              </div>
+              {ingredients.map((instruction, index) => (
+                <div
+                  key={index}
+                  className="w-full flex items-center justify-between gap-6 lg:gap-3"
+                >
+                  <input
+                    type="text"
+                    placeholder="Instruction"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={instruction.content}
+                    onChange={(e) =>
+                      handleIngredientChange(index, "content", e.target.value)
+                    }
+                  />
+                  <div>
+                    <button
+                      type="button"
+                      className="bg-red-100 text-white font-medium py-3 px-4 text-sm rounded-lg"
+                      onClick={() => removeIngredientField(index)}
+                    >
+                      <FiTrash className="text-lg text-red-600" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+
           <div className="w-full flex items-center justify-end gap-4">
             <button
               className={`text-sm font-medium text-white ${styles.bgColor} rounded-lg px-4 py-2`}

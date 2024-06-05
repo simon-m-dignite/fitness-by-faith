@@ -358,21 +358,31 @@ const EditWorkoutForm = ({ editable, setEditable }) => {
             Add More Exercises
           </button>
         </div>
-
-        <div className="w-full hidden flex items-center justify-end gap-4">
-          <button
-            type="submit"
-            className={`${styles.bgColor} text-white font-medium text-sm px-4 py-2 rounded-lg`}
-          >
-            Update Workout
-          </button>
-          <Link
-            to="/workout-plans"
-            className={`bg-red-500 text-white font-medium text-sm px-4 py-2 rounded-lg`}
-          >
-            Cancel
-          </Link>
-        </div>
+        {editable ? (
+          <div className="w-full flex justify-end bg-white rounded-b-xl items-center gap-4 py-2">
+            <button
+              onClick={() => setEditable(false)}
+              className={`${styles.bgColor} text-white text-sm font-medium px-3 py-2 rounded-lg`}
+            >
+              Update Workout
+            </button>
+            <button
+              onClick={() => setEditable(false)}
+              className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className="w-full py-2">
+            <button
+              className={`${styles.bgColor} text-white px-4 py-2 rounded-lg text-sm font-medium mt-2 float-end`}
+              onClick={() => setEditable(true)}
+            >
+              Edit Workout
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

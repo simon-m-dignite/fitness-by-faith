@@ -28,7 +28,7 @@ const Analytics = () => {
       <div className="w-full rounded-xl px-6 py-8 flex items-center justify-between gap-2.5 bg-white">
         <div className="flex flex-col gap-1">
           <h3 className="text-sm font-medium text-gray-400">
-            Workout Plans Sold
+            Standard Plans Sold
           </h3>
           <h1 className="text-3xl font-medium">2,123</h1>
         </div>
@@ -38,7 +38,9 @@ const Analytics = () => {
       </div>
       <div className="w-full rounded-xl px-6 py-8 flex items-center justify-between gap-2.5 bg-white">
         <div className="flex flex-col gap-1">
-          <h3 className="text-sm font-medium text-gray-400">Meal Plans Sold</h3>
+          <h3 className="text-sm font-medium text-gray-400">
+            Premium Plans Sold
+          </h3>
           <h1 className="text-3xl font-medium">903</h1>
         </div>
         <div className="w-14 h-14 bg-[#dcefed] rounded-full flex items-center justify-center">

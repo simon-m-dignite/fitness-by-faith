@@ -2,6 +2,7 @@ import Layout from "../components/Global/Layout";
 import ChangePassword from "../pages/ChangePassword";
 import Chat from "../pages/Chat";
 import CreateMealPlan from "../pages/CreateMealPlan";
+import CreateVideoWorkout from "../pages/CreateVideoWorkout";
 import CreateWorkout from "../pages/CreateWorkout";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
@@ -17,6 +18,8 @@ import UserDetails from "../pages/UserDetails";
 import Users from "../pages/Users";
 import VerifyEmail from "../pages/VerifyEmail";
 import VerifyOtp from "../pages/VerifyOtp";
+import VideoDetailsPage from "../pages/VideoDetailsPage";
+import Videos from "../pages/Videos";
 import WorkoutDetails from "../pages/WorkoutDetails";
 import WorkoutEdit from "../pages/WorkoutEdit";
 import WorkoutPlans from "../pages/WorkoutPlans";
@@ -52,6 +55,21 @@ export const routes = [
     title: "Dashboard Page",
     url: "/update-workout/1234",
     page: <Layout pages={<WorkoutEdit />} />,
+  },
+  {
+    title:"Workout Videos Page",
+    url:"/videos",
+    page: <Layout pages={<Videos/>}/>
+  },
+  {
+    title:"Workout Videos Edit and update Page",
+    url:"/video/1233",
+    page: <Layout pages={<VideoDetailsPage/>}/>
+  },
+  {
+    title:"Upoad Videos Page",
+    url:"/videos/create-workout",
+    page: <Layout pages={<CreateVideoWorkout/>}/>
   },
   {
     title: "Dashboard Page",

@@ -5,12 +5,16 @@ import { FiTrash } from "react-icons/fi";
 
 const VideoWorkoutForm = () => {
   const [videoTitle, setVideoTitle] = useState("");
+  const [exerciseName, setExerciseName] = useState("")
   const [videoDescription, setVideoDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [instructions, setInstructions] = useState([
     { title: "", content: "" },
   ]);
+
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
 
   const handleThumbnailChange = (event) => {
     setThumbnail(event.target.files[0]);
@@ -87,15 +91,57 @@ const VideoWorkoutForm = () => {
             )}
           </div>
         </div>
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="w-full flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Video Title</label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              value={videoTitle}
+              onChange={(e) => setVideoTitle(e.target.value)}
+            />
+          </div>
+          <div className="w-full flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Exercise Name</label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              value={exerciseName}
+              onChange={(e) => setExerciseName(e.target.value)}
+            />
+          </div>
+        </div>
 
-        <div className="w-full flex flex-col items-start gap-1">
-          <label className="text-sm font-medium">Video Title</label>
-          <input
-            type="text"
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={videoTitle}
-            onChange={(e) => setVideoTitle(e.target.value)}
-          />
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Video Category</label>
+            <select
+              name="subCategory"
+              id="subCategory"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+            >
+              <option value="">Select a category</option>
+              <option value="">Yoga</option>
+              <option value="">Lifting</option>
+              <option value="">Cardio</option>
+            </select>
+          </div>
+          <div className="w-full flex flex-col items-start gap-1">
+            <label htmlFor="subCategory" className="text-sm font-medium">
+              Video Sub-Category:
+            </label>
+            <select
+              name="subCategory"
+              id="subCategory"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+            >
+              <option value="">Select a sub-category</option>
+              <option value="">Bodyweight cardio</option>
+              <option value="">Equipment-based cardio</option>
+              <option value="">Free weight</option>
+              <option value="">Gym</option>
+            </select>
+          </div>
         </div>
 
         <div className="w-full flex flex-col items-start gap-1">
@@ -109,8 +155,8 @@ const VideoWorkoutForm = () => {
         </div>
 
         <div className="w-full flex flex-col items-start gap-1">
-            <label className="text-sm font-medium">Video Instructions</label>
-            
+          <label className="text-sm font-medium">Video Instructions</label>
+
           {instructions.map((instruction, index) => (
             <div
               key={index}
@@ -156,12 +202,12 @@ const VideoWorkoutForm = () => {
           ))}
         </div>
         <button
-              type="button"
-              className={`${styles.bgColor} text-white font-medium mt-1 py-2 px-3 rounded-lg text-[10px]`}
-              onClick={addInstructionField}
-            >
-              Add Instruction
-            </button>
+          type="button"
+          className={`${styles.bgColor} text-white font-medium mt-1 py-2 px-3 rounded-lg text-[10px]`}
+          onClick={addInstructionField}
+        >
+          Add Instruction
+        </button>
         <div className="w-full py-4">
           <button
             type="submit"

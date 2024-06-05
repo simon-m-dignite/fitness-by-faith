@@ -10,6 +10,7 @@ const WorkoutCreationForm = () => {
   const [duration, setDuration] = useState("");
   const [calorieBurn, setCalorieBurn] = useState("");
   const [totalExercises, setTotalExercises] = useState("");
+  const [isTimeBased, setIsTimeBased] = useState(false);
 
   const [exerciseList, setExerciseList] = useState([
     { title: "", sets: "", reps: "", restBetweenSets: "", image: null },
@@ -154,11 +155,21 @@ const WorkoutCreationForm = () => {
               <div className="w-auto flex flex-col gap-3 justify-center items-center">
                 <LuImagePlus className="text-4xl font-medium text-gray-400" />
                 <span className="text-sm font-normal text-gray-400">
-                  Please upload workout  thumbnail.
+                  Please upload workout thumbnail.
                 </span>
               </div>
             )}
           </div>
+        </div>
+
+        <div className="w-full flex flex-col items-start gap-1">
+          <label className="text-sm font-medium">Workout Title</label>
+          <input
+            type="text"
+            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+            value={workoutTitle}
+            onChange={(e) => setWorkoutTitle(e.target.value)}
+          />
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -176,24 +187,18 @@ const WorkoutCreationForm = () => {
             </select>
           </div>
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
-            <label className="text-sm font-medium">Workout Title</label>
-            <input
-              type="text"
+            <label className="text-sm font-medium">Sub-Category</label>
+            <select
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutTitle}
-              onChange={(e) => setWorkoutTitle(e.target.value)}
-            />
+              value={workoutCategory}
+              onChange={(e) => setWorkoutCategory(e.target.value)}
+            >
+              <option value="">Select sub-category</option>
+              <option value="cardio">Cardio</option>
+              <option value="yoga">Yoga</option>
+              <option value="lifting">Lifting</option>
+            </select>
           </div>
-        </div>
-
-        <div className="w-full flex flex-col items-start gap-1">
-          <label className="text-sm font-medium">Workout Description</label>
-          <textarea
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={workoutDescription}
-            rows={"5"}
-            onChange={(e) => setWorkoutDescription(e.target.value)}
-          ></textarea>
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -222,13 +227,36 @@ const WorkoutCreationForm = () => {
         </div>
 
         <div className="w-full flex flex-col items-start gap-1">
-          <label className="text-sm font-medium">Total Exercises</label>
-          <input
-            type="number"
+          <label className="text-sm font-medium">Workout Description</label>
+          <textarea
             className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={totalExercises}
-            onChange={(e) => setTotalExercises(e.target.value)}
-          />
+            value={workoutDescription}
+            rows={"5"}
+            onChange={(e) => setWorkoutDescription(e.target.value)}
+          ></textarea>
+        </div>
+
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="w-full col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Total Exercises</label>
+            <input
+              type="number"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              value={totalExercises}
+              onChange={(e) => setTotalExercises(e.target.value)}
+            />
+          </div>
+          <div className="w-full col-span-2 md:col-span-1 flex flex-col gap-1 items-start">
+            <label className="text-sm font-medium">Rest Between Sets</label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              // value={exercise.restBetweenSets}
+              // onChange={(e) =>
+              //   handleExerciseChange(index, "restBetweenSets", e.target.value)
+              // }
+            />
+          </div>
         </div>
 
         {exerciseList.map((exercise, index) => (
@@ -273,43 +301,52 @@ const WorkoutCreationForm = () => {
 
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="w-full flex flex-col gap-1 items-start">
-                <label className="text-sm font-medium">Reps</label>
-                <input
-                  type="number"
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.reps}
-                  onChange={(e) =>
-                    handleExerciseChange(index, "reps", e.target.value)
-                  }
-                />
+                <div className="w-full flex items-center justify-between gap-4">
+                  <label className="text-sm font-medium">Reps</label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      name="timeBased"
+                      id="timeBased"
+                      checked={isTimeBased}
+                      onChange={(e) => setIsTimeBased(e.target.checked)}
+                    />
+                    <label htmlFor="timeBased" className="text-sm">
+                      Is the exercise time based?
+                    </label>
+                  </div>
+                </div>
+                {isTimeBased ? (
+                  <input
+                    type="number"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={exercise.reps}
+                    placeholder="Enter time in seconds"
+                    onChange={(e) =>
+                      handleExerciseChange(index, "reps", e.target.value)
+                    }
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={exercise.reps}
+                    placeholder="Enter no. of reps"
+                    onChange={(e) =>
+                      handleExerciseChange(index, "reps", e.target.value)
+                    }
+                  />
+                )}
               </div>
               <div className="w-full flex flex-col gap-1 items-start">
-                <label className="text-sm font-medium">Rest Between Sets</label>
+                <label className="text-sm font-medium">Exercise Image</label>
                 <input
-                  type="text"
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.restBetweenSets}
-                  onChange={(e) =>
-                    handleExerciseChange(
-                      index,
-                      "restBetweenSets",
-                      e.target.value
-                    )
-                  }
+                  type="file"
+                  accept="image/*"
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                  onChange={(e) => handleImageChange(index, e)}
                 />
               </div>
-            </div>
-
-            <div className="w-full flex flex-col gap-1 items-start">
-              <label className="text-sm font-medium">
-                Exercise Image
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                onChange={(e) => handleImageChange(index, e)}
-              />
             </div>
           </div>
         ))}
@@ -324,14 +361,15 @@ const WorkoutCreationForm = () => {
           </button>
         </div>
 
-        <div className="w-full flex items-center justify-end gap-4">
+        <div className="w-full flex items-center justify-end gap-4 py-4">
           <button
             type="submit"
             className={`${styles.bgColor} text-white font-medium text-sm px-4 py-2 rounded-lg`}
           >
             Create Workout
           </button>
-          <Link to="/workout-plans"
+          <Link
+            to="/workout-plans"
             className={`bg-red-500 text-white font-medium text-sm px-4 py-2 rounded-lg`}
           >
             Cancel

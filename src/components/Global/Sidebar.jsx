@@ -14,6 +14,7 @@ import { PiUsersThreeBold } from "react-icons/pi";
 import { BiSupport } from "react-icons/bi";
 import { FiLock } from "react-icons/fi";
 import { MdOutlineContactSupport } from "react-icons/md";
+import { FiVideo } from "react-icons/fi";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -51,7 +52,19 @@ const Sidebar = () => {
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
           >
-            <LiaDumbbellSolid className="text-xl" /> Workout Plans
+            <LiaDumbbellSolid className="text-xl" /> Workouts
+          </button>
+        </li>
+        <li className="w-full ">
+          <button
+            onClick={() => navigateToLink("/videos", "Videos")}
+            className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
+              activeLink === "Videos"
+                ? `text-white ${styles.bgColor}`
+                : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
+            }`}
+          >
+            <FiVideo className="text-xl" /> Videos
           </button>
         </li>
         <li className="w-full ">
@@ -63,7 +76,7 @@ const Sidebar = () => {
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
           >
-            <MdOutlineNoMeals className="text-lg" /> Meal Plans
+            <MdOutlineNoMeals className="text-lg" /> Meals
           </button>
         </li>
         <li className="w-full">

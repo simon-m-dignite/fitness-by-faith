@@ -285,7 +285,7 @@ const MealDetailsPage = () => {
             {editable ? (
               <button
                 type="button"
-                className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline`}
+                className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
                 onClick={handleUpdateMeal}
               >
                 Update Meal
@@ -293,7 +293,7 @@ const MealDetailsPage = () => {
             ) : (
               <button
                 type="button"
-                className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline`}
+                className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
                 onClick={toggleEditable}
               >
                 Edit Meal

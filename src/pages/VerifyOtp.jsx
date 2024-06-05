@@ -6,8 +6,8 @@ import { styles } from "../styles/styles";
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const handleNavigate = () => {
-    navigate("/reset-password")
-  }
+    navigate("/reset-password");
+  };
 
   return (
     <div className="font-[sans-serif] text-[#333]">
@@ -33,8 +33,7 @@ const VerifyOtp = () => {
                   />
                 </div>
               </div>
-
-              <div className="!mt-4">
+              <div className="mt-4">
                 <button
                   type="button"
                   onClick={handleNavigate}
@@ -42,6 +41,10 @@ const VerifyOtp = () => {
                 >
                   Verify OTP
                 </button>
+                <p className="text-sm text-center mt-4 text-gray-400">
+                  Didn't receive OTP?
+                  <button className="underline ml-1 text-black font-medium">Resend OTP</button>
+                </p>
               </div>
             </form>
           </div>
