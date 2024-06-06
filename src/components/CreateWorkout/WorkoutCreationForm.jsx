@@ -13,7 +13,14 @@ const WorkoutCreationForm = () => {
   const [isTimeBased, setIsTimeBased] = useState(false);
 
   const [exerciseList, setExerciseList] = useState([
-    { title: "", sets: "", reps: "", restBetweenSets: "", image: null },
+    {
+      title: "",
+      sets: "",
+      reps: "",
+      restBetweenSets: "",
+      image: null,
+      time: "",
+    },
   ]);
   const [nextId, setNextId] = useState(2);
 
@@ -27,6 +34,7 @@ const WorkoutCreationForm = () => {
         reps: "",
         restBetweenSets: "",
         image: null,
+        time:""
       },
     ]);
     setNextId(nextId + 1); // Increment nextId for the next exercise
@@ -42,7 +50,10 @@ const WorkoutCreationForm = () => {
   const handleExerciseChange = (id, field, value) => {
     const updatedExerciseList = exerciseList.map((exercise) => {
       if (exercise.id === id) {
-        return { ...exercise, [field]: value };
+        // Ensure the checkbox state is boolean
+        const updatedValue =
+          field === "isTimeBased" ? !exercise.isTimeBased : value;
+        return { ...exercise, [field]: updatedValue };
       }
       return exercise;
     });
@@ -190,13 +201,16 @@ const WorkoutCreationForm = () => {
             <label className="text-sm font-medium">Sub-Category</label>
             <select
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutCategory}
-              onChange={(e) => setWorkoutCategory(e.target.value)}
+              // value={workoutCategory}
+              // onChange={(e) => setWorkoutCategory(e.target.value)}
             >
-              <option value="">Select sub-category</option>
-              <option value="cardio">Cardio</option>
-              <option value="yoga">Yoga</option>
-              <option value="lifting">Lifting</option>
+              <option value="sub-category" selected>
+                Select sub-category
+              </option>
+              <option value="cardio">Free weight</option>
+              <option value="yoga">Gym</option>
+              <option value="lifting">Bodyweight cardio</option>
+              <option value="lifting">Equipment-based cardio</option>
             </select>
           </div>
         </div>
@@ -249,7 +263,7 @@ const WorkoutCreationForm = () => {
           <div className="w-full col-span-2 md:col-span-1 flex flex-col gap-1 items-start">
             <label className="text-sm font-medium">Rest Between Sets</label>
             <input
-              type="text"
+              type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               // value={exercise.restBetweenSets}
               // onChange={(e) =>
@@ -303,7 +317,7 @@ const WorkoutCreationForm = () => {
               <div className="w-full flex flex-col gap-1 items-start">
                 <div className="w-full flex items-center justify-between gap-4">
                   <label className="text-sm font-medium">Reps</label>
-                  <div className="flex items-center gap-1">
+                  {/* <div className="flex items-center gap-1">
                     <input
                       type="checkbox"
                       name="timeBased"
@@ -314,13 +328,13 @@ const WorkoutCreationForm = () => {
                     <label htmlFor="timeBased" className="text-sm">
                       Is the exercise time based?
                     </label>
-                  </div>
+                  </div> */}
                 </div>
                 {isTimeBased ? (
                   <input
                     type="number"
                     className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                    value={exercise.reps}
+                    value={exercise.time}
                     placeholder="Enter time in seconds"
                     onChange={(e) =>
                       handleExerciseChange(index, "reps", e.target.value)
@@ -337,6 +351,18 @@ const WorkoutCreationForm = () => {
                     }
                   />
                 )}
+                <div className="flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      name="timeBased"
+                      id="timeBased"
+                      checked={isTimeBased}
+                      onChange={(e) => setIsTimeBased(e.target.checked)}
+                    />
+                    <label htmlFor="timeBased" className="text-xs">
+                      Is the exercise time based?
+                    </label>
+                  </div>
               </div>
               <div className="w-full flex flex-col gap-1 items-start">
                 <label className="text-sm font-medium">Exercise Image</label>
