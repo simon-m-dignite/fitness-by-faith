@@ -12,6 +12,44 @@ const WorkoutCreationForm = () => {
   const [totalExercises, setTotalExercises] = useState("");
   const [isTimeBased, setIsTimeBased] = useState(false);
 
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const categories = {
+    yoga: [],
+    cardio: ["bodyweight cardio", "equipment-based cardio"],
+    lifting: ["free weight", "gym"],
+  };
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setSelectedSubCategory(""); // Reset subcategory on category change
+  };
+  const subCategories = categories[selectedCategory] || [];
+
+  const [numExercises, setNumExercises] = useState(0); // Initial state for number of exercises
+  const [exerciseForms, setExerciseForms] = useState([]); // Array to store exercise forms
+  const handleNumExercisesChange = (event) => {
+    const newNumExercises = parseInt(event.target.value);
+    if (newNumExercises >= 1) {
+      // Enforce minimum of 1 exercise
+      setNumExercises(newNumExercises);
+      // Reset exercise forms on number change
+      setExerciseForms(Array(newNumExercises).fill({}));
+    }
+  };
+
+  const handleExerciseChange2 = (exerciseIndex, event) => {
+    const updatedForms = [...exerciseForms];
+    updatedForms[exerciseIndex] = {
+      ...updatedForms[exerciseIndex],
+      [event.target.name]: event.target.value,
+    };
+    setExerciseForms(updatedForms);
+  };
+  const handleDeleteExercise = (index) => {
+    const updatedForms = exerciseForms.filter((_, formIndex) => formIndex !== index);
+    setExerciseForms(updatedForms);
+  };
+
   const [exerciseList, setExerciseList] = useState([
     {
       title: "",
@@ -34,7 +72,7 @@ const WorkoutCreationForm = () => {
         reps: "",
         restBetweenSets: "",
         image: null,
-        time:""
+        time: "",
       },
     ]);
     setNextId(nextId + 1); // Increment nextId for the next exercise
@@ -188,29 +226,30 @@ const WorkoutCreationForm = () => {
             <label className="text-sm font-medium">Workout Category</label>
             <select
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutCategory}
-              onChange={(e) => setWorkoutCategory(e.target.value)}
+              value={selectedCategory}
+              onChange={handleCategoryChange}
             >
               <option value="">Select Category</option>
-              <option value="cardio">Cardio</option>
-              <option value="yoga">Yoga</option>
-              <option value="lifting">Lifting</option>
+              {Object.keys(categories).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Sub-Category</label>
             <select
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              // value={workoutCategory}
-              // onChange={(e) => setWorkoutCategory(e.target.value)}
+              value={selectedSubCategory}
+              onChange={(e) => setSelectedSubCategory(e.target.value)}
             >
-              <option value="sub-category" selected>
-                Select sub-category
-              </option>
-              <option value="cardio">Free weight</option>
-              <option value="yoga">Gym</option>
-              <option value="lifting">Bodyweight cardio</option>
-              <option value="lifting">Equipment-based cardio</option>
+              <option value="">Select Subcategory</option>
+              {subCategories.map((subCategory) => (
+                <option key={subCategory} value={subCategory}>
+                  {subCategory}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -256,8 +295,10 @@ const WorkoutCreationForm = () => {
             <input
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={totalExercises}
-              onChange={(e) => setTotalExercises(e.target.value)}
+              id="numExercises"
+              value={numExercises}
+              onChange={handleNumExercisesChange}
+              min={1}
             />
           </div>
           <div className="w-full col-span-2 md:col-span-1 flex flex-col gap-1 items-start">
@@ -273,7 +314,7 @@ const WorkoutCreationForm = () => {
           </div>
         </div>
 
-        {exerciseList.map((exercise, index) => (
+        {exerciseForms.map((exercise, index) => (
           <div key={index} className="w-full flex flex-col items-start gap-4">
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="w-full flex flex-col gap-1 items-start">
@@ -316,7 +357,9 @@ const WorkoutCreationForm = () => {
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="w-full flex flex-col gap-1 items-start">
                 <div className="w-full flex items-center justify-between gap-4">
-                  <label className="text-sm font-medium">{isTimeBased ? 'Time Duration':"No. Reps"}</label>
+                  <label className="text-sm font-medium">
+                    {isTimeBased ? "Time Duration" : "No. Reps"}
+                  </label>
                   {/* <div className="flex items-center gap-1">
                     <input
                       type="checkbox"
@@ -352,17 +395,17 @@ const WorkoutCreationForm = () => {
                   />
                 )}
                 <div className="flex items-center gap-1">
-                    <input
-                      type="checkbox"
-                      name="timeBased"
-                      id="timeBased"
-                      checked={isTimeBased}
-                      onChange={(e) => setIsTimeBased(e.target.checked)}
-                    />
-                    <label htmlFor="timeBased" className="text-xs">
-                      Is the exercise time based?
-                    </label>
-                  </div>
+                  <input
+                    type="checkbox"
+                    name="timeBased"
+                    id="timeBased"
+                    checked={isTimeBased}
+                    onChange={(e) => setIsTimeBased(e.target.checked)}
+                  />
+                  <label htmlFor="timeBased" className="text-xs">
+                    Is the exercise time based?
+                  </label>
+                </div>
               </div>
               <div className="w-full flex flex-col gap-1 items-start">
                 <label className="text-sm font-medium">Exercise Image</label>
