@@ -316,7 +316,7 @@ const WorkoutCreationForm = () => {
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="w-full flex flex-col gap-1 items-start">
                 <div className="w-full flex items-center justify-between gap-4">
-                  <label className="text-sm font-medium">Reps</label>
+                  <label className="text-sm font-medium">{isTimeBased ? 'Time Duration':"No. Reps"}</label>
                   {/* <div className="flex items-center gap-1">
                     <input
                       type="checkbox"

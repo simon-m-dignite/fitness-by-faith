@@ -12,7 +12,7 @@ const UserProfileDetails = () => {
         />
         <div className="w-full flex items-center justify-between">
         <h1 className="text-base font-medium">Jon Doe</h1>
-        <span className="text-xs bg-emerald-100 px-3 py-1 rounded-full font-medium text-emerald-600">Diet Plan</span>
+        <span className="text-xs bg-emerald-100 px-3 py-1 rounded-full font-medium text-emerald-600">Standard Plan</span>
         </div>
       </div>
 
@@ -73,6 +73,17 @@ const UserProfileDetails = () => {
             <div className="w-full py-3 rounded-lg bg-gray-50 text-center text-sm text-gray-400">
                 3.4 cm
             </div>
+        </div>
+      </div>
+
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="col-span-2 md:col-span-1">
+            <p className="text-sm font-medium">Hip: </p>
+            <div className="w-full py-3 rounded-lg bg-gray-50 text-center text-sm text-gray-400">
+                27 cm
+            </div>
+        </div>
+        <div className="col-span-2 md:col-span-1">
         </div>
       </div>
 

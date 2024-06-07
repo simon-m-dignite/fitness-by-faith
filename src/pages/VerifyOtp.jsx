@@ -1,10 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { OTPMockup } from "../assets/export";
 import { Link, useNavigate } from "react-router-dom";
 import { styles } from "../styles/styles";
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
+  const [timer, setTimer] = useState(60);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+    }, 1000);
+
+    // Clean up the interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleResendOTP = () => {
+    // Implement resend OTP logic here
+    // For example, you can call an API to resend OTP to the email
+    // Reset timer to 60 seconds
+    setTimer(60);
+  };
   const handleNavigate = () => {
     navigate("/reset-password");
   };
@@ -41,10 +62,21 @@ const VerifyOtp = () => {
                 >
                   Verify OTP
                 </button>
-                <p className="text-sm text-center mt-4 text-gray-400">
-                  Didn't receive OTP?
-                  <button className="underline ml-1 text-black font-medium">Resend OTP</button>
-                </p>
+                {timer > 0 ? (
+                  <p className="text-sm font-medium text-gray-400 text-center mt-4">
+                    Time left: {timer} seconds
+                  </p>
+                ) : (
+                  <p className="text-sm text-center mt-4 text-gray-400">
+                    Didn't receive OTP?
+                    <button
+                      className="underline ml-1 text-black font-medium"
+                      onClick={handleResendOTP}
+                    >
+                      Resend OTP
+                    </button>
+                  </p>
+                )}
               </div>
             </form>
           </div>
