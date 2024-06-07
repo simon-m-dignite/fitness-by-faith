@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const VideoCard = () => {
   return (
     <div className="w-full relative">
-      <Link to="/video/1233">
+      <Link to="/videos">
         <img
           src={
             "https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
