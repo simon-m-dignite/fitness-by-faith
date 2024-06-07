@@ -30,10 +30,17 @@ const WorkoutCreationForm = () => {
   const handleNumExercisesChange = (event) => {
     const newNumExercises = parseInt(event.target.value);
     if (newNumExercises >= 1) {
-      // Enforce minimum of 1 exercise
       setNumExercises(newNumExercises);
-      // Reset exercise forms on number change
-      setExerciseForms(Array(newNumExercises).fill({}));
+      setExerciseForms(
+        Array(newNumExercises).fill({
+          title: "",
+          sets: "",
+          reps: "",
+          restBetweenSets: "",
+          image: null,
+          time: "",
+        })
+      );
     }
   };
 
@@ -45,8 +52,11 @@ const WorkoutCreationForm = () => {
     };
     setExerciseForms(updatedForms);
   };
+
   const handleDeleteExercise = (index) => {
-    const updatedForms = exerciseForms.filter((_, formIndex) => formIndex !== index);
+    const updatedForms = exerciseForms.filter(
+      (_, formIndex) => formIndex !== index
+    );
     setExerciseForms(updatedForms);
   };
 
@@ -334,11 +344,10 @@ const WorkoutCreationForm = () => {
                 </label>
                 <input
                   type="text"
+                  name="title"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.title}
-                  onChange={(e) =>
-                    handleExerciseChange(index, "title", e.target.value)
-                  }
+                  onChange={(event) => handleExerciseChange2(index, event)}
+                  value={exercise.title || ""}
                 />
               </div>
               <div className="w-full flex flex-col gap-1 items-start">
@@ -346,10 +355,9 @@ const WorkoutCreationForm = () => {
                 <input
                   type="number"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.sets}
-                  onChange={(e) =>
-                    handleExerciseChange(index, "sets", e.target.value)
-                  }
+                  name="sets"
+                  onChange={(event) => handleExerciseChange2(index, event)}
+                  value={exercise.sets || ""}
                 />
               </div>
             </div>
@@ -377,21 +385,19 @@ const WorkoutCreationForm = () => {
                   <input
                     type="number"
                     className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                    value={exercise.time}
                     placeholder="Enter time in seconds"
-                    onChange={(e) =>
-                      handleExerciseChange(index, "reps", e.target.value)
-                    }
+                    name="time"
+                    value={exercise.time || ""}
+                    onChange={(event) => handleExerciseChange2(index, event)}
                   />
                 ) : (
                   <input
                     type="number"
                     className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                    value={exercise.reps}
                     placeholder="Enter no. of reps"
-                    onChange={(e) =>
-                      handleExerciseChange(index, "reps", e.target.value)
-                    }
+                    name="reps"
+                    value={exercise.reps || ""}
+                    onChange={(event) => handleExerciseChange2(index, event)}
                   />
                 )}
                 <div className="flex items-center gap-1">
@@ -413,14 +419,15 @@ const WorkoutCreationForm = () => {
                   type="file"
                   accept="image/*"
                   className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  onChange={(e) => handleImageChange(index, e)}
+                  value={exercise.image || ""}
+                  onChange={(event) => handleExerciseChange2(index, event)}
                 />
               </div>
             </div>
           </div>
         ))}
 
-        <div className="">
+        {/* <div className="">
           <button
             type="button"
             className={`${styles.bgColor} text-white font-medium text-[10px] px-3 py-2 rounded-lg`}
@@ -428,7 +435,7 @@ const WorkoutCreationForm = () => {
           >
             Add More Exercises
           </button>
-        </div>
+        </div> */}
 
         <div className="w-full flex items-center justify-end gap-4 py-4">
           <button

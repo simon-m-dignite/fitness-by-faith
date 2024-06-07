@@ -5,7 +5,7 @@ import { FiTrash } from "react-icons/fi";
 
 const VideoWorkoutForm = () => {
   const [videoTitle, setVideoTitle] = useState("");
-  const [exerciseName, setExerciseName] = useState("")
+  const [exerciseName, setExerciseName] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
@@ -13,8 +13,20 @@ const VideoWorkoutForm = () => {
     { title: "", content: "" },
   ]);
 
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+
+  const categories = {
+    yoga: [],
+    cardio: ["bodyweight cardio", "equipment-based cardio"],
+    lifting: ["free weight", "gym"],
+  };
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setSelectedSubCategory(""); // Reset subcategory on category change
+  };
+
+  const subCategories = categories[selectedCategory] || [];
 
   const handleThumbnailChange = (event) => {
     setThumbnail(event.target.files[0]);
@@ -118,12 +130,16 @@ const VideoWorkoutForm = () => {
             <select
               name="subCategory"
               id="subCategory"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             >
-              <option value="">Select a category</option>
-              <option value="">Yoga</option>
-              <option value="">Lifting</option>
-              <option value="">Cardio</option>
+              <option value="">Select Category</option>
+              {Object.keys(categories).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
           <div className="w-full flex flex-col items-start gap-1">
@@ -133,13 +149,16 @@ const VideoWorkoutForm = () => {
             <select
               name="subCategory"
               id="subCategory"
+              value={selectedSubCategory}
+              onChange={(e) => setSelectedSubCategory(e.target.value)}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             >
-              <option value="">Select a sub-category</option>
-              <option value="">Bodyweight cardio</option>
-              <option value="">Equipment-based cardio</option>
-              <option value="">Free weight</option>
-              <option value="">Gym</option>
+              <option value="">Select Subcategory</option>
+              {subCategories.map((subCategory) => (
+                <option key={subCategory} value={subCategory}>
+                  {subCategory}
+                </option>
+              ))}
             </select>
           </div>
         </div>
