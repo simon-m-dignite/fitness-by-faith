@@ -25,8 +25,11 @@ const WorkoutCreationForm = () => {
   };
   const subCategories = categories[selectedCategory] || [];
 
+  console.log("Sub-category:::", selectedSubCategory);
+
   const [numExercises, setNumExercises] = useState(0); // Initial state for number of exercises
   const [exerciseForms, setExerciseForms] = useState([]); // Array to store exercise forms
+
   const handleNumExercisesChange = (event) => {
     const newNumExercises = parseInt(event.target.value);
     if (newNumExercises >= 1) {
@@ -263,6 +266,24 @@ const WorkoutCreationForm = () => {
             </select>
           </div>
         </div>
+
+        {selectedSubCategory === "free weight" || selectedSubCategory === "gym" ? (
+          <div className="w-full">
+            <div className="w-full flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">Sub-category</label>
+              <select className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]">
+                <option value="">Select Category</option>
+                <option value="">Bicep</option>
+                <option value="">Tricep</option>
+                <option value="">Chest</option>
+                <option value="">Back</option>
+                <option value="">Shoulders</option>
+              </select>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">

@@ -163,6 +163,24 @@ const VideoWorkoutForm = () => {
           </div>
         </div>
 
+        {selectedSubCategory === "free weight" || selectedSubCategory === "gym" ? (
+          <div className="w-full">
+            <div className="w-full flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">Sub-category</label>
+              <select className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]">
+                <option value="">Select Category</option>
+                <option value="">Bicep</option>
+                <option value="">Tricep</option>
+                <option value="">Chest</option>
+                <option value="">Back</option>
+                <option value="">Shoulders</option>
+              </select>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+
         <div className="w-full flex flex-col items-start gap-1">
           <label className="text-sm font-medium">Video Description</label>
           <textarea
