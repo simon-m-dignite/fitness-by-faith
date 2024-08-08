@@ -1,15 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styles } from "../../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
 import { Link } from "react-router-dom";
+import Axios from "../../axios";
+import Loader from "../Global/Loader";
+import { ErrorToaster } from "../Global/Toaster";
 
-const EditWorkoutForm = ({ editable, setEditable }) => {
+const EditWorkoutForm = ({id, editable, setEditable }) => {
   const [workoutCategory, setWorkoutCategory] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [calorieBurn, setCalorieBurn] = useState("");
   const [totalExercises, setTotalExercises] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const [exerciseList, setExerciseList] = useState([
     { title: "", sets: "", reps: "", restBetweenSets: "", image: null },
@@ -126,9 +130,47 @@ const EditWorkoutForm = ({ editable, setEditable }) => {
     });
   };
 
+  //* API CALL FOR GET WORKOUT DETAILS
+  
+  const [workoutDetail, setWorkoutDetail] = useState([])
+
+  const getWorkoutDetail = async(workoutId) => {
+    try{
+      setLoading(true)
+      const {data} = await Axios.get(`workout/getOne/${workoutId}?isSession=false`)
+      console.log("data EditWorkoutForm-> ", data)
+      if(data.status === 200){
+        setWorkoutDetail(data?.data)
+        setWorkoutCategory(data?.data?.category)
+        setWorkoutTitle(data?.data?.title)
+        setWorkoutDescription(data?.data?.description)
+        setDuration(data?.data?.totalTime)
+        setCalorieBurn(data?.data?.calorieburn)
+        setTotalExercises(data?.data?.totalExercises)
+      }
+      else{
+        ErrorToaster(data?.message[0])
+      }
+    }
+    catch(error){
+      ErrorToaster(error.message)
+      console.log("Error-> : ", error)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
+
+  useEffect(()=>{
+    getWorkoutDetail(id)
+  },[id])
+
   return (
     <div className="w-full bg-white rounded-xl p-6">
-      <form
+      {loading ? (
+        <Loader/>
+      ):(
+        <form
         onSubmit={handleSubmit}
         className="w-full flex flex-col items-start gap-4"
       >
@@ -163,7 +205,7 @@ const EditWorkoutForm = ({ editable, setEditable }) => {
             </div>
           ) : (
             <img
-              src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src={workoutDetail.thumbnail}
               alt="workout-image"
               className="lg:h-[50vh] rounded-2xl mb-4 brightness-75"
             />
@@ -178,8 +220,8 @@ const EditWorkoutForm = ({ editable, setEditable }) => {
               disabled={!editable}
               placeholder="Yoga"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutTitle}
-              onChange={(e) => setWorkoutTitle(e.target.value)}
+              value={workoutCategory}
+              onChange={(e) => setWorkoutCategory(e.target.value)}
             />
             {/* <select
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
@@ -384,6 +426,7 @@ const EditWorkoutForm = ({ editable, setEditable }) => {
           </div>
         )}
       </form>
+      )}
     </div>
   );
 };

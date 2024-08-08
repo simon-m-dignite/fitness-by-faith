@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const { token } = useContext(AuthContext);
+  
   useEffect(() => {
     // Redirect based on isLoggedIn state
-    if (isLoggedIn) {
+    if (token) {
       navigate("/dashboard");
     } else {
       navigate("/login");
     }
-  }, []); // Empty dependency array ensures useEffect runs only once after mount
+  }, [token, navigate]); // Empty dependency array ensures useEffect runs only once after mount
 
   return <div></div>;
 };

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "../styles/styles";
 import EditWorkoutForm from "../components/EditWorkout/EditWorkoutForm";
+import { useParams } from "react-router-dom";
 
 const WorkoutDetails = () => {
+  const { id } = useParams();
   const [editable, setEditable] = useState(false);
 
   return (
@@ -10,7 +12,7 @@ const WorkoutDetails = () => {
       <div className="w-full flex itmes-center justify-between mb-6">
         <h1 className="text-xl font-semibold">Workout details</h1>
       </div>
-      <EditWorkoutForm editable={editable} setEditable={setEditable} />
+      <EditWorkoutForm id={id} editable={editable} setEditable={setEditable} />
 
       {/* {editable && (
         <div className="w-full flex justify-end bg-white rounded-b-xl px-6 py-2 items-center gap-4">

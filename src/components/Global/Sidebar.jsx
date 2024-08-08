@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { HiOutlineLogout } from "react-icons/hi";
@@ -15,8 +15,10 @@ import { BiSupport } from "react-icons/bi";
 import { FiLock } from "react-icons/fi";
 import { MdOutlineContactSupport } from "react-icons/md";
 import { FiVideo } from "react-icons/fi";
+import { AuthContext } from "../../context/AuthContext";
 
 const Sidebar = () => {
+  const {logout} = useContext(AuthContext);
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState("Dashboard");
 
@@ -24,6 +26,11 @@ const Sidebar = () => {
     navigate(link);
     setActiveLink(name);
   };
+
+  const Logout =()=> {
+    logout()
+    navigate("/login")
+  }
 
   return (
     <div className="w-full py-6 px-2 lg:px-6 flex flex-col items-center gap-y-6">
@@ -153,7 +160,7 @@ const Sidebar = () => {
         </li>
         <li className={`w-full  text-white`}>
           <button
-            onClick={() => navigate("/login")}
+            onClick={Logout}
             className="text-sm font-medium w-full py-3 px-6 flex items-center gap-3 text-black rounded-lg hover:bg-[#64B5AC] hover:text-white transition-all duration-300"
           >
             <HiOutlineLogout className="text-lg" /> Logout

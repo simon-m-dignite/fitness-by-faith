@@ -3,17 +3,47 @@ import { Link, useNavigate } from "react-router-dom";
 import { LoginImage } from "../assets/export";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { styles } from "../styles/styles";
+import Axios from "../axios"
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthContext } from "../context/AuthContext";
+import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
 
 const Login = () => {
+  
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const [showPass, setShowPass] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // const { isLoggedIn, setIsLoggedIn, ToggleUser } = useContext(AuthContext);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // ToggleUser()
-    navigate("/dashboard");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const response = await Axios.post("auth/emailSignIn", formData);
+      if(response.data.status === 200){
+        navigate("/dashboard")
+        login(response?.data?.data[0]);
+        SuccessToaster("Login Successfully")
+      }
+      else if(response.data.status === 401){
+        ErrorToaster(response?.data?.message[0])
+      }
+    } catch (error) {
+      console.log("err -> ", error)
+      ErrorToaster(error.message)
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
@@ -26,13 +56,16 @@ const Login = () => {
                 <h3 className="text-3xl font-extrabold">Sign in</h3>
                 <p className="text-sm mt-4">Sign in to your account.</p>
               </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div>
                 <label className="text-sm mb-2 block">Email</label>
                 <div className="relative flex items-center">
-                  <input
+                <input
                     name="email"
                     type="email"
                     autoComplete="off"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full text-sm border border-gray-300 px-4 py-3 rounded-md outline-none"
                     placeholder="Enter email"
                   />
@@ -62,10 +95,16 @@ const Login = () => {
                   <input
                     name="password"
                     type={showPass ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
                     className="w-full text-sm py-3 outline-none"
                     placeholder="Enter password"
                   />
-                  <button onClick={() => setShowPass(!showPass)}>
+                  <button onClick={(e) => {
+                      e.preventDefault();
+                      setShowPass(!showPass);
+                    }}
+                  >
                     {showPass ? (
                       <LuEyeOff className="text-lg text-gray-400" />
                     ) : (
@@ -86,10 +125,11 @@ const Login = () => {
               </div>
               <div className="!mt-4">
                 <button
+                  disabled={loading}
                   type="submit"
                   className={`w-full shadow-xl py-2.5 px-4 text-sm font-semibold rounded-md text-white ${styles.bgColor} hover:bg-opacity-85 focus:outline-none`}
                 >
-                  Log in
+                  {loading ? "Logging in..." : "Log in"}
                 </button>
               </div>
             </form>

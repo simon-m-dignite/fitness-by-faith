@@ -48,7 +48,7 @@ export const routes = [
   },
   {
     title: "Dashboard Page",
-    url: "/workout/1234",
+    url: "/workout/:id",
     page: <Layout pages={<WorkoutDetails />} />,
   },
   {
@@ -125,25 +125,5 @@ export const routes = [
     title: "Help & Support Page",
     url: "/help-and-support",
     page: <Layout pages={<Chat />} />,
-  },
-  {
-    title: "Dashboard Page",
-    url: "/login",
-    page: <Login />,
-  },
-  {
-    title: "Verify Email Page",
-    url: "/verify-email",
-    page: <VerifyEmail />,
-  },
-  {
-    title: "Verify OTP Page",
-    url: "/verify-otp",
-    page: <VerifyOtp />,
-  },
-  {
-    title: "Reset Password Page",
-    url: "/reset-password",
-    page: <ResetPassword />,
   },
 ];
