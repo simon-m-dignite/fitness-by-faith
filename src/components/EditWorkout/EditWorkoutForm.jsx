@@ -1,23 +1,56 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { styles } from "../../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import Axios from "../../axios";
 import Loader from "../Global/Loader";
-import { ErrorToaster } from "../Global/Toaster";
+import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
 
 const EditWorkoutForm = ({id, editable, setEditable }) => {
-  const [workoutCategory, setWorkoutCategory] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [calorieBurn, setCalorieBurn] = useState("");
   const [totalExercises, setTotalExercises] = useState("");
+  const [restBetween, setRestBetween] = useState(0);
   const [loading, setLoading] = useState(false)
+  const [btnLoading, setBtnLoading] = useState(false)
+  const [snippetLoading, setSnippetLoading] = useState(false);
+  const [snippetErr, setSnippetErr] = useState(false)
+  const [imgLoading, setImgLoading] = useState(false);
+  const [imgAddress, setImgAddress] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  console.log("🚀 ~ EditWorkoutForm ~ selectedSubCategory:", selectedSubCategory)
+  const [subCategory, setSubCategory] = useState("");
+  console.log("🚀 ~ EditWorkoutForm ~ subCategory:", subCategory)
+  const [selectedBodyPart, setSelectedBodyPart] = useState("")
 
   const [exerciseList, setExerciseList] = useState([
-    { title: "", sets: "", reps: "", restBetweenSets: "", image: null },
+    {id:"", title: "", sets: "", reps: "", restBetweenSets: "", image: null },
   ]);
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    setSelectedSubCategory("")
+  };
+
+  const categories = {
+    Yoga: [],
+    Cardio: ["Bodyweight Cardio", "Equipment-Based Cardio"],
+    Lifting: ["Free Weight", "Gym"],
+  };
+
+  const subCategories = categories[selectedCategory] || [];
+
+  const handleSubCategory = (e) =>{
+    setSelectedSubCategory(e.target.value)
+    if (e.target.value === "Bodyweight Cardio") return setSubCategory("BodyWeight") ;
+    if (e.target.value === "Equipment-based cardio") return setSubCategory("Equipment");
+    if (e.target.value === "Free Weight") return setSubCategory("FreeWeight");
+    if (e.target.value === "Gym") return setSubCategory("Gym");
+  }
+  
   const [nextId, setNextId] = useState(2);
 
   const addExerciseField = () => {
@@ -37,43 +70,72 @@ const EditWorkoutForm = ({id, editable, setEditable }) => {
 
   const removeExerciseField = (id) => {
     const updatedExerciseList = exerciseList.filter(
-      (exercise) => exercise.id !== id
+      (exercise , index) => id !== exercise.id
     );
     setExerciseList(updatedExerciseList);
   };
 
-  const handleExerciseChange = (id, field, value) => {
-    const updatedExerciseList = exerciseList.map((exercise) => {
-      if (exercise.id === id) {
-        return { ...exercise, [field]: value };
-      }
-      return exercise;
-    });
-    setExerciseList(updatedExerciseList);
+  const handleExerciseChange = (index, field, value) => {
+    const updatedExercises = [...exerciseList];
+    updatedExercises[index][field] = value;
+    setExerciseList(updatedExercises);
   };
 
-  const handleImageChange = (id, event) => {
-    const updatedExerciseList = exerciseList.map((exercise) => {
-      if (exercise.id === id) {
-        return { ...exercise, image: event.target.files[0] };
-      }
-      return exercise;
-    });
-    setExerciseList(updatedExerciseList);
+  const handleTimeBasedChange = (index, isChecked) => {
+    const updatedExercises = [...exerciseList];
+    updatedExercises[index].isTimeBased = isChecked;
+    setExerciseList(updatedExercises);
   };
 
-  const addExercise = () => {
-    const newExercise = {
-      title: exerciseTitle,
-      sets: sets,
-      reps: reps,
-      restBetweenSets: restBetweenSets,
-    };
-    setExerciseList([...exerciseList, newExercise]);
-    setExerciseTitle("");
-    setSets("");
-    setReps("");
-    setRestBetweenSets("");
+  const handleImageChange = async (index, event) => {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        setSnippetLoading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+  
+        const { data } = await Axios.post("media/upload/image", formData);
+  
+        if (data.status === 200) {
+          const updatedExercises = [...exerciseList];
+          updatedExercises[index].image = data?.data?.fileAddress;
+          setExerciseList(updatedExercises);
+          setSnippetLoading(false);
+        }
+      } catch (error) {
+        console.log(error)
+        setSnippetErr(true);
+        setSnippetLoading(false);
+      }
+    }
+  };
+
+  const handleTotalExercisesChange = (event) => {
+    const newTotalExercises = parseInt(event.target.value);
+    if (newTotalExercises >= 1) {
+      setTotalExercises(newTotalExercises);
+      const updatedExerciseList = [...exerciseList];
+      
+      if (newTotalExercises > exerciseList.length) {
+        for (let i = exerciseList.length; i < newTotalExercises; i++) {
+          updatedExerciseList.push({
+            id: Date.now() + i,
+            title: "",
+            sets: "",
+            reps: "",
+            time: "",
+            restBetweenSets: "",
+            image: null,
+            isTimeBased: false,
+          });
+        }
+      } else {
+        updatedExerciseList.length = newTotalExercises;
+      }
+      
+      setExerciseList(updatedExerciseList);
+    }
   };
 
   // image uploading and image preview
@@ -85,16 +147,24 @@ const EditWorkoutForm = ({id, editable, setEditable }) => {
 
   const handleProfileChange = async (e) => {
     const file = e.target.files[0];
-
+    const formData = new FormData();
+    formData.append('file', file);
+    
     if (file) {
       try {
+        
         const base64String = await convertImageToBase64(file);
         setImage(base64String);
-        // updateProfile(base64String);
-
-        // console.log(base64String)
+        setImgLoading(true);
+  
+        const {data} = await Axios.post("media/upload/image", formData,);
+        if(data?.status === 200){
+          setImgAddress(data?.data?.fileAddress);
+          setImgLoading(false);
+        }
       } catch (error) {
-        console.error("Error converting image to base64:", error.message);
+        setImgLoading(false);
+        console.error("Error->", error.message);
       }
     }
   };
@@ -116,22 +186,56 @@ const EditWorkoutForm = ({id, editable, setEditable }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Here you can handle form submission, e.g., send data to server
-    console.log({
-      workoutCategory,
-      workoutTitle,
-      workoutDescription,
-      duration,
-      calorieBurn,
-      totalExercises,
-      exerciseList,
-    });
+    const workoutData = {
+      category: selectedCategory,
+      title: workoutTitle,
+      subCategory: subCategory,
+      bodyPart: selectedBodyPart || "Chest", 
+      description: workoutDescription,
+      sets: 3, 
+      totalTime: duration,
+      breakTime: restBetween,
+      calorieburn: calorieBurn,
+      thumbnail: imgAddress,
+      exercises: exerciseList?.map(({ title, sets, time, reps, image }) => ({
+        "name":title,
+        "sets":sets,
+        // time,
+        ...(reps ? { "reps": +reps } : { "time": +time }),
+        "url":image,
+        "category": "Legs",
+        "calorieburn":100,
+        "isActive": true,
+      }))
+    };
+    console.log("🚀 ~ handleSubmit ~ workoutData:", workoutData)
+
+    try{
+      setBtnLoading(true)
+      const {data} = await Axios.put(`workout/update/${id}`, workoutData);
+      console.log("Workout created successfully:", data);
+      if (data.status === 200) {
+        SuccessToaster(data.message[0])
+        setBtnLoading(false)
+        setEditable(false)
+        navigate("/workout-plans")
+      }
+      else{
+        setBtnLoading(false)
+        ErrorToaster(data.message[0])
+      }
+    }
+    catch(error){
+      console.log("Error is :", error )
+    }
+    finally{
+      setBtnLoading(false)
+    }
   };
 
   //* API CALL FOR GET WORKOUT DETAILS
-  
   const [workoutDetail, setWorkoutDetail] = useState([])
 
   const getWorkoutDetail = async(workoutId) => {
@@ -141,12 +245,32 @@ const EditWorkoutForm = ({id, editable, setEditable }) => {
       console.log("data EditWorkoutForm-> ", data)
       if(data.status === 200){
         setWorkoutDetail(data?.data)
-        setWorkoutCategory(data?.data?.category)
-        setWorkoutTitle(data?.data?.title)
-        setWorkoutDescription(data?.data?.description)
-        setDuration(data?.data?.totalTime)
-        setCalorieBurn(data?.data?.calorieburn)
-        setTotalExercises(data?.data?.totalExercises)
+        const {_id, title, description, category, subCategory, bodyPart, totalTime, calorieburn, totalExercises, exercise, breakTime, thumbnail, } = data?.data
+        setSelectedCategory(category)
+        setSelectedSubCategory(()=> subCategory === "BodyWeight" ? "Bodyweight Cardio" : 
+        subCategory === "Equipment" ? "Equipment-based cardio" : subCategory === "Free Weigh" ? "FreeWeigh": subCategory)
+        setSubCategory(subCategory)
+        bodyPart ? setSelectedBodyPart(bodyPart) : setSelectedBodyPart("Triceps")
+        setWorkoutTitle(title)
+        setWorkoutDescription(description)
+        setDuration(totalTime)
+        setCalorieBurn(calorieburn)
+        setTotalExercises(totalExercises)
+        setRestBetween(breakTime)
+        setImgAddress(thumbnail)
+
+        const mappedExercises = exercise.map((ex) => ({
+          id:ex._id,
+          title: ex.name,
+          sets: ex.totalSets || "",
+          reps: ex.reps || "",
+          time: ex.time || "",
+          restBetweenSets: ex.restBetweenSets || "",
+          image: ex.url || null,
+          isTimeBased: !!ex.time,
+        }));
+        setExerciseList(mappedExercises);
+
       }
       else{
         ErrorToaster(data?.message[0])
@@ -168,264 +292,324 @@ const EditWorkoutForm = ({id, editable, setEditable }) => {
   return (
     <div className="w-full bg-white rounded-xl p-6">
       {loading ? (
-        <Loader/>
-      ):(
+        <Loader />
+      ) : (
         <form
-        onSubmit={handleSubmit}
-        className="w-full flex flex-col items-start gap-4"
-      >
-        <div className="w-full">
-          {editable ? (
-            <div
-              onClick={handleProfileImg}
-              className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
-            >
-              <input
-                ref={fileInputRef}
-                disabled={!editable}
-                id="cat-image-add"
-                className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
-                type="file"
-                accept="image/png, image/jpeg"
-                onChange={(e) => handleProfileChange(e)}
+          onSubmit={handleSubmit}
+          className="w-full flex flex-col items-start gap-4"
+        >
+          <div className="w-full">
+            {editable ? (
+              <Fragment>
+                {imgLoading ? (
+                  <Loader />
+                ) : (
+                  <div
+                    onClick={handleProfileImg}
+                    className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+                  >
+                    <input
+                      ref={fileInputRef}
+                      disabled={!editable}
+                      id="cat-image-add"
+                      className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
+                      type="file"
+                      accept="image/png, image/jpeg"
+                      onChange={(e) => handleProfileChange(e)}
+                    />
+                    <img
+                      src={imgAddress}
+                      className="w-full h-full rounded-xl object-contain"
+                    />
+                  </div>
+                )}
+              </Fragment>
+            ) : (
+              <img
+                src={workoutDetail.thumbnail}
+                alt="workout-image"
+                className="lg:h-[50vh] rounded-2xl mb-4 brightness-75"
               />
-              {image ? (
-                <img
-                  src={`data:image/webp;base64,${image && image}`}
-                  className="w-full h-full rounded-xl object-contain"
-                />
-              ) : (
-                <div className="w-auto flex flex-col gap-3 justify-center items-center">
-                  <LuImagePlus className="text-4xl font-medium text-gray-400" />
-                  <span className="text-sm font-normal text-gray-400">
-                    Please upload workout thumbnail.
-                  </span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <img
-              src={workoutDetail.thumbnail}
-              alt="workout-image"
-              className="lg:h-[50vh] rounded-2xl mb-4 brightness-75"
-            />
-          )}
-        </div>
-
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
-            <label className="text-sm font-medium">Workout Category</label>
-            <input
-              type="text"
-              disabled={!editable}
-              placeholder="Yoga"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutCategory}
-              onChange={(e) => setWorkoutCategory(e.target.value)}
-            />
-            {/* <select
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutCategory}
-              disabled
-              onChange={(e) => setWorkoutCategory(e.target.value)}
-            >
-              <option value="">Select Category</option>
-              <option value="cardio">Cardio</option>
-              <option value="yoga">Yoga</option>
-              <option value="lifting">Lifting</option>
-            </select> */}
+            )}
           </div>
-          <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
-            <label className="text-sm font-medium">Workout Title</label>
-            <input
-              type="text"
-              disabled={!editable}
-              placeholder="Title"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={workoutTitle}
-              onChange={(e) => setWorkoutTitle(e.target.value)}
-            />
-          </div>
-        </div>
 
-        <div className="w-full flex flex-col items-start gap-1">
-          <label className="text-sm font-medium">Workout Description</label>
-          <textarea
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={workoutDescription}
-            rows={"5"}
-            disabled={!editable}
-            placeholder="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-            onChange={(e) => setWorkoutDescription(e.target.value)}
-          ></textarea>
-        </div>
-
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
-            <label className="text-sm font-medium">
-              Estimated Calorie Burn
-            </label>
-            <input
-              type="number"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={calorieBurn}
-              disabled={!editable}
-              placeholder="500"
-              onChange={(e) => setCalorieBurn(e.target.value)}
-            />
-          </div>
-          <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
-            <label className="text-sm font-medium">
-              Duration <span className="text-xs text-gray-400">(minutes)</span>
-            </label>
-            <input
-              type="number"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={duration}
-              disabled={!editable}
-              placeholder="10 min"
-              onChange={(e) => setDuration(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="w-full flex flex-col items-start gap-1">
-          <label className="text-sm font-medium">Total Exercises</label>
-          <input
-            type="number"
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={totalExercises}
-            disabled={!editable}
-            placeholder="6"
-            onChange={(e) => setTotalExercises(e.target.value)}
-          />
-        </div>
-
-        {exerciseList.map((exercise, index) => (
-          <div key={index} className="w-full flex flex-col items-start gap-4">
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="w-full flex flex-col gap-1 items-start">
-                <label className="text-sm font-medium flex items-center justify-start gap-4">
-                  <span>Exercise {index + 1} Title</span>
-                  {index >= 1 ? (
-                    <button
-                      type="button"
-                      className="text-red-600 font-medium text-xs"
-                      onClick={() => removeExerciseField(exercise.id)}
-                    >
-                      Delete Exercise
-                    </button>
-                  ) : (
-                    <></>
-                  )}
-                </label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.title}
-                  disabled={!editable}
-                  placeholder="Exercise Title"
-                  onChange={(e) =>
-                    handleExerciseChange(index, "title", e.target.value)
-                  }
-                />
-              </div>
-              <div className="w-full flex flex-col gap-1 items-start">
-                <label className="text-sm font-medium">Sets</label>
-                <input
-                  type="number"
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.sets}
-                  disabled={!editable}
-                  placeholder="3"
-                  onChange={(e) =>
-                    handleExerciseChange(index, "sets", e.target.value)
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="w-full flex flex-col gap-1 items-start">
-                <label className="text-sm font-medium">Reps</label>
-                <input
-                  type="number"
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.reps}
-                  disabled={!editable}
-                  placeholder="12"
-                  onChange={(e) =>
-                    handleExerciseChange(index, "reps", e.target.value)
-                  }
-                />
-              </div>
-              <div className="w-full flex flex-col gap-1 items-start">
-                <label className="text-sm font-medium">Rest Between Sets</label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={exercise.restBetweenSets}
-                  disabled={!editable}
-                  placeholder="1 min"
-                  onChange={(e) =>
-                    handleExerciseChange(
-                      index,
-                      "restBetweenSets",
-                      e.target.value
-                    )
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="w-full flex flex-col gap-1 items-start">
-              <label className="text-sm font-medium">Exercise Image</label>
+          <div className="w-full flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">Workout Title</label>
               <input
-                type="file"
+                type="text"
                 disabled={!editable}
-                accept="image/*"
+                placeholder="Title"
                 className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                onChange={(e) => handleImageChange(index, e)}
+                value={workoutTitle}
+                onChange={(e) => setWorkoutTitle(e.target.value)}
               />
             </div>
+            
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">Workout Category</label>
+              <select
+                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <option value="">Select Category</option>
+                {Object.keys(categories).map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Sub-Category</label>
+            <select
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              value={selectedSubCategory}
+              onChange={(e) => handleSubCategory(e)}
+            >
+              <option value="">Select Subcategory</option>
+              {subCategories.map((subCategory) => (
+                <option key={subCategory} value={subCategory}>
+                  {subCategory}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
+          </div>
 
-        <div className="hidden">
-          <button
-            type="button"
-            className={`${styles.bgColor} text-white font-medium text-[10px] px-3 py-2 rounded-lg`}
-            onClick={addExerciseField}
-          >
-            Add More Exercises
-          </button>
-        </div>
-        {editable ? (
-          <div className="w-full flex justify-end bg-white rounded-b-xl items-center gap-4 py-2">
-            <button
-              onClick={() => setEditable(false)}
-              className={`${styles.bgColor} text-white text-sm font-medium px-3 py-2 rounded-lg`}
-            >
-              Update Workout
-            </button>
-            <button
-              onClick={() => setEditable(false)}
-              className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
-            >
-              Cancel
-            </button>
+          {selectedSubCategory === "Free Weight" ||selectedSubCategory === "Gym" ? (
+          <div className="w-full">
+            <div className="w-full flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">Sub-category</label>
+              <select
+                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                value={selectedBodyPart}
+                onChange={(e) => setSelectedBodyPart(e.target.value)}
+              >
+                <option value="">Select Body Part</option>
+                <option value="Biceps">Biceps</option>
+                <option value="Triceps">Triceps</option>
+                <option value="Chest">Chest</option>
+                <option value="Back">Back</option>
+                <option value="Shoulders">Shoulders</option>
+                <option value="Legs">Legs</option>
+              </select>
+            </div>
           </div>
         ) : (
-          <div className="w-full py-2">
+          <></>
+        )}
+
+          <div className="w-full flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Workout Description</label>
+            <textarea
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              value={workoutDescription}
+              rows={"5"}
+              disabled={!editable}
+              placeholder="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+              onChange={(e) => setWorkoutDescription(e.target.value)}
+            ></textarea>
+          </div>
+
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">
+                Estimated Calorie Burn
+              </label>
+              <input
+                type="number"
+                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                value={calorieBurn}
+                disabled={!editable}
+                placeholder="500"
+                onChange={(e) => setCalorieBurn(e.target.value)}
+              />
+            </div>
+            <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">
+                Duration{" "}
+                <span className="text-xs text-gray-400">(minutes)</span>
+              </label>
+              <input
+                type="number"
+                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                value={duration}
+                disabled={!editable}
+                placeholder="10 min"
+                onChange={(e) => setDuration(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col items-start gap-1">
+            <label className="text-sm font-medium">Total Exercises</label>
+            <input
+              type="number"
+              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              value={totalExercises}
+              disabled={!editable}
+              placeholder="6"
+              onChange={(e) => handleTotalExercisesChange(e)}
+            />
+          </div>
+
+          {exerciseList.map((exercise, index) => (
+            <div key={index} className="w-full flex flex-col items-start gap-4">
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Exercise Title */}
+                <div className="w-full flex flex-col gap-1 items-start">
+                  <label className="text-sm font-medium flex items-center justify-start gap-4">
+                    <span>Exercise {index + 1} Title</span>
+                    {index >= 1 && (
+                      <button
+                        type="button"
+                        className="text-red-600 font-medium text-xs"
+                        onClick={() => removeExerciseField(exercise.id)}
+                      >
+                        Delete Exercise
+                      </button>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={exercise.title}
+                    disabled={!editable}
+                    placeholder="Exercise Title"
+                    onChange={(e) =>
+                      handleExerciseChange(index, "title", e.target.value)
+                    }
+                  />
+                </div>
+
+                {/* Sets */}
+                <div className="w-full flex flex-col gap-1 items-start">
+                  <label className="text-sm font-medium">Sets</label>
+                  <input
+                    type="number"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={exercise.sets}
+                    disabled={!editable}
+                    placeholder="3"
+                    onChange={(e) =>
+                      handleExerciseChange(index, "sets", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Reps or Time */}
+                <div className="w-full flex flex-col gap-1 items-start">
+                  <label className="text-sm font-medium">
+                    {exercise.isTimeBased ? "Time Duration" : "No. Reps"}
+                  </label>
+                  {exercise.isTimeBased ? (
+                    <input
+                      type="number"
+                      className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                      placeholder="Enter time in seconds"
+                      value={exercise.time}
+                      disabled={!editable}
+                      onChange={(e) =>
+                        handleExerciseChange(index, "time", e.target.value)
+                      }
+                      min={1}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                      placeholder="Enter no. of reps"
+                      value={exercise.reps}
+                      disabled={!editable}
+                      onChange={(e) =>
+                        handleExerciseChange(index, "reps", e.target.value)
+                      }
+                      min={1}
+                    />
+                  )}
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      name="timeBased"
+                      id="timeBased"
+                      checked={exercise.isTimeBased}
+                      onChange={(e) => {
+                        handleTimeBasedChange(index, e.target.checked);
+                      }}
+                    />
+                    <label htmlFor="timeBased" className="text-xs">
+                      Is the exercise time based?
+                    </label>
+                  </div>
+                </div>
+
+                {/* Exercise Image */}
+                <div className="w-full flex flex-col gap-1 items-start">
+                  <label className="text-sm font-medium">Exercise Image</label>
+                  <div className="w-full flex justify-between ">
+                    <input
+                      type="file"
+                      disabled={!editable}
+                      accept="image/*"
+                      className="w-full h-12 border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                      onChange={(e) => handleImageChange(index, e)}
+                    />
+                    {exercise.image && (
+                      <img
+                        src={exercise.image}
+                        alt="Preview"
+                        className=" ml-2 w-14 h-14 object-cover"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div className="hidden">
             <button
-              className={`${styles.bgColor} text-white px-4 py-2 rounded-lg text-sm font-medium mt-2 float-end`}
-              onClick={() => setEditable(true)}
+              type="button"
+              className={`${styles.bgColor} text-white font-medium text-[10px] px-3 py-2 rounded-lg`}
+              onClick={addExerciseField}
             >
-              Edit Workout
+              Add More Exercises
             </button>
           </div>
-        )}
-      </form>
+          {editable ? (
+            <div className="w-full flex justify-end bg-white rounded-b-xl items-center gap-4 py-2">
+              <button
+                disabled={btnLoading}
+                type="submit"
+                className={`${styles.bgColor} text-white text-sm font-medium px-3 py-2 rounded-lg`}
+              >
+                {btnLoading ? "Updating... " : "Update Workout"}
+              </button>
+              <button
+                onClick={() => setEditable(false)}
+                className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="w-full py-2">
+              <button
+                className={`${styles.bgColor} text-white px-4 py-2 rounded-lg text-sm font-medium mt-2 float-end`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setEditable(true);
+                }}
+              >
+                Edit Workout
+              </button>
+            </div>
+          )}
+        </form>
       )}
     </div>
   );

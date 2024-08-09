@@ -8,49 +8,65 @@ import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
 
 const WorkoutCreationForm = () => {
   const navigate = useNavigate()
-  // const [workoutCategory, setWorkoutCategory] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [calorieBurn, setCalorieBurn] = useState("");
-  // const [totalExercises, setTotalExercises] = useState("");
   const [imgAddress, setImgAddress] = useState('');
   
   const [imgLoading, setImgLoading] = useState(false);
   const [snippetLoading, setSnippetLoading] = useState(false);
-  const [snippetErr, setSnippetErr] = useState(false)
   const [btnLoading, setBtnLoading] = useState(false)
 
-  const [selectedBodyPart, setSelectedBodyPart] = useState("")
+  const [snippetErr, setSnippetErr] = useState(false)
+  const [subCategoryErr,setSubCategoryErr] = useState(null)
+  const [categoryErr,setCategoryErr] = useState(null)
+  const [bodyErr,SetBodyErr] = useState(null) 
+
+  const [selectedBodyPart, setSelectedBodyPart] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  
+  const [numExercises, setNumExercises] = useState(1);
+  const [restBetween, setRestBetween] = useState(1);
+  const [exerciseForms, setExerciseForms] = useState([{
+    title: '', sets: 3, time: '', reps: '', isTimeBased: false, imagePreview: '', loading: false, error: false, 
+  }]);
+  console.log("🚀 ~ WorkoutCreationForm ~ exerciseForms:", exerciseForms)
+  const [subCategory, setSubCategory] = useState("");
+
   const categories = {
-    yoga: [],
-    cardio: ["bodyweight cardio", "equipment-based cardio"],
-    lifting: ["free weight", "gym"],
+    Yoga: [],
+    Cardio: ["Bodyweight Cardio", "Equipment-Based Cardio"],
+    Lifting: ["Free Weight", "Gym"],
   };
+
+  const subCategories = categories[selectedCategory] || [];
+
+  const handleSubCategory = (e) =>{
+    setSubCategoryErr(null)
+    setSelectedSubCategory(e.target.value)
+    if (e.target.value === "Bodyweight Cardio") return setSubCategory("BodyWeight") ;
+    if (e.target.value === "Equipment-based cardio") return setSubCategory("Equipment");
+    if (e.target.value === "Free Weight") return setSubCategory("FreeWeight");
+    if (e.target.value === "Gym") return setSubCategory("Gym");
+  }
+  
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
     setSelectedSubCategory(""); 
+    setCategoryErr(null)
   };
-  const subCategories = categories[selectedCategory] || [];
-
-  console.log("Selected Sub-category:::", selectedSubCategory);
-
-  const [numExercises, setNumExercises] = useState(0); 
-  const [restBetween, setRestBetween] = useState(0);
-  const [exerciseForms, setExerciseForms] = useState([{
-    title: '', sets: '', time: '', reps: '', isTimeBased: false, imagePreview: '', 
-  }]);
 
   const handleNumExercisesChange = (event) => {
     const newNumExercises = parseInt(event.target.value);
+    setNumExercises(newNumExercises);
     if (newNumExercises >= 1) {
-      setNumExercises(newNumExercises);
       setExerciseForms(
+        
         Array(newNumExercises).fill({
           title: "",
-          sets: "",
+          sets: 3,
           reps: "",
           restBetweenSets: "",
           image: null,
@@ -70,6 +86,7 @@ const WorkoutCreationForm = () => {
   };
 
   const handleExerciseImage = async (exerciseIndex, event) => {
+    console.log("🚀 ~ handleExerciseImage ~ exerciseIndex:", exerciseIndex)
     const updatedForms = [...exerciseForms];
     const file = event.target.files[0];
     const formData = new FormData();
@@ -80,31 +97,28 @@ const WorkoutCreationForm = () => {
     updatedForms[exerciseIndex].imagePreview = imagePreviewUrl;
 
     try{
-      setSnippetLoading(true)
+      updatedForms[exerciseIndex].loading = true;
+      updatedForms[exerciseIndex].error = false;
       const {data} = await axios.post("media/upload/image", formData)
       if(data.status === 200){
-        setSnippetLoading(false)
-        setSnippetErr(false)
         updatedForms[exerciseIndex] = {
           ...updatedForms[exerciseIndex],
           image: data?.data?.fileAddress,
         };
+        updatedForms[exerciseIndex].loading = false;
+        updatedForms[exerciseIndex].error = false;
         setExerciseForms(updatedForms);
       }
     }
     catch(err){
-      setSnippetErr(true)
-      setSnippetLoading(false)
-    console.log("🚀 ~ handleExerciseImage ~ err:", err)
+      updatedForms[exerciseIndex].error = true;
+      updatedForms[exerciseIndex].loading = false;
+      console.log("🚀 ~ handleExerciseImage ~ err:", err)
+    }
+    finally{
+      setExerciseForms(updatedForms);
     }
   };
-
-  // const handleDeleteExercise = (index) => {
-  //   const updatedForms = exerciseForms.filter(
-  //     (_, formIndex) => formIndex !== index
-  //   );
-  //   setExerciseForms(updatedForms);
-  // };
 
   const [exerciseList, setExerciseList] = useState([
     {
@@ -116,102 +130,36 @@ const WorkoutCreationForm = () => {
       time: "",
     },
   ]);
-  const [nextId, setNextId] = useState(2);
-
-  // const addExerciseField = () => {
-  //   setExerciseList([
-  //     ...exerciseList,
-  //     {
-  //       id: nextId,
-  //       title: "",
-  //       sets: "",
-  //       reps: "",
-  //       restBetweenSets: "",
-  //       image: null,
-  //       time: "",
-  //     },
-  //   ]);
-  //   setNextId(nextId + 1); // Increment nextId for the next exercise
-  // };
 
   const removeExerciseField = (id) => {
     const updatedExerciseList = exerciseList.filter(
-      (exercise) => exercise.id !== id
+      (exercise, index) => index+1 !== id
     );
     setExerciseList(updatedExerciseList);
   };
 
-  // const handleExerciseChange = (id, field, value) => {
-  //   const updatedExerciseList = exerciseList.map((exercise) => {
-  //     if (exercise.id === id) {
-  //       // Ensure the checkbox state is boolean
-  //       const updatedValue =
-  //         field === "isTimeBased" ? !exercise.isTimeBased : value;
-  //       return { ...exercise, [field]: updatedValue };
-  //     }
-  //     return exercise;
-  //   });
-  //   setExerciseList(updatedExerciseList);
-  // };
-
-  // const handleImageChange = (id, event) => {
-  //   const updatedExerciseList = exerciseList.map((exercise) => {
-  //     if (exercise.id === id) {
-  //       return { ...exercise, image: event.target.files[0] };
-  //     }
-  //     return exercise;
-  //   });
-  //   setExerciseList(updatedExerciseList);
-  // };
-
-  // const addExercise = () => {
-  //   const newExercise = {
-  //     title: exerciseTitle,
-  //     sets: sets,
-  //     reps: reps,
-  //     restBetweenSets: restBetweenSets,
-  //   };
-  //   setExerciseList([...exerciseList, newExercise]);
-  //   // setExerciseTitle("");
-  //   setSets("");
-  //   setReps("");
-  //   // setRestBetweenSets("");
-  // };
-
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  };
-  
-  
-  const mapSubCategory = (subCategory) => {
-    if (subCategory === "bodyweight cardio") return "BodyWeight";
-    if (subCategory === "equipment-based cardio") return "Equipment";
-    if (subCategory === "free weight") return "FreeWeight";
-    if (subCategory === "gym") return "Gym";
-    return subCategory; 
-  };
-
   const handleSubmit = async(e) => {
     e.preventDefault();
+    console.log("Submit Handle===")
     if (!selectedCategory) {
-      alert("Please select a category.");
+      setCategoryErr("Please select a category.");
       return;
     }
-    if ((selectedCategory === "lifting" || selectedCategory === "cardio") && !selectedSubCategory) {
-      alert("Please select a sub-category.");
+    if ((selectedCategory === "Lifting" || selectedCategory === "Cardio") && !selectedSubCategory) {
+      setSubCategoryErr("Please select a sub-category.");
       return;
     }
-    if (selectedSubCategory === "free weight" || selectedSubCategory === "gym") {
-      if (!bodyPart) {
-        alert("Please select a body part.");
+    if (selectedSubCategory === "Free Weight" || selectedSubCategory === "Gym") {
+      if (!selectedBodyPart) {
+        SetBodyErr("Please select a body part.");
         return;
       }
     }
-    console.log("test mapping->",mapSubCategory(selectedSubCategory))
+    
     const workoutData = {
-      category: capitalizeFirstLetter(selectedCategory),
+      category: selectedCategory,
       title: workoutTitle,
-      subCategory: mapSubCategory(selectedSubCategory),
+      subCategory: subCategory,
       bodyPart: selectedBodyPart || "Chest", 
       description: workoutDescription,
       sets: 3, 
@@ -221,7 +169,7 @@ const WorkoutCreationForm = () => {
       thumbnail: imgAddress,
       exercises: exerciseForms.map(({ title, sets, time, reps, image }) => ({
         "name":title,
-        "sets":sets,
+        "sets":3,
         // time,
         ...(reps ? { "reps": +reps } : { "time": +time }),
         "url":image,
@@ -230,6 +178,7 @@ const WorkoutCreationForm = () => {
         "isActive": true,
       }))
     };
+    console.log("🚀 ~ handleSubmit ~ workoutData:", workoutData)
 
     try {
       setBtnLoading(true)
@@ -250,9 +199,6 @@ const WorkoutCreationForm = () => {
     }
   };
 
-  // image uploading and image preview
-  const [image, setImage] = useState(null);
-
   const fileInputRef = useRef(null);
   const handleProfileImg = () => {
     fileInputRef.current.click();
@@ -265,10 +211,6 @@ const WorkoutCreationForm = () => {
     
     if (file) {
       try {
-        
-        const base64String = await convertImageToBase64(file);
-        setImage(base64String);
-        // updateProfile(base64String);
         setImgLoading(true);
   
         const {data} = await axios.post("media/upload/image", formData,);
@@ -276,7 +218,6 @@ const WorkoutCreationForm = () => {
           setImgAddress(data?.data?.fileAddress);
           setImgLoading(false);
         }
-        // console.log(base64String)
       } catch (error) {
         setImgLoading(false);
         console.error("Error->", error.message);
@@ -284,32 +225,20 @@ const WorkoutCreationForm = () => {
     }
   };
 
-  const convertImageToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        const base64String = reader.result.split(",")[1]; // Get base64 string without data:image part
-        resolve(base64String);
-      };
-
-      reader.onerror = (error) => {
-        reject(error);
-      };
-
-      reader.readAsDataURL(file);
-    });
-  };
-
   return (
     <div className="w-full bg-white rounded-xl p-6">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e)=>handleSubmit(e)}
         className="w-full flex flex-col items-start gap-4"
       >
         <div className="w-full">
           {imgLoading ? (
+            <div
+            onClick={handleProfileImg}
+            className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+          >
             <Loader />
+          </div>
           ) : (
             <div
               onClick={handleProfileImg}
@@ -323,9 +252,9 @@ const WorkoutCreationForm = () => {
                 accept="image/png, image/jpeg"
                 onChange={(e) => handleProfileChange(e)}
               />
-              {image ? (
+              {imgAddress ? (
                 <img
-                  src={`data:image/webp;base64,${image && image}`}
+                  src={imgAddress}
                   className="w-full h-full rounded-xl object-contain"
                 />
               ) : (
@@ -365,13 +294,14 @@ const WorkoutCreationForm = () => {
                 </option>
               ))}
             </select>
+            {categoryErr && <p className="text-[12px] text-red-700">{categoryErr}</p>}
           </div>
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Sub-Category</label>
             <select
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               value={selectedSubCategory}
-              onChange={(e) => setSelectedSubCategory(e.target.value)}
+              onChange={(e) => handleSubCategory(e)}
             >
               <option value="">Select Subcategory</option>
               {subCategories.map((subCategory) => (
@@ -380,18 +310,19 @@ const WorkoutCreationForm = () => {
                 </option>
               ))}
             </select>
+            {subCategoryErr && <p className="text-[12px] text-red-700">{subCategoryErr}</p>}
           </div>
         </div>
 
-        {selectedSubCategory === "free weight" ||
-        selectedSubCategory === "gym" ? (
+        {selectedSubCategory === "Free Weight" ||
+        selectedSubCategory === "Gym" ? (
           <div className="w-full">
             <div className="w-full flex flex-col items-start gap-1">
               <label className="text-sm font-medium">Sub-category</label>
               <select
                 className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                 value={selectedBodyPart}
-                onChange={(e) => setSelectedBodyPart(e.target.value)}
+                onChange={(e) => {setSelectedBodyPart(e.target.value); SetBodyErr(null)}}
               >
                 <option value="">Select Body Part</option>
                 <option value="Biceps">Biceps</option>
@@ -401,6 +332,7 @@ const WorkoutCreationForm = () => {
                 <option value="Shoulders">Shoulders</option>
                 <option value="Legs">Legs</option>
               </select>
+              {bodyErr && <p className="text-[12px] text-red-700">{bodyErr}</p>}
             </div>
           </div>
         ) : (
@@ -452,7 +384,7 @@ const WorkoutCreationForm = () => {
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               id="numExercises"
               value={numExercises}
-              onChange={handleNumExercisesChange}
+              onChange={(e)=>handleNumExercisesChange(e)}
               min={1}
             />
           </div>
@@ -462,6 +394,7 @@ const WorkoutCreationForm = () => {
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               id="restBetween"
+              placeholder="Enter time in seconds"
               value={restBetween}
               onChange={(e)=>setRestBetween(e.target.value)}
               min={1}
@@ -479,7 +412,7 @@ const WorkoutCreationForm = () => {
                     <button
                       type="button"
                       className="text-red-600 font-medium text-xs"
-                      onClick={() => removeExerciseField(exercise.id)}
+                      onClick={() => removeExerciseField(index)}
                     >
                       Delete Exercise
                     </button>
@@ -498,6 +431,7 @@ const WorkoutCreationForm = () => {
               <div className="w-full flex flex-col gap-1 items-start">
                 <label className="text-sm font-medium">Sets</label>
                 <input
+                disabled
                   type="number"
                   className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
                   name="sets"
@@ -576,11 +510,11 @@ const WorkoutCreationForm = () => {
                   />
                   {exercise.imagePreview && (
                     <Fragment>
-                      {snippetLoading ? (
+                      {exercise.loading ? (
                         <div>uploading...</div>
                       ) : (
                         <>
-                        {snippetErr ?
+                        {exercise.error ?
                          <p className="text-red-700 text-[12px]">Upload failed: Make sure correct file type</p>:
                         <img
                         src={exercise.imagePreview}
@@ -597,16 +531,6 @@ const WorkoutCreationForm = () => {
             </div>
           </div>
         ))}
-
-        {/* <div className="">
-          <button
-            type="button"
-            className={`${styles.bgColor} text-white font-medium text-[10px] px-3 py-2 rounded-lg`}
-            onClick={addExerciseField}
-          >
-            Add More Exercises
-          </button>
-        </div> */}
 
         <div className="w-full flex items-center justify-end gap-4 py-4">
           <button

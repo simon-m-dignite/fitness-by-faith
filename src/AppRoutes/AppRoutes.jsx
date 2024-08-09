@@ -21,7 +21,6 @@ import VerifyOtp from "../pages/VerifyOtp";
 import VideoDetailsPage from "../pages/VideoDetailsPage";
 import Videos from "../pages/Videos";
 import WorkoutDetails from "../pages/WorkoutDetails";
-import WorkoutEdit from "../pages/WorkoutEdit";
 import WorkoutPlans from "../pages/WorkoutPlans";
 import Auth from "./Auth";
 
@@ -50,11 +49,6 @@ export const routes = [
     title: "Dashboard Page",
     url: "/workout/:id",
     page: <Layout pages={<WorkoutDetails />} />,
-  },
-  {
-    title: "Dashboard Page",
-    url: "/update-workout/1234",
-    page: <Layout pages={<WorkoutEdit />} />,
   },
   {
     title:"Workout Videos Page",
