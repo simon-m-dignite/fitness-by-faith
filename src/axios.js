@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const baseUrl = 'http://54.81.4.236:5000/';
+export const baseUrl = 'https://api.fitnessbyfaith.org/';
 
 const instance = axios.create({
   baseURL: baseUrl, 

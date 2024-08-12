@@ -46,7 +46,7 @@ export const routes = [
     page: <Layout pages={<CreateWorkout />} />,
   },
   {
-    title: "Dashboard Page",
+    title: "Create Workout Page",
     url: "/workout/:id",
     page: <Layout pages={<WorkoutDetails />} />,
   },
@@ -77,7 +77,7 @@ export const routes = [
   },
   {
     title: "Meal Plan Details Page",
-    url: "/meal/1234",
+    url: "/meal/:id",
     page: <Layout pages={<MealDetailsPage />} />,
   },
   {

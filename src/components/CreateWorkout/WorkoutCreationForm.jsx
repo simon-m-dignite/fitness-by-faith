@@ -15,10 +15,9 @@ const WorkoutCreationForm = () => {
   const [imgAddress, setImgAddress] = useState('');
   
   const [imgLoading, setImgLoading] = useState(false);
-  const [snippetLoading, setSnippetLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false)
-
-  const [snippetErr, setSnippetErr] = useState(false)
+  const [snippetLoading, setSnippetLoading] = useState({});
+  const [snippetErr, setSnippetErr] = useState({})
   const [subCategoryErr,setSubCategoryErr] = useState(null)
   const [categoryErr,setCategoryErr] = useState(null)
   const [bodyErr,SetBodyErr] = useState(null) 
@@ -30,9 +29,9 @@ const WorkoutCreationForm = () => {
   const [numExercises, setNumExercises] = useState(1);
   const [restBetween, setRestBetween] = useState(1);
   const [exerciseForms, setExerciseForms] = useState([{
-    title: '', sets: 3, time: '', reps: '', isTimeBased: false, imagePreview: '', loading: false, error: false, 
+    title: '', sets: 3, time: '', reps: '', isTimeBased: false, imagePreview: '', 
   }]);
-  console.log("🚀 ~ WorkoutCreationForm ~ exerciseForms:", exerciseForms)
+
   const [subCategory, setSubCategory] = useState("");
 
   const categories = {
@@ -61,7 +60,7 @@ const WorkoutCreationForm = () => {
   const handleNumExercisesChange = (event) => {
     const newNumExercises = parseInt(event.target.value);
     setNumExercises(newNumExercises);
-    if (newNumExercises >= 1) {
+    if (newNumExercises >= 1 && newNumExercises <= 25 ) {
       setExerciseForms(
         
         Array(newNumExercises).fill({
@@ -86,7 +85,6 @@ const WorkoutCreationForm = () => {
   };
 
   const handleExerciseImage = async (exerciseIndex, event) => {
-    console.log("🚀 ~ handleExerciseImage ~ exerciseIndex:", exerciseIndex)
     const updatedForms = [...exerciseForms];
     const file = event.target.files[0];
     const formData = new FormData();
@@ -94,29 +92,28 @@ const WorkoutCreationForm = () => {
 
     // URL for the image preview
     const imagePreviewUrl = URL.createObjectURL(file);
-    updatedForms[exerciseIndex].imagePreview = imagePreviewUrl;
+    // updatedForms[exerciseIndex].imagePreview = imagePreviewUrl;
 
     try{
-      updatedForms[exerciseIndex].loading = true;
-      updatedForms[exerciseIndex].error = false;
+      setSnippetLoading(prevState => ({ ...prevState, [exerciseIndex]: { load: true } })); 
       const {data} = await axios.post("media/upload/image", formData)
       if(data.status === 200){
+        setSnippetErr(prevState => ({ ...prevState, [exerciseIndex]: { error: false } }));
         updatedForms[exerciseIndex] = {
           ...updatedForms[exerciseIndex],
           image: data?.data?.fileAddress,
+          imagePreview: imagePreviewUrl
         };
-        updatedForms[exerciseIndex].loading = false;
-        updatedForms[exerciseIndex].error = false;
         setExerciseForms(updatedForms);
       }
     }
     catch(err){
-      updatedForms[exerciseIndex].error = true;
-      updatedForms[exerciseIndex].loading = false;
       console.log("🚀 ~ handleExerciseImage ~ err:", err)
+      setSnippetErr(prevState => ({ ...prevState, [exerciseIndex]: { error: true } }));
     }
     finally{
       setExerciseForms(updatedForms);
+      setSnippetLoading(prevState => ({ ...prevState, [exerciseIndex]: { load: false } }));
     }
   };
 
@@ -329,7 +326,7 @@ const WorkoutCreationForm = () => {
                 <option value="Triceps">Triceps</option>
                 <option value="Chest">Chest</option>
                 <option value="Back">Back</option>
-                <option value="Shoulders">Shoulders</option>
+                <option value="Shoulder">Shoulders</option>
                 <option value="Legs">Legs</option>
               </select>
               {bodyErr && <p className="text-[12px] text-red-700">{bodyErr}</p>}
@@ -510,12 +507,12 @@ const WorkoutCreationForm = () => {
                   />
                   {exercise.imagePreview && (
                     <Fragment>
-                      {exercise.loading ? (
+                      {snippetLoading[index]?.load ? (
                         <div>uploading...</div>
                       ) : (
                         <>
-                        {exercise.error ?
-                         <p className="text-red-700 text-[12px]">Upload failed: Make sure correct file type</p>:
+                        {snippetErr[index]?.error ?
+                         <p className="text-red-700 text-[12px] pl-1">Upload failed: Make sure correct file type</p>:
                         <img
                         src={exercise.imagePreview}
                         alt="Preview"

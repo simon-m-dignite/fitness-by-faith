@@ -152,9 +152,9 @@ const CreateMealPlan = () => {
                   Choose a category
                 </option>
                 <option value="Vegans">Vegans</option>
-                <option value="Low carbs">Low carbs</option>
-                <option value="High carbs">High carbs</option>
-                <option value="High protien">High protien</option>
+                <option value="LowCarbs">Low carbs</option>
+                <option value="HighCarbs">High carbs</option>
+                <option value="HighProtein">High Protein</option>
               </select>
             </div>
           </div>

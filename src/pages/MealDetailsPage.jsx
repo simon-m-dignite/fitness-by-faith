@@ -1,10 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styles } from "../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
+import { useParams } from "react-router-dom";
+import Axios from "../axios";
+import Loader from "../components/Global/Loader";
 
-const MealDetailsPage = () => {
+const MealDetailsPage = () => { 
+  const { id } = useParams();
   const [image, setImage] = useState(null);
+  console.log("🚀 ~ MealDetailsPage ~ image:", image)
   const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const [instructions, setInstructions] = useState([]);
   const [inputValue, setInputValue] = useState("");
@@ -55,9 +61,9 @@ const MealDetailsPage = () => {
     }
   };
   const [mealDetails, setMealDetails] = useState({
-    title: "Sample Meal",
-    description: "Lorem ipsum dolor sit amet",
-    category: "Select Category",
+    title: "",
+    description: "",
+    category: "",
     carbs: 0,
     fat: 0,
     protein: 0,
@@ -68,6 +74,7 @@ const MealDetailsPage = () => {
     ingredients: [],
     instructions: [],
   });
+  console.log("🚀 ~ MealDetailsPage ~ mealDetails:", mealDetails)
 
   const [editable, setEditable] = useState(false);
 
@@ -88,6 +95,41 @@ const MealDetailsPage = () => {
     setEditable(false);
   };
 
+  const getMealDetail = async (workoutId) => {
+    try {
+      setLoading(true);
+      const { data } = await Axios.get(`meal/getOne/${workoutId}?isSession=false`);
+
+      if (data.status === 200) {
+        const mealData = data?.data;
+        setMealDetails({
+          title: mealData.title,
+          description: mealData.description,
+          category: mealData.category,
+          carbs: mealData.carbs || 0,
+          fat: mealData.fat || 0,
+          protein: mealData.protein || 0,
+          calories: mealData.calories || 0,
+          prepTime: mealData.prepTime || 0,
+          servingSize: mealData.servingSize || 0,
+          numberOfServings: mealData.numServing || 0,
+          ingredients: mealData.ingredients || [],
+          instructions: mealData.instructions || [],
+        });
+        setImage(mealData.url)
+        setLoading(false)
+      }
+    }
+    catch(error){
+      console.log("🚀 ~ getWorkoutDetail ~ error:", error)
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getMealDetail(id);
+  }, [id]);
+
   return (
     <div className="">
       {editable ? (
@@ -95,7 +137,10 @@ const MealDetailsPage = () => {
       ) : (
         <h1 className="text-xl font-semibold mb-4">Meal Details</h1>
       )}
-      <form className="w-full bg-white p-6 rounded-xl">
+      {loading ? (
+        <Loader />
+      ) : (
+        <form className="w-full bg-white p-6 rounded-xl">
         <div className="w-full">
           {editable ? (
             <div
@@ -112,7 +157,7 @@ const MealDetailsPage = () => {
               />
               {image ? (
                 <img
-                  src={`data:image/webp;base64,${image && image}`}
+                  src={image}
                   className="w-full h-full rounded-xl object-contain"
                 />
               ) : (
@@ -126,7 +171,7 @@ const MealDetailsPage = () => {
             </div>
           ) : (
             <img
-              src="https://images.unsplash.com/photo-1576064535185-9f6e3f24b63e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src={image}
               alt=""
               className="h-auto md:h-[50vh] rounded-xl mb-6"
             />
@@ -158,10 +203,10 @@ const MealDetailsPage = () => {
               disabled={!editable}
             >
               <option value="Select Category">Select Category</option>
-              <option value="Breakfast">Breakfast</option>
-              <option value="Lunch">Lunch</option>
-              <option value="Dinner">Dinner</option>
-              <option value="Snack">Snack</option>
+              <option value="Vegans">Vegans</option>
+              <option value="LowCarbs">Low carbs</option>
+              <option value="HighCarbs">High carbs</option>
+              <option value="HighProtein">High Protein</option>
             </select>
           </div>
           <div className="col-span-2 lg:col-span-1">
@@ -302,6 +347,7 @@ const MealDetailsPage = () => {
           </div>
         </div>
       </form>
+      )}
     </div>
   );
 };
