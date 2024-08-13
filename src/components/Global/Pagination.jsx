@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-const Pagination = ({page, totalPages, rowsPerPage, onPageChange }) => {
+const Pagination = ({page, totalPages, rowsPerPage, onPageChange, selectedFilter }) => {
   console.log("🚀 ~ Pagination ~ totalPages:", totalPages)
   console.log("🚀 ~ Pagination ~ page:", page)
   
   const handlePageClick = (pageNumber) => {
     console.log("🚀 ~ handlePageClick ~ pageNumber:", pageNumber)
-    onPageChange(pageNumber, rowsPerPage);
+    onPageChange(pageNumber, rowsPerPage, selectedFilter);
   };
 
   useEffect(() => {

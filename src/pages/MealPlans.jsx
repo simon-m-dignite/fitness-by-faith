@@ -93,7 +93,7 @@ const MealPlans = () => {
         <Fragment>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 pt-3">
         {filteredData.map((meal, index)=>(
-          <MealCard key={index} id={meal._id} title={meal.title} instructions={meal.instructions} numServing={meal.numServing} prepTime={meal.prepTime} servingSize={meal.servingSize} url={meal.url}/>
+          <MealCard key={index} id={meal._id} title={meal.title} instructions={meal.instructions} numServing={meal.numServing} prepTime={meal.prepTime} servingSize={meal.servingSize} url={meal.url} category={meal.category}/>
         ))}
       </div>
       <div className="w-full flex justify-center mt-4">

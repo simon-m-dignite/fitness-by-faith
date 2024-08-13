@@ -57,7 +57,7 @@ export const routes = [
   },
   {
     title:"Workout Videos Edit and update Page",
-    url:"/video/1233",
+    url:"/video/:id",
     page: <Layout pages={<VideoDetailsPage/>}/>
   },
   {

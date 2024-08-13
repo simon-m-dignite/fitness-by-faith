@@ -3,15 +3,54 @@ import { LuImagePlus } from "react-icons/lu";
 import TextField from "../components/Global/TextField";
 import { styles } from "../styles/styles";
 import { FiMinus, FiPlus, FiTrash } from "react-icons/fi";
+import Axios from "../axios";
+import Loader from "../components/Global/Loader";
+import { Link, useNavigate } from "react-router-dom";
+import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
 
 const CreateMealPlan = () => {
-  // Image:
-  const [image, setImage] = useState(null);
-  const fileInputRef = useRef(null);
 
-  const [instructions, setInstructions] = useState([
-    { title: "", content: "" },
-  ]);
+  const navigate = useNavigate()
+
+  const [mealDetails, setMealDetails] = useState({
+    title: '',
+    description: '',
+    prepTime: '',
+    servingSize: '',
+    numServing: '',
+    carbs: '',
+    fat: '',
+    protein: '',
+    calories: '',
+  });
+  console.log("🚀 ~ CreateMealPlan ~ mealDetails:", mealDetails)
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setMealDetails({
+      ...mealDetails,
+      [name]: value,
+    });
+  };
+
+  const [category, setCategory] = useState("");
+  console.log("🚀 ~ CreateMealPlan ~ category:", category)
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+  
+  const [instructions, setInstructions] = useState([""]);
+  console.log("🚀 ~ CreateMealPlan ~ instructions:", instructions)
+
+  // Image:
+  const fileInputRef = useRef(null);
+  const [image, setImage] = useState(null);
+  const [imgAddress, setImgAddress] = useState('');
+  console.log("🚀 ~ CreateMealPlan ~ imgAddress:", imgAddress)
+  
+  const [imgLoading, setImgLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false)
 
   const handleProfileImg = () => {
     fileInputRef.current.click();
@@ -19,79 +58,92 @@ const CreateMealPlan = () => {
 
   const handleProfileChange = async (e) => {
     const file = e.target.files[0];
-
+    const formData = new FormData();
+    formData.append('file', file);
+    
     if (file) {
       try {
-        const base64String = await convertImageToBase64(file);
-        setImage(base64String);
-        // updateProfile(base64String);
-
-        // console.log(base64String)
+        setImgLoading(true);
+        const {data} = await Axios.post("media/upload/image", formData,);
+        if(data?.status === 200){
+          setImgAddress(data?.data?.fileAddress);
+          setImgLoading(false);
+        }
       } catch (error) {
-        console.error("Error converting image to base64:", error.message);
+        setImgLoading(false);
+        console.error("Error->", error.message);
       }
     }
   };
 
-  const convertImageToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        const base64String = reader.result.split(",")[1]; // Get base64 string without data:image part
-        resolve(base64String);
-      };
-
-      reader.onerror = (error) => {
-        reject(error);
-      };
-
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async(e) => {
     e.preventDefault();
-    if (inputValue.trim() !== "") {
-      setInstructions([...instructions, inputValue]);
-      setIngredients([...ingredients, ingredient]);
-      setInputValue("");
-      setIngredient("");
+    const apiData={ 
+      "url" : imgAddress,
+      "title" : mealDetails.title,
+      "description": mealDetails.description,
+      "serving" : "1",
+      "carbs" : mealDetails.carbs,
+      "protein" : mealDetails.protein,
+      "fat" : mealDetails.fat,
+      "calories" : mealDetails.calories,
+      "prepTime" : mealDetails.prepTime,
+      "servingSize" : mealDetails.servingSize,
+      "numServing" : mealDetails.numServing,
+      "ingredients": ingredients,
+      "instructions" : instructions,
+      "category": category
+    }
+
+    try {
+      const {data} = await Axios.post('meal/create', apiData);
+      console.log('Meal created successfully:', data);
+      if (data.status === 200) {
+        SuccessToaster(data.message[0])
+        setBtnLoading(false)
+        navigate("/meal-plans")
+      }
+      else{
+        setBtnLoading(false)
+        ErrorToaster(data.message[0])
+      }
+    } catch (error) {
+      console.error('Error creating meal:', error);
+      ErrorToaster("There was an error submitting data. Please try again.")
     }
   };
 
-  const handleInstructionChange = (index, field, value) => {
+  const handleInstructionChange = (index, value) => {
     const updatedInstructions = [...instructions];
-    updatedInstructions[index][field] = value;
+    updatedInstructions[index] = value;
     setInstructions(updatedInstructions);
   };
 
   const addInstructionField = () => {
-    setInstructions([...instructions, { title: "", content: "" }]);
+    setInstructions([...instructions,""]);
   };
 
   const removeInstructionField = (index) => {
-    const updatedInstructions = [...instructions];
-    updatedInstructions.splice(index, 1);
+    const updatedInstructions = instructions.filter((_, i) => i !== index);
     setInstructions(updatedInstructions);
-  };
+};
 
   //
-  const [ingredients, setIngredients] = useState([{ title: "", content: "" }]);
+  const [ingredients, setIngredients] = useState([""]);
+  console.log("🚀 ~ CreateMealPlan ~ ingredients:", ingredients)
 
-  const handleIngredientChange = (index, field, value) => {
-    const updatedInstructions = [...ingredients];
-    updatedInstructions[index][field] = value;
-    setIngredients(updatedInstructions);
+  const handleIngredientChange = (index, value) => {
+    const updatedIngredients = [...ingredients];
+    updatedIngredients[index] = value;
+    setIngredients(updatedIngredients);
   };
 
   const addIngredientField = () => {
-    setIngredients([...ingredients, { title: "", content: "" }]);
+    setIngredients([...ingredients, ""]);
   };
 
   const removeIngredientField = (index) => {
-    const updatedInstructions = [...ingredients];
-    updatedInstructions.splice(index, 1);
+    const updatedInstructions = ingredients.filter((_, i) => i !== index);
     setIngredients(updatedInstructions);
   };
 
@@ -103,33 +155,43 @@ const CreateMealPlan = () => {
         className="w-full bg-white p-6 rounded-xl flex flex-col gap-6 items-start"
       >
         <div className="w-full">
-          <div
-            onClick={handleProfileImg}
-            className="w-full h-60 md:h-96 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
-          >
-            <input
-              ref={fileInputRef}
-              id="cat-image-add"
-              className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
-              type="file"
-              accept="image/png, image/jpeg"
-              onChange={(e) => handleProfileChange(e)}
-            />
-            {image ? (
-              <img
-                src={`data:image/webp;base64,${image && image}`}
-                className="w-full h-full rounded-xl object-contain"
+          {imgLoading ? (
+            <div
+              onClick={handleProfileImg}
+              className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+            >
+              <Loader />
+            </div>
+          ) : (
+            <div
+              onClick={handleProfileImg}
+              className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+            >
+              <input
+                ref={fileInputRef}
+                id="cat-image-add"
+                className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleProfileChange(e)}
               />
-            ) : (
-              <div className="w-auto flex flex-col gap-3 justify-center items-center">
-                <LuImagePlus className="text-4xl font-medium text-gray-400" />
-                <span className="text-sm font-normal text-gray-400">
-                  Please provide the Image in jpg or png format.
-                </span>
-              </div>
-            )}
-          </div>
+              {imgAddress ? (
+                <img
+                  src={imgAddress}
+                  className="w-full h-full rounded-xl object-contain"
+                />
+              ) : (
+                <div className="w-auto flex flex-col gap-3 justify-center items-center">
+                  <LuImagePlus className="text-4xl font-medium text-gray-400" />
+                  <span className="text-sm font-normal text-gray-400">
+                    Please upload meal thumbnail.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
+
         <div className="w-full flex flex-col gap-6">
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
@@ -137,6 +199,9 @@ const CreateMealPlan = () => {
                 inputType={"text"}
                 label={"Meal Title"}
                 placeholder={"Title"}
+                value={mealDetails.title}
+                onChange={handleInputChange}
+                name="title"
               />
             </div>
             <div className="col-span-2 md:col-span-1">
@@ -147,11 +212,13 @@ const CreateMealPlan = () => {
                 name="meal-category"
                 id="meal-category"
                 className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                value={category}
+                onChange={handleCategoryChange}
               >
-                <option selected value="">
+                <option value="" disabled>
                   Choose a category
                 </option>
-                <option value="Vegans">Vegans</option>
+                <option value="Vegan">Vegan</option>
                 <option value="LowCarbs">Low carbs</option>
                 <option value="HighCarbs">High carbs</option>
                 <option value="HighProtein">High Protein</option>
@@ -163,6 +230,8 @@ const CreateMealPlan = () => {
               Description
             </label>
             <textarea
+            value={mealDetails.description}
+            onChange={handleInputChange}
               name="description"
               id="description"
               rows={"5"}
@@ -170,60 +239,82 @@ const CreateMealPlan = () => {
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             ></textarea>
           </div>
+
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"Prep. Time"}
-                placeholder={"10 mins"}
+                inputType="number"
+                label="Prep. Time"
+                name="prepTime"
+                value={mealDetails.prepTime}
+                onChange={handleInputChange}
+                placeholder="10 mins"
               />
             </div>
             <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"Serving Size"}
-                placeholder={"1 Plate"}
+                inputType="number"
+                label="Serving Size"
+                name="servingSize"
+                value={mealDetails.servingSize}
+                onChange={handleInputChange}
+                placeholder="1 Plate"
               />
             </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"No. of Serving"}
-                placeholder={"2,3,4..."}
+                inputType="number"
+                label="No. of Serving"
+                name="numServing"
+                value={mealDetails.numServing}
+                onChange={handleInputChange}
+                placeholder="2,3,4..."
               />
             </div>
             <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"Enter Carbs"}
-                placeholder={"31.1 g"}
+                inputType="number"
+                label="Enter Carbs"
+                name="carbs"
+                value={mealDetails.carbs}
+                onChange={handleInputChange}
+                placeholder="31.1 g"
               />
             </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"Enter Fat"}
-                placeholder={"31.1g"}
+                inputType="number"
+                label="Enter Fat"
+                name="fat"
+                value={mealDetails.fat}
+                onChange={handleInputChange}
+                placeholder="31.1g"
               />
             </div>
             <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"Enter Protien"}
-                placeholder={"31.1g"}
+                inputType="number"
+                label="Enter Protein"
+                name="protein"
+                value={mealDetails.protein}
+                onChange={handleInputChange}
+                placeholder="31.1g"
               />
             </div>
           </div>
-          <div className="w-full">
-            <div className="w-full">
+          <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div className="col-span-2 md:col-span-1">
               <TextField
-                inputType={"text"}
-                label={"Enter Calories"}
-                placeholder={"31.1g"}
+                inputType="number"
+                label="Enter Calories"
+                name="calories"
+                value={mealDetails.calories}
+                onChange={handleInputChange}
+                placeholder="100 kcal"
               />
             </div>
           </div>
@@ -248,9 +339,9 @@ const CreateMealPlan = () => {
                     type="text"
                     placeholder="Instruction"
                     className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                    value={instruction.content}
+                    value={instruction}
                     onChange={(e) =>
-                      handleInstructionChange(index, "content", e.target.value)
+                      handleInstructionChange(index, e.target.value)
                     }
                   />
                   <div>
@@ -276,7 +367,7 @@ const CreateMealPlan = () => {
                   Add Ingredient
                 </button>
               </div>
-              {ingredients.map((instruction, index) => (
+              {ingredients.map((ingredient, index) => (
                 <div
                   key={index}
                   className="w-full flex items-center justify-between gap-6 lg:gap-3"
@@ -285,9 +376,9 @@ const CreateMealPlan = () => {
                     type="text"
                     placeholder="Instruction"
                     className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                    value={instruction.content}
+                    value={ingredient}
                     onChange={(e) =>
-                      handleIngredientChange(index, "content", e.target.value)
+                      handleIngredientChange(index, e.target.value)
                     }
                   />
                   <div>
@@ -306,15 +397,17 @@ const CreateMealPlan = () => {
 
           <div className="w-full flex items-center justify-end gap-4">
             <button
+              disabled={btnLoading}
               className={`text-sm font-medium text-white ${styles.bgColor} rounded-lg px-4 py-2`}
             >
-              Create Meal
+              {btnLoading ? "Creating... " : "Create Meal"}
             </button>
-            <button
-              className={`text-sm font-medium text-white bg-red-600 rounded-lg px-4 py-2`}
-            >
-              Cancel
-            </button>
+            <Link
+            to="/meal-plans"
+            className={`bg-red-500 text-white font-medium text-sm px-4 py-2 rounded-lg`}
+          >
+            Cancel
+          </Link>
           </div>
         </div>
       </form>

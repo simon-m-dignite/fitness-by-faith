@@ -1,21 +1,34 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const VideoCard = ({title, description, thumbnail}) => {
+const VideoCard = ({id, title, description, thumbnail}) => {
   return (
-    <div className="w-full relative">
-      <Link to="/videos">
-        <img src={thumbnail} alt="video" className="w-full rounded-2xl brightness-75 relative"/>
-        <div className="w-full absolute bottom-4 px-4 flex flex-col gap-1">
-          <h1 className="text-lg font-semibold text-white">
-            {title}
-          </h1>
-          <p className="text-sm text-white">
-            {description}
-          </p>
+    // <div className="w-full relative">
+    //   <Link to="/videos">
+    //     <img src={thumbnail} alt="video" className="w-full h-[350px] object-cover rounded-2xl brightness-75 relative"/>
+    //     <div className="w-full absolute bottom-4 px-4 flex flex-col gap-1">
+    //       <h1 className="text-lg font-semibold text-white">
+    //         {title}
+    //       </h1>
+    //       <p className="text-sm text-white">
+    //         {description}
+    //       </p>
+    //     </div>
+    //   </Link>
+    // </div>
+    <Link to= {`/video/${id}`} >
+      <div className="w-full rounded-2xl bg-white">
+        <img
+          src={thumbnail}
+          alt=""
+          className="w-full h-[350px] object-cover rounded-2xl brightness-75"
+        />
+        <div className="w-full px-4 flex flex-col justify-center items-start py-4 gap-2">
+          <h1 className="text-xl font-medium text-[#64B5AC]">{title}</h1>
+          <p className="text-xs font-normal">{description}</p>
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 };
 

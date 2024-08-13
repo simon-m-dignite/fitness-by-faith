@@ -2,14 +2,14 @@ import React from "react";
 import { MealImage } from "../../assets/export";
 import { Link } from "react-router-dom";
 
-const MealCard = ({id, title, instructions, numServing, prepTime, servingSize, url}) => {
+const MealCard = ({id, title, instructions, numServing, prepTime, servingSize, url, category}) => {
   
   return (
     <Link to={`/meal/${id}`}>
       <div className="w-full h-auto md:h-[265px] p-4 rounded-2xl flex flex-col md:flex-row gap-y-4 bg-white">
         <img src={url} alt="" className="h-[265px] md:h-full w-full md:w-[180px] object-cover" />
         <div className="h-full px-4 flex flex-col justify-center gap-3">
-          <p className="text-xs font-normal text-[#64B5AC]">Vegans</p>
+          <p className="text-xs font-normal text-[#64B5AC]">{category}</p>
           <h1 className="text-lg font-medium text-[#64B5AC]">
             {title}
           </h1>

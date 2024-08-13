@@ -2,38 +2,92 @@ import React, { useState } from "react";
 import { BsTrash3Fill } from "react-icons/bs";
 import { styles } from "../../styles/styles";
 import { FiTrash } from "react-icons/fi";
-
+import Axios from "../../axios";
+import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
+import Loader from "../Global/Loader";
 const VideoWorkoutForm = () => {
   const [videoTitle, setVideoTitle] = useState("");
-  const [exerciseName, setExerciseName] = useState("");
+  // const [exerciseName, setExerciseName] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
+  const [imgAddress, setImgAddress] = useState('');
+  const [videoAddress, setVideoAddress] = useState('');
+  const [videoLoading, setVideoLoading] = useState(false)
   const [instructions, setInstructions] = useState([
     { title: "", content: "" },
   ]);
 
+  const [btnLoading, setBtnLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [selectedBodyPart, setSelectedBodyPart] = useState("");
 
-  const categories = {
-    yoga: [],
-    cardio: ["bodyweight cardio", "equipment-based cardio"],
-    lifting: ["free weight", "gym"],
-  };
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
-    setSelectedSubCategory(""); // Reset subcategory on category change
+    setSelectedSubCategory("");
+  };
+
+  const categories = {
+    Yoga: [],
+    Cardio: ["Bodyweight Cardio", "Equipment-Based Cardio"],
+    Lifting: ["Free Weight", "Gym"],
   };
 
   const subCategories = categories[selectedCategory] || [];
 
-  const handleThumbnailChange = (event) => {
-    setThumbnail(event.target.files[0]);
+  const handleSubCategory = (e) => {
+    setSelectedSubCategory(e.target.value);
+    if (e.target.value === "Bodyweight Cardio")
+      return setSubCategory("BodyWeight");
+    if (e.target.value === "Equipment-Based Cardio")
+      return setSubCategory("Equipment");
+    if (e.target.value === "Free Weight") return setSubCategory("FreeWeight");
+    if (e.target.value === "Gym") return setSubCategory("Gym");
   };
 
-  const handleVideoChange = (event) => {
-    setVideoFile(event.target.files[0]);
+  const handleThumbnailChange =async (e) => {
+    setThumbnail(e.target.files[0]);
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    if (file) {
+      try {
+        const {data} = await Axios.post("media/upload/image", formData,);
+        if(data?.status === 200){
+          setImgAddress(data?.data?.fileAddress);
+        }
+      } catch (error) {
+        console.error("Error->", error.message);
+      }
+    }
+  };
+
+  const handleProfileChange = async (e) => {
+    
+  };
+
+  const handleVideoChange = async (e) => {
+    setVideoFile(e.target.files[0]);
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    if (file) {
+      try {
+        setVideoLoading(true)
+        const {data} = await Axios.post("media/upload/video", formData,);
+        if(data?.status === 200){
+          setVideoAddress(data?.data?.fileAddress);
+          setVideoLoading(false)
+        }
+      } catch (error) {
+        setVideoLoading(false)
+        console.error("Error->", error.message);
+      }
+    }
   };
 
   const handleInstructionChange = (index, field, value) => {
@@ -52,16 +106,51 @@ const VideoWorkoutForm = () => {
     setInstructions(updatedInstructions);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission, e.g., send data to server
-    console.log({
-      videoTitle,
-      videoDescription,
-      thumbnail,
-      videoFile,
-      instructions,
-    });
+
+    // const errors = {};
+    // exerciseList.forEach((exercise, index) => {
+    //   if (!exercise.image) {
+    //     errors[index] = "Please upload an image for this exercise.";
+    //   }
+    // });
+
+    // if (Object.keys(errors).length > 0) {
+    //   setImageErrors(errors);
+    //   return; 
+    // }
+
+    const videoData = {
+      title: videoTitle,
+      category: selectedCategory,
+      subCategory: subCategory,
+      bodyPart: selectedBodyPart || "Chest",
+      description: videoDescription,
+      thumbnail: imgAddress,
+      "instructions" : instructions,
+      "url" : videoAddress,
+    };
+    console.log("🚀 ~ handleSubmit ~ videoData:", videoData);
+
+    try {
+      setBtnLoading(true);
+      const { data } = await Axios.put(`video/update/${id}`, videoData);
+      console.log("Workout created successfully:", data);
+      if (data.status === 200) {
+        SuccessToaster(data.message[0]);
+        setBtnLoading(false);
+        setEditable(false);
+        // navigate("/workout-plans");
+      } else {
+        setBtnLoading(false);
+        ErrorToaster(data.message[0]);
+      }
+    } catch (error) {
+      console.log("Error is :", error);
+    } finally {
+      setBtnLoading(false);
+    }
   };
 
   return (
@@ -95,15 +184,20 @@ const VideoWorkoutForm = () => {
               onChange={handleVideoChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
+            {videoLoading ?
+            <Loader/> :
+            <>
             {videoFile && (
               <video className="mt-2" width="320" height="240" controls>
                 <source src={URL.createObjectURL(videoFile)} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             )}
+            </>
+            }
           </div>
         </div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
           <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Video Title</label>
             <input
@@ -113,7 +207,7 @@ const VideoWorkoutForm = () => {
               onChange={(e) => setVideoTitle(e.target.value)}
             />
           </div>
-          <div className="w-full flex flex-col items-start gap-1">
+          {/* <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Exercise Name</label>
             <input
               type="text"
@@ -121,7 +215,7 @@ const VideoWorkoutForm = () => {
               value={exerciseName}
               onChange={(e) => setExerciseName(e.target.value)}
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -150,7 +244,7 @@ const VideoWorkoutForm = () => {
               name="subCategory"
               id="subCategory"
               value={selectedSubCategory}
-              onChange={(e) => setSelectedSubCategory(e.target.value)}
+              onChange={(e) => handleSubCategory(e)}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             >
               <option value="">Select Subcategory</option>
@@ -163,24 +257,29 @@ const VideoWorkoutForm = () => {
           </div>
         </div>
 
-        {selectedSubCategory === "free weight" || selectedSubCategory === "gym" ? (
-          <div className="w-full">
-            <div className="w-full flex flex-col items-start gap-1">
-              <label className="text-sm font-medium">Sub-category</label>
-              <select className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]">
-                <option value="">Select Category</option>
-                <option value="">Biceps</option>
-                <option value="">Triceps</option>
-                <option value="">Chest</option>
-                <option value="">Back</option>
-                <option value="">Shoulders</option>
-                <option value="">Legs</option>
-              </select>
+        {selectedSubCategory === "Free Weight" ||
+          selectedSubCategory === "Gym" ? (
+            <div className="w-full">
+              <div className="w-full flex flex-col items-start gap-1">
+                <label className="text-sm font-medium">Sub-category</label>
+                <select
+                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                  value={selectedBodyPart}
+                  onChange={(e) => setSelectedBodyPart(e.target.value)}
+                >
+                  <option value="">Select Body Part</option>
+                  <option value="Biceps">Biceps</option>
+                  <option value="Triceps">Triceps</option>
+                  <option value="Chest">Chest</option>
+                  <option value="Back">Back</option>
+                  <option value="Shoulders">Shoulders</option>
+                  <option value="Legs">Legs</option>
+                </select>
+              </div>
             </div>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
 
         <div className="w-full flex flex-col items-start gap-1">
           <label className="text-sm font-medium">Video Description</label>
@@ -251,7 +350,7 @@ const VideoWorkoutForm = () => {
             type="submit"
             className={`${styles.bgColor} float-end text-white font-medium py-2.5 px-4 rounded-lg text-sm`}
           >
-            Create Workout
+            {btnLoading? "Creating" : "Create Workout"}
           </button>
         </div>
       </form>

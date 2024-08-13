@@ -2,12 +2,12 @@ import React, { Fragment, useRef, useState } from "react";
 import { styles } from "../../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "../../axios";
+import Axios from "../../axios";
 import Loader from "../Global/Loader";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
 
 const WorkoutCreationForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate() 
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
@@ -96,7 +96,7 @@ const WorkoutCreationForm = () => {
 
     try{
       setSnippetLoading(prevState => ({ ...prevState, [exerciseIndex]: { load: true } })); 
-      const {data} = await axios.post("media/upload/image", formData)
+      const {data} = await Axios.post("media/upload/image", formData)
       if(data.status === 200){
         setSnippetErr(prevState => ({ ...prevState, [exerciseIndex]: { error: false } }));
         updatedForms[exerciseIndex] = {
@@ -179,7 +179,7 @@ const WorkoutCreationForm = () => {
 
     try {
       setBtnLoading(true)
-      const {data} = await axios.post("workout/create", workoutData);
+      const {data} = await Axios.post("workout/create", workoutData);
       console.log("Workout created successfully:", data);
       if (data.status === 200) {
         SuccessToaster(data.message[0])
@@ -192,7 +192,7 @@ const WorkoutCreationForm = () => {
       }
     } catch (error) {
       console.error("Failed to create workout:", error);
-      alert("There was an error submitting the form. Please try again.");
+      ErrorToaster("There was an error submitting the form. Please try again.");
     }
   };
 
@@ -210,7 +210,7 @@ const WorkoutCreationForm = () => {
       try {
         setImgLoading(true);
   
-        const {data} = await axios.post("media/upload/image", formData,);
+        const {data} = await Axios.post("media/upload/image", formData,);
         if(data?.status === 200){
           setImgAddress(data?.data?.fileAddress);
           setImgLoading(false);
