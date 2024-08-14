@@ -15,9 +15,8 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
     { title: "", description: "" },
   ]);
 
-  console.log("instructions--> ", instructions)
-
   const [imgAddress, setImgAddress] = useState("");
+  console.log("🚀 ~ VideoDetailsAndEdit ~ imgAddress:", imgAddress)
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
@@ -48,8 +47,22 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
     if (e.target.value === "Gym") return setSubCategory("Gym");
   };
 
-  const handleThumbnailChange = (event) => {
-    setThumbnail(event.target.files[0]);
+  const handleThumbnailChange = async (e) => { 
+    setThumbnail(e.target.files[0]);
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    if (file) {
+      try {
+        const {data} = await Axios.post("media/upload/image", formData,);
+        if(data?.status === 200){
+          setImgAddress(data?.data?.fileAddress);
+        }
+      } catch (error) {
+        console.error("Error->", error.message);
+      }
+    }
   };
 
   const handleVideoChange = (event) => {
@@ -93,16 +106,14 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
       subCategory: subCategory,
       bodyPart: selectedBodyPart || "Chest",
       description: videoDescription,
-      thumbnail: thumbnail,
+      thumbnail: imgAddress,
       "instructions" : instructions,
       "url" : videoFile,
     };
-    console.log("🚀 ~ handleSubmit ~ videoData:", videoData);
 
     try {
       setBtnLoading(true);
       const { data } = await Axios.put(`video/update/${id}`, videoData);
-      console.log("Workout created successfully:", data);
       if (data.status === 200) {
         SuccessToaster(data.message[0]);
         setBtnLoading(false);
@@ -129,8 +140,9 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
       if (data.status === 200) {
         setVideoDetail(data?.data);
         const {_id,title, description, category, subCategory, bodyPart, thumbnail, url, instructions} = data?.data;
+        console.log("🚀 ~ getVideoDetail ~ bodyPart:", bodyPart)
         setVideoFile(url)
-        setThumbnail(thumbnail)
+        setImgAddress(thumbnail)
         setSelectedCategory(category);
         setSelectedSubCategory(() =>
           subCategory === "BodyWeight"? "Bodyweight Cardio"
@@ -176,10 +188,10 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
               onChange={handleThumbnailChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
-            {thumbnail && (
+            {imgAddress && (
               <img
                 className="mt-2 w-40"
-                src={thumbnail}
+                src={imgAddress}
                 alt="Thumbnail Preview"
               />
             )}
@@ -280,7 +292,7 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
                   <option value="Triceps">Triceps</option>
                   <option value="Chest">Chest</option>
                   <option value="Back">Back</option>
-                  <option value="Shoulders">Shoulders</option>
+                  <option value="Shoulder">Shoulders</option>
                   <option value="Legs">Legs</option>
                 </select>
               </div>

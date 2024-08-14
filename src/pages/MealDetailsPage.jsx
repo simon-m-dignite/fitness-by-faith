@@ -10,14 +10,12 @@ import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
 const MealDetailsPage = () => { 
   const { id } = useParams();
   const [image, setImage] = useState(null);
-  console.log("🚀 ~ MealDetailsPage ~ image:", image)
+
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
 
   const [instructions, setInstructions] = useState([""]);
-  console.log("🚀 ~ MealDetailsPage ~ instructions:", instructions)
-  const [inputValue, setInputValue] = useState("");
 
   const addInstructionField = () => {
     setInstructions([...instructions,""]);
@@ -37,7 +35,6 @@ const MealDetailsPage = () => {
 //
 
 const [ingredients, setIngredients] = useState([""]);
-  console.log("🚀 ~ CreateMealPlan ~ ingredients:", ingredients)
 
   const handleIngredientChange = (index, value) => {
     const updatedIngredients = [...ingredients];
@@ -111,7 +108,6 @@ const [ingredients, setIngredients] = useState([""]);
     }
     try{
       const {data} = await Axios.put(`meal/update/${id}`, apiData)
-      console.log("🚀 ~ handleFormSubmit ~ data:", data)
       if (data.status === 200) {
         SuccessToaster(data.message[0]);
         setBtnLoading(false);
@@ -141,7 +137,6 @@ const [ingredients, setIngredients] = useState([""]);
     ingredients: [],
     instructions: [],
   });
-  console.log("🚀 ~ MealDetailsPage ~ mealDetails:", mealDetails)
 
   const [editable, setEditable] = useState(false);
 

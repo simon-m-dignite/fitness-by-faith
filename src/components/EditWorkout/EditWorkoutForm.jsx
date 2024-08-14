@@ -273,12 +273,10 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
         isActive: true,
       })),
     };
-    console.log("🚀 ~ handleSubmit ~ workoutData:", workoutData);
 
     try {
       setBtnLoading(true);
       const { data } = await Axios.put(`workout/update/${id}`, workoutData);
-      console.log("Workout created successfully:", data);
       if (data.status === 200) {
         SuccessToaster(data.message[0]);
         setBtnLoading(false);

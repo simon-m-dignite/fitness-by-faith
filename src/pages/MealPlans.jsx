@@ -9,22 +9,25 @@ import Pagination from "../components/Global/Pagination";
 const MealPlans = () => {
   const [mealData, setMealData] = useState([])
   const [pageDetails, setPageDetails] = useState({})
-  const [filteredData, setFilteredData] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [loading, setLoading] = useState(false)
 
   const rowsPerPage = 10;
 
 
-  const getMeals = async (pageNumber = 1, rows = 10) => {
-    console.log("🚀 ~ getWorkouts ~ pageNumber: ", pageNumber, "🚀 rows: ",rows)
+  const getMeals = async (pageNumber = 1, rows = 10, filter) => {
     try {
+      let url = "";
       setLoading(true);
-      const { data } = await Axios.get(`meal/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}`);
+      if (filter === 'All' || filter == undefined  ) {
+        url = `meal/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}`
+      }
+      else{
+        url = `meal/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}&category=${filter}`
+      }
+      const { data } = await Axios.get(url);
       setMealData(data?.data?.data);
-      console.log("🚀 ~ getVideos ~ data:", data?.data)
       setPageDetails(data?.data?.pageDetails);
-      applyFilter(selectedFilter, data?.data?.data);
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -32,17 +35,9 @@ const MealPlans = () => {
     }
   };
 
-  const applyFilter = (filter, data) => {
-    if (filter === 'All') {
-      setFilteredData(data);
-    } else {
-      setFilteredData(data.filter(item => item.category.toLowerCase() === filter.toLowerCase()));
-    }
-  };
-
   const handleFilterClick = (filter) => {
     setSelectedFilter(filter);
-    applyFilter(filter, mealData);
+    getMeals(1, 10, filter);
   };
 
   useEffect(()=>{
@@ -92,12 +87,12 @@ const MealPlans = () => {
       ) : (
         <Fragment>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 pt-3">
-        {filteredData.map((meal, index)=>(
+        {mealData?.map((meal, index)=>(
           <MealCard key={index} id={meal._id} title={meal.title} instructions={meal.instructions} numServing={meal.numServing} prepTime={meal.prepTime} servingSize={meal.servingSize} url={meal.url} category={meal.category}/>
         ))}
       </div>
       <div className="w-full flex justify-center mt-4">
-        <Pagination page={pageDetails?.page} totalPages={pageDetails.pageCount} rowsPerPage={pageDetails.pageSize} onPageChange={getMeals}/>
+        <Pagination page={pageDetails?.page} totalPages={pageDetails.pageCount} rowsPerPage={pageDetails.pageSize} selectedFilter={selectedFilter} onPageChange={getMeals}/>
       </div>
       </Fragment>
       )}

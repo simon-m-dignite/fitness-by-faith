@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { HiOutlineLogout } from "react-icons/hi";
 import { LuLayoutDashboard, LuUser } from "react-icons/lu";
@@ -20,6 +20,9 @@ import { AuthContext } from "../../context/AuthContext";
 const Sidebar = () => {
   const {logout} = useContext(AuthContext);
   const navigate = useNavigate();
+  const {pathname} = useLocation()
+  let currentLoc = pathname.split("/")
+  console.log("🚀 ~ Sidebar ~ currentLoc:", currentLoc[1])
   const [activeLink, setActiveLink] = useState("Dashboard");
 
   const navigateToLink = (link, name) => {
@@ -42,7 +45,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/dashboard", "Dashboard")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "Dashboard"
+              currentLoc[1] === "dashboard"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -54,7 +57,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/workout-plans", "WorkoutPlans")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "WorkoutPlans"
+              activeLink === "WorkoutPlans" || currentLoc[1] === "workout"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -66,7 +69,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/videos", "Videos")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "Videos"
+              activeLink === "Videos" || currentLoc[1] === "video" || currentLoc[1] === "videos"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -78,7 +81,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/meal-plans", "MealPlans")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "MealPlans"
+              activeLink === "MealPlans" || currentLoc[1] === "meal"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -90,7 +93,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/users", "Users")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "Users"
+              activeLink === "Users" || currentLoc[1] === "user"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}

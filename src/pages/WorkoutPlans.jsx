@@ -10,22 +10,25 @@ const WorkoutPlans = () => {
 
   const [workoutData, setWorkoutData] = useState([])
   const [pageDetails, setPageDetails] = useState({})
-  const [filteredData, setFilteredData] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [loading, setLoading] = useState(false)
 
   const rowsPerPage = 9;
 
 
-  const getWorkouts = async (pageNumber = 1, rows = 9) => {
-    console.log("🚀 ~ getWorkouts ~ pageNumber: ", pageNumber, "🚀 rows: ",rows)
+  const getWorkouts = async (pageNumber = 1, rows = 9, filter) => {
     try {
+      let url = "";
       setLoading(true);
-      const { data } = await Axios.get(`workout/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}`);
+      if (filter === 'All' || filter == undefined  ) {
+        url = `workout/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}`
+      }
+      else{
+        url = `workout/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}&category=${filter}`
+      }
+      const { data } = await Axios.get(url);
       setWorkoutData(data?.data?.data);
-      console.log("🚀 ~ getWorkouts ~ data:", data?.data)
       setPageDetails(data?.data?.pageDetails);
-      applyFilter(selectedFilter, data?.data?.data);
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -33,17 +36,9 @@ const WorkoutPlans = () => {
     }
   };
 
-  const applyFilter = (filter, data) => {
-    if (filter === 'All') {
-      setFilteredData(data);
-    } else {
-      setFilteredData(data.filter(item => item.category.toLowerCase() === filter.toLowerCase()));
-    }
-  };
-
   const handleFilterClick = (filter) => {
     setSelectedFilter(filter);
-    applyFilter(filter, workoutData);
+    getWorkouts(1, 9, filter);
   };
 
   useEffect(()=>{
@@ -93,7 +88,7 @@ const WorkoutPlans = () => {
         </button>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredData?.map((workOut, index) => (
+            {workoutData?.map((workOut, index) => (
               <WorkoutCard
                 key={index}
                 id={workOut._id}
@@ -108,6 +103,7 @@ const WorkoutPlans = () => {
               page={pageDetails?.page}
               totalPages={pageDetails.pageCount}
               rowsPerPage={pageDetails.pageSize}
+              selectedFilter={selectedFilter}
               onPageChange={getWorkouts}
             />
           </div>

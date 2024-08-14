@@ -137,7 +137,6 @@ const WorkoutCreationForm = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Submit Handle===")
     if (!selectedCategory) {
       setCategoryErr("Please select a category.");
       return;
@@ -175,12 +174,10 @@ const WorkoutCreationForm = () => {
         "isActive": true,
       }))
     };
-    console.log("🚀 ~ handleSubmit ~ workoutData:", workoutData)
 
     try {
       setBtnLoading(true)
       const {data} = await Axios.post("workout/create", workoutData);
-      console.log("Workout created successfully:", data);
       if (data.status === 200) {
         SuccessToaster(data.message[0])
         setBtnLoading(false)

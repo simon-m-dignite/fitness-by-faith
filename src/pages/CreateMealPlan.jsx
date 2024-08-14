@@ -23,7 +23,6 @@ const CreateMealPlan = () => {
     protein: '',
     calories: '',
   });
-  console.log("🚀 ~ CreateMealPlan ~ mealDetails:", mealDetails)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,20 +33,17 @@ const CreateMealPlan = () => {
   };
 
   const [category, setCategory] = useState("");
-  console.log("🚀 ~ CreateMealPlan ~ category:", category)
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
   
   const [instructions, setInstructions] = useState([""]);
-  console.log("🚀 ~ CreateMealPlan ~ instructions:", instructions)
 
   // Image:
   const fileInputRef = useRef(null);
   const [image, setImage] = useState(null);
   const [imgAddress, setImgAddress] = useState('');
-  console.log("🚀 ~ CreateMealPlan ~ imgAddress:", imgAddress)
   
   const [imgLoading, setImgLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false)
@@ -97,7 +93,6 @@ const CreateMealPlan = () => {
 
     try {
       const {data} = await Axios.post('meal/create', apiData);
-      console.log('Meal created successfully:', data);
       if (data.status === 200) {
         SuccessToaster(data.message[0])
         setBtnLoading(false)
@@ -130,7 +125,6 @@ const CreateMealPlan = () => {
 
   //
   const [ingredients, setIngredients] = useState([""]);
-  console.log("🚀 ~ CreateMealPlan ~ ingredients:", ingredients)
 
   const handleIngredientChange = (index, value) => {
     const updatedIngredients = [...ingredients];

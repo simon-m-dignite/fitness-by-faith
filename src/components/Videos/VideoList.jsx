@@ -15,11 +15,9 @@ const VideoList = () => {
       let url = "";
       setLoading(true);
       if (filter === 'All' || filter == undefined  ) {
-        console.log("if call :", filter)
         url = `video/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}`
       }
       else{
-        console.log("else call :", filter)
         url = `video/getAll?pagination=true&page=${pageNumber}&pageSize=${rows}&category=${filter}`
       }
       const { data } = await Axios.get(url);

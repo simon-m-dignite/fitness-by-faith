@@ -87,7 +87,7 @@ export const routes = [
   },
   {
     title: "Dashboard Page",
-    url: "/user/1234",
+    url: "/user/:id",
     page: <Layout pages={<UserDetails />} />,
   },
   {

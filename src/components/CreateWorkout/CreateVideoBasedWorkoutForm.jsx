@@ -1,24 +1,27 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { BsTrash3Fill } from "react-icons/bs";
 import { styles } from "../../styles/styles";
 import { FiTrash } from "react-icons/fi";
 import Axios from "../../axios";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
 import Loader from "../Global/Loader";
+import { useNavigate } from "react-router-dom";
 const VideoWorkoutForm = () => {
+  const navigate = useNavigate()
   const [videoTitle, setVideoTitle] = useState("");
   // const [exerciseName, setExerciseName] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
-  const [thumbnail, setThumbnail] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [imgAddress, setImgAddress] = useState('');
   const [videoAddress, setVideoAddress] = useState('');
   const [videoLoading, setVideoLoading] = useState(false)
   const [instructions, setInstructions] = useState([
-    { title: "", content: "" },
+    { title: "", description: "" },
   ]);
 
+  const [snippetErr, setSnippetErr] = useState(false)
   const [btnLoading, setBtnLoading] = useState(false);
+  const [imgLoading, setImgLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
@@ -48,19 +51,26 @@ const VideoWorkoutForm = () => {
   };
 
   const handleThumbnailChange =async (e) => {
-    setThumbnail(e.target.files[0]);
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('file', file);
     
     if (file) {
       try {
+        setSnippetErr(false)
+        setImgLoading(true);
         const {data} = await Axios.post("media/upload/image", formData,);
         if(data?.status === 200){
           setImgAddress(data?.data?.fileAddress);
+          setImgLoading(false);
+        }else{
+          setSnippetErr(true)
+          setImgLoading(false);
         }
       } catch (error) {
         console.error("Error->", error.message);
+        setSnippetErr(true)
+        setImgLoading(false);
       }
     }
   };
@@ -72,22 +82,31 @@ const VideoWorkoutForm = () => {
   const handleVideoChange = async (e) => {
     setVideoFile(e.target.files[0]);
     const file = e.target.files[0];
+  if (file) {
+    setVideoFile(file);
+    
     const formData = new FormData();
     formData.append('file', file);
-    
-    if (file) {
-      try {
-        setVideoLoading(true)
-        const {data} = await Axios.post("media/upload/video", formData,);
-        if(data?.status === 200){
-          setVideoAddress(data?.data?.fileAddress);
-          setVideoLoading(false)
-        }
-      } catch (error) {
-        setVideoLoading(false)
-        console.error("Error->", error.message);
+
+    try {
+      setVideoLoading(true);
+      const { data } = await Axios.post("media/upload/video", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (data?.status === 200) {
+        setVideoAddress(data?.data?.fileAddress);
+      } else {
+        console.error("Upload failed:", data?.message);
       }
+    } catch (error) {
+      console.error("Error->", error.response ? error.response.data : error.message);
+    } finally {
+      setVideoLoading(false);
     }
+  }
   };
 
   const handleInstructionChange = (index, field, value) => {
@@ -97,7 +116,7 @@ const VideoWorkoutForm = () => {
   };
 
   const addInstructionField = () => {
-    setInstructions([...instructions, { title: "", content: "" }]);
+    setInstructions([...instructions, { title: "", description: "" }]);
   };
 
   const removeInstructionField = (index) => {
@@ -131,22 +150,21 @@ const VideoWorkoutForm = () => {
       "instructions" : instructions,
       "url" : videoAddress,
     };
-    console.log("🚀 ~ handleSubmit ~ videoData:", videoData);
+    
 
     try {
       setBtnLoading(true);
-      const { data } = await Axios.put(`video/update/${id}`, videoData);
-      console.log("Workout created successfully:", data);
+      const { data } = await Axios.post(`video/create`, videoData);
       if (data.status === 200) {
-        SuccessToaster(data.message[0]);
+        SuccessToaster(data?.message[0]);
         setBtnLoading(false);
-        setEditable(false);
-        // navigate("/workout-plans");
+        navigate("/videos");
       } else {
         setBtnLoading(false);
-        ErrorToaster(data.message[0]);
+        ErrorToaster(data?.message[0]);
       }
     } catch (error) {
+      ErrorToaster(error?.message);
       console.log("Error is :", error);
     } finally {
       setBtnLoading(false);
@@ -168,13 +186,20 @@ const VideoWorkoutForm = () => {
               onChange={handleThumbnailChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
-            {thumbnail && (
+            {imgLoading? <Loader/>:
+            <Fragment>
+            {imgAddress &&
               <img
-                className="mt-2 w-40"
-                src={URL.createObjectURL(thumbnail)}
+                className="mt-2 h-auto w-[180px] mx-auto"
+                src={imgAddress}
                 alt="Thumbnail Preview"
               />
-            )}
+            }
+            {snippetErr &&
+              <p className="text-red-700 text-[12px] pl-1">Upload failed: Make sure correct file type</p>
+            }
+            </Fragment>
+            }
           </div>
           <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Workout video</label>
@@ -272,7 +297,7 @@ const VideoWorkoutForm = () => {
                   <option value="Triceps">Triceps</option>
                   <option value="Chest">Chest</option>
                   <option value="Back">Back</option>
-                  <option value="Shoulders">Shoulders</option>
+                  <option value="Shoulder">Shoulders</option>
                   <option value="Legs">Legs</option>
                 </select>
               </div>
@@ -312,9 +337,9 @@ const VideoWorkoutForm = () => {
                 type="text"
                 placeholder="Instruction Content"
                 className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                value={instruction.content}
+                value={instruction.description}
                 onChange={(e) =>
-                  handleInstructionChange(index, "content", e.target.value)
+                  handleInstructionChange(index, "description", e.target.value)
                 }
               />
               {index === 0 ? (
@@ -347,6 +372,7 @@ const VideoWorkoutForm = () => {
         </button>
         <div className="w-full py-4">
           <button
+          disabled={btnLoading}
             type="submit"
             className={`${styles.bgColor} float-end text-white font-medium py-2.5 px-4 rounded-lg text-sm`}
           >
