@@ -9,7 +9,7 @@ const UserProfileDetails = ({data}) => {
         <img
           src={data?.image}
           alt="user"
-          className="block rounded-full w-20 h-20"
+          className="block rounded-full w-20 h-20 object-cover"
         />
         <div className="w-full flex items-center justify-between">
         <h1 className="text-base font-medium">{data?.fullName}</h1>

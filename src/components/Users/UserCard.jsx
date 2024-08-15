@@ -8,7 +8,7 @@ const UserCard = ({id, fullName, email, image, target, age, chest, gender, heigh
       <img
         src={image}
         alt=""
-        className="block rounded-full w-20 h-20"
+        className="block rounded-full w-20 h-20 object-cover"
       />
       <div className="w-full flex flex-col items-center gap-1">
         <h1 className="text-sm font-medium">{fullName}</h1>

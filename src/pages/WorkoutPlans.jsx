@@ -47,10 +47,6 @@ const WorkoutPlans = () => {
 
   return (
     <div className="min-h-screen flex flex-col gap-6">
-      {loading ? (
-        <Loader />
-      ) : (
-        <Fragment>
           <div className="w-full flex items-center justify-between">
             <h1 className="text-xl font-semibold">Workout Plans</h1>
             <Link
@@ -87,6 +83,10 @@ const WorkoutPlans = () => {
           Lifting
         </button>
           </div>
+          {loading ? (
+        <Loader />
+      ) : (
+        <Fragment>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workoutData?.map((workOut, index) => (
               <WorkoutCard

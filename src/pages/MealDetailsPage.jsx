@@ -6,13 +6,18 @@ import Axios from "../axios";
 import Loader from "../components/Global/Loader";
 import {FiTrash } from "react-icons/fi";
 import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
+import Uploader from "../components/Global/Uploader";
 
 const MealDetailsPage = () => { 
   const { id } = useParams();
   const [image, setImage] = useState(null);
+  console.log("🚀 ~ MealDetailsPage ~ image:", image)
+  const [imgAddress, setImgAddress] = useState("");
+  console.log("🚀 ~ MealDetailsPage ~ imgAddress:", imgAddress)
 
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [imgLoading, setImgLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
 
   const [instructions, setInstructions] = useState([""]);
@@ -53,20 +58,26 @@ const [ingredients, setIngredients] = useState([""]);
 
   const handleProfileImg = () => {
     fileInputRef.current.click();
+
   };
 
   const handleProfileChange = async (e) => {
+    setImage(e.target.files[0]);
     const file = e.target.files[0];
-
+    const formData = new FormData();
+    formData.append('file', file);
+    
     if (file) {
       try {
-        const base64String = await convertImageToBase64(file);
-        setImage(base64String);
-        // updateProfile(base64String);
-
-        // console.log(base64String)
+        setImgLoading(true);
+        const {data} = await Axios.post("media/upload/image", formData,);
+        if(data?.status === 200){
+          setImgAddress(data?.data?.fileAddress);
+          setImgLoading(false);
+        }
       } catch (error) {
-        console.error("Error converting image to base64:", error.message);
+        console.error("Error->", error.message);
+        setImgLoading(false);
       }
     }
   };
@@ -209,38 +220,36 @@ const [ingredients, setIngredients] = useState([""]);
           className="w-full bg-white p-6 rounded-xl"
         >
           <div className="w-full">
-            {editable ? (
-              <div
-                onClick={handleProfileImg}
-                className="w-full h-60 md:h-96 mb-6 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
-              >
-                <input
-                  ref={fileInputRef}
-                  id="cat-image-add"
-                  className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
-                  type="file"
-                  accept="image/png, image/jpeg"
-                  onChange={(e) => handleProfileChange(e)}
-                />
-                {image ? (
-                  <img
-                    src={image}
-                    className="w-full h-full rounded-xl object-contain"
-                  />
+          {editable ? (
+              <Fragment>
+                {imgLoading ? (
+                  <Uploader />
                 ) : (
-                  <div className="w-auto flex flex-col gap-3 justify-center items-center">
-                    <LuImagePlus className="text-4xl font-medium text-gray-400" />
-                    <span className="text-sm font-normal text-gray-400">
-                      Please provide the Image in jpg or png format.
-                    </span>
+                  <div
+                    onClick={handleProfileImg}
+                    className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+                  >
+                    <input
+                      ref={fileInputRef}
+                      disabled={!editable}
+                      id="cat-image-add"
+                      className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
+                      type="file"
+                      accept="image/png, image/jpeg"
+                      onChange={(e) => handleProfileChange(e)}
+                    />
+                    <img
+                      src={imgAddress?imgAddress:image}
+                      className="w-full h-full rounded-xl object-contain"
+                    />
                   </div>
                 )}
-              </div>
+              </Fragment>
             ) : (
               <img
                 src={image}
-                alt=""
-                className="h-auto md:h-[50vh] rounded-xl mb-6"
+                alt="workout-image"
+                className="w-full h-60 md:h-80 rounded-xl object-contain"
               />
             )}
           </div>

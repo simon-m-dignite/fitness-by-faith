@@ -1,12 +1,15 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { styles } from "../../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Axios from "../../axios";
 import Loader from "../Global/Loader";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
+import Uploader from "../Global/Uploader";
+import ConfirmationDialog from "../Global/ConfirmationDialog";
 
 const EditWorkoutForm = ({ id, editable, setEditable }) => {
+  const navigate = useNavigate()
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutDescription, setWorkoutDescription] = useState("");
   const [duration, setDuration] = useState("");
@@ -20,12 +23,19 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
   const [snippetErr, setSnippetErr] = useState({});
   const [imgLoading, setImgLoading] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
+  const [deleteLoad, setDeleteLoad] = useState(false)
 
   const [imgAddress, setImgAddress] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
+
+  const [showModal, setShowModal] = useState(false);
+  const handleModal = (e) => {
+    e.preventDefault()
+    setShowModal(!showModal);
+  };
 
   const [exerciseList, setExerciseList] = useState([
     { id: "", title: "", sets: 3, reps: "", restBetweenSets: "", image: null },
@@ -293,6 +303,30 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
     }
   };
 
+  const handleDelete = async (e) =>{
+    e.preventDefault()
+    console.log("Delete call")
+    try {
+      setDeleteLoad(true)
+      const { data } = await Axios.delete(`workout/delete/${id}`);
+      if (data.status === 200) {
+        SuccessToaster(data?.message[0])
+        setShowModal(false)
+        navigate("/workout-plans")
+        setDeleteLoad(false)
+      } else {
+        ErrorToaster(data?.message[0]);
+        setDeleteLoad(false)
+      }
+    } catch (error) {
+      setDeleteLoad(false)
+      ErrorToaster(error.message);
+      console.log("Error-> : ", error);
+    } finally {
+      setDeleteLoad(false)
+    }
+  }
+
   //* API CALL FOR GET WORKOUT DETAILS
   const [workoutDetail, setWorkoutDetail] = useState([]);
 
@@ -353,6 +387,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
 
   return (
     <div className="w-full bg-white rounded-xl p-6">
+      <ConfirmationDialog showModal={showModal} onclick={handleModal} action={handleDelete} loading={deleteLoad} title="Are you sure?" text="You Won't be able to revert this"/>
       {loading ? (
         <Loader />
       ) : (
@@ -364,7 +399,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
             {editable ? (
               <Fragment>
                 {imgLoading ? (
-                  <Loader />
+                  <Uploader />
                 ) : (
                   <div
                     onClick={handleProfileImg}
@@ -390,7 +425,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
               <img
                 src={workoutDetail.thumbnail}
                 alt="workout-image"
-                className="lg:h-[50vh] rounded-2xl mb-4 brightness-75"
+                className="w-full h-60 md:h-80 rounded-xl object-contain"
               />
             )}
           </div>
@@ -676,14 +711,24 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
                 {btnLoading ? "Updating... " : "Update Workout"}
               </button>
               <button
-                onClick={() => setEditable(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setEditable(false);
+                }}
                 className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
               >
                 Cancel
               </button>
             </div>
           ) : (
-            <div className="w-full py-2">
+            <div className="w-full flex justify-end py-2">
+              <button
+              disabled={deleteLoad}
+                onClick={(e)=>handleModal(e)}
+                className={`bg-red-600 text-white px-4 py-2 mx-1 rounded-lg text-sm font-medium mt-2 float-end`}
+              >
+                Delete
+              </button>
               <button
                 className={`${styles.bgColor} text-white px-4 py-2 rounded-lg text-sm font-medium mt-2 float-end`}
                 onClick={(e) => {

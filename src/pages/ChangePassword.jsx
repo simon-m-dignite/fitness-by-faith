@@ -2,26 +2,69 @@ import React, { useState } from "react";
 import { LuEyeOff } from "react-icons/lu";
 import { LuEye } from "react-icons/lu";
 import { styles } from "../styles/styles";
+import Axios from "../axios"
+import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
 
 const ChangePassword = () => {
+  let email = localStorage.getItem('email');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
 
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [btnLoading, setBtnLoading] = useState(false)
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (oldPassword === "" || newPassword === "" || confirmPassword === "") {
-      alert("Fill the missing field");
-    } else if (confirmPassword !== newPassword) {
-      alert("Passwords do not match");
+  const handleNewPasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (confirmPassword && e.target.value !== confirmPassword) {
+      setPasswordError("Passwords do not match");
     } else {
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setPasswordError("");
+    }
+  };
+  
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    if (password && e.target.value !== password) {
+      setPasswordError("Passwords do not match");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (currentPassword === "" || password === "" || confirmPassword === "") {
+      setPasswordError("Fill the missing field");
+      return
+    } else if (confirmPassword !== password) {
+      setPasswordError("Passwords do not match");
+    } else {
+      setBtnLoading(true)
+      try{
+        let apiData = {
+          currentPassword,
+          password,
+          confirmPassword,
+          email
+        }
+        const {data} = await Axios.post("auth/updatePass", apiData)
+        if(data.status === 200){
+          SuccessToaster(data.message[0])
+          setBtnLoading(false)
+        }
+        else{
+          ErrorToaster(data.message[0])
+          setBtnLoading(false)
+        }
+      }
+      catch(error){
+        ErrorToaster(error.message)
+        setBtnLoading(false)
+      }
     }
   };
 
@@ -44,8 +87,8 @@ const ChangePassword = () => {
               type={showCurrentPassword ? "text" : "password"}
               name="current-password"
               id="current-password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full border-none  py-3 text-sm outline-none"
             />
             <span onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
@@ -69,8 +112,8 @@ const ChangePassword = () => {
               type={showPass1 ? "text" : "password"}
               name="new-password"
               id="new-password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              value={password}
+              onChange={handleNewPasswordChange}
               className="w-full border-none  py-3 text-sm outline-none"
             />
             <span onClick={() => setShowPass1(!showPass1)}>
@@ -95,7 +138,7 @@ const ChangePassword = () => {
               name="confirm-password"
               id="confirm-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={handleConfirmPasswordChange}
               className="w-full border-none  py-3 text-sm outline-none"
             />
             <span onClick={() => setShowPass2(!showPass2)}>
@@ -107,12 +150,16 @@ const ChangePassword = () => {
             </span>
           </div>
         </div>
+        {passwordError && (
+          <p className="text-red-600 text-xs ">{passwordError}</p>
+          )}
         <div>
           <button
+          disabled={btnLoading}
             type="submit"
             className={`px-4 py-2 rounded-lg text-sm font-medium text-white ${styles.bgColor}`}
           >
-            Update Password
+            {btnLoading ? "Updating...": "Update Password"} 
           </button>
         </div>
       </form>

@@ -7,6 +7,7 @@ import Axios from "../axios";
 import Loader from "../components/Global/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
+import Uploader from "../components/Global/Uploader";
 
 const CreateMealPlan = () => {
 
@@ -154,7 +155,7 @@ const CreateMealPlan = () => {
               onClick={handleProfileImg}
               className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
             >
-              <Loader />
+              <Uploader />
             </div>
           ) : (
             <div

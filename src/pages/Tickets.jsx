@@ -9,9 +9,9 @@ const Tickets = () => {
 
   const getTicketMails = async()=>{
     try {
-      const { data } = await Axios.get("notification/admin");
+      const { data } = await Axios.get("support/get/emails");
       setMails(data?.data)
-      setLoading(false);
+      setLoading(false); 
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -24,7 +24,7 @@ const Tickets = () => {
   },[])
   return (
     <div className='min-h-screen'>
-      <h1 className='text-xl font-medium mb-6'>Support Requests</h1>
+      <h1 className='text-xl font-semibold mb-6'>Support Requests</h1>
       {!loading ? <TicketsList mails={mails}/> : <Loader/> }
     </div>
   )

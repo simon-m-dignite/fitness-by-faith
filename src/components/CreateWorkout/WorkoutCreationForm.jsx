@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Axios from "../../axios";
 import Loader from "../Global/Loader";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
+import Uploader from "../Global/Uploader";
 
 const WorkoutCreationForm = () => {
   const navigate = useNavigate() 
@@ -231,7 +232,7 @@ const WorkoutCreationForm = () => {
             onClick={handleProfileImg}
             className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
           >
-            <Loader />
+            <Uploader />
           </div>
           ) : (
             <div

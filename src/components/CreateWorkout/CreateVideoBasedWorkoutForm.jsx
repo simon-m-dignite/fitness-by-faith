@@ -6,6 +6,8 @@ import Axios from "../../axios";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
 import Loader from "../Global/Loader";
 import { useNavigate } from "react-router-dom";
+import Uploader from "../Global/Uploader";
+
 const VideoWorkoutForm = () => {
   const navigate = useNavigate()
   const [videoTitle, setVideoTitle] = useState("");
@@ -20,6 +22,7 @@ const VideoWorkoutForm = () => {
   ]);
 
   const [snippetErr, setSnippetErr] = useState(false)
+  const [videoErr, setVideoErr] = useState(false)
   const [btnLoading, setBtnLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -90,6 +93,7 @@ const VideoWorkoutForm = () => {
 
     try {
       setVideoLoading(true);
+      setVideoErr(false)
       const { data } = await Axios.post("media/upload/video", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -98,10 +102,13 @@ const VideoWorkoutForm = () => {
 
       if (data?.status === 200) {
         setVideoAddress(data?.data?.fileAddress);
+        setVideoErr(false)
       } else {
+        setVideoErr(true)
         console.error("Upload failed:", data?.message);
       }
     } catch (error) {
+      setVideoErr(true)
       console.error("Error->", error.response ? error.response.data : error.message);
     } finally {
       setVideoLoading(false);
@@ -186,20 +193,24 @@ const VideoWorkoutForm = () => {
               onChange={handleThumbnailChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
-            {imgLoading? <Loader/>:
-            <Fragment>
-            {imgAddress &&
-              <img
-                className="mt-2 h-auto w-[180px] mx-auto"
-                src={imgAddress}
-                alt="Thumbnail Preview"
-              />
-            }
-            {snippetErr &&
-              <p className="text-red-700 text-[12px] pl-1">Upload failed: Make sure correct file type</p>
-            }
-            </Fragment>
-            }
+            {imgLoading ? (
+              <Uploader/>
+            ) : (
+              <Fragment>
+                {imgAddress && (
+                  <img
+                    className="mt-2 h-auto w-[180px] mx-auto"
+                    src={imgAddress}
+                    alt="Thumbnail Preview"
+                  />
+                )}
+                {snippetErr && (
+                  <p className="text-red-700 text-[12px] pl-1">
+                    Upload failed: Make sure correct file type
+                  </p>
+                )}
+              </Fragment>
+            )}
           </div>
           <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Workout video</label>
@@ -209,17 +220,26 @@ const VideoWorkoutForm = () => {
               onChange={handleVideoChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
-            {videoLoading ?
-            <Loader/> :
-            <>
-            {videoFile && (
-              <video className="mt-2" width="320" height="240" controls>
-                <source src={URL.createObjectURL(videoFile)} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            {videoLoading ? (
+              <Uploader/>
+            ) : (
+              <>
+                {videoFile && (
+                  <video className="mt-2" width="320" height="240" controls>
+                    <source
+                      src={URL.createObjectURL(videoFile)}
+                      type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                {videoErr && (
+                  <p className="text-red-700 text-[12px] pl-1">
+                    Upload failed: Make sure correct file type
+                  </p>
+                )}
+              </>
             )}
-            </>
-            }
           </div>
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
@@ -283,28 +303,28 @@ const VideoWorkoutForm = () => {
         </div>
 
         {selectedSubCategory === "Free Weight" ||
-          selectedSubCategory === "Gym" ? (
-            <div className="w-full">
-              <div className="w-full flex flex-col items-start gap-1">
-                <label className="text-sm font-medium">Sub-category</label>
-                <select
-                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-                  value={selectedBodyPart}
-                  onChange={(e) => setSelectedBodyPart(e.target.value)}
-                >
-                  <option value="">Select Body Part</option>
-                  <option value="Biceps">Biceps</option>
-                  <option value="Triceps">Triceps</option>
-                  <option value="Chest">Chest</option>
-                  <option value="Back">Back</option>
-                  <option value="Shoulder">Shoulders</option>
-                  <option value="Legs">Legs</option>
-                </select>
-              </div>
+        selectedSubCategory === "Gym" ? (
+          <div className="w-full">
+            <div className="w-full flex flex-col items-start gap-1">
+              <label className="text-sm font-medium">Sub-category</label>
+              <select
+                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                value={selectedBodyPart}
+                onChange={(e) => setSelectedBodyPart(e.target.value)}
+              >
+                <option value="">Select Body Part</option>
+                <option value="Biceps">Biceps</option>
+                <option value="Triceps">Triceps</option>
+                <option value="Chest">Chest</option>
+                <option value="Back">Back</option>
+                <option value="Shoulder">Shoulders</option>
+                <option value="Legs">Legs</option>
+              </select>
             </div>
-          ) : (
-            <></>
-          )}
+          </div>
+        ) : (
+          <></>
+        )}
 
         <div className="w-full flex flex-col items-start gap-1">
           <label className="text-sm font-medium">Video Description</label>
@@ -372,11 +392,11 @@ const VideoWorkoutForm = () => {
         </button>
         <div className="w-full py-4">
           <button
-          disabled={btnLoading}
+            disabled={btnLoading}
             type="submit"
             className={`${styles.bgColor} float-end text-white font-medium py-2.5 px-4 rounded-lg text-sm`}
           >
-            {btnLoading? "Creating" : "Create Workout"}
+            {btnLoading ? "Creating" : "Create Workout"}
           </button>
         </div>
       </form>

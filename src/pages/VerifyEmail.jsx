@@ -1,13 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { EmailVerificationMockup } from "../assets/export";
 import { Link, useNavigate } from "react-router-dom";
 import { styles } from "../styles/styles";
+import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
+import Axios from "../axios"
 
 const VerifyEmail = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleNavigate = () => {
-    navigate("/verify-otp");
+  const handleSubmit =async (e) => {
+    e.preventDefault()
+    try{
+      setLoading(true);
+      const {data} = await Axios.post("auth/sendPassOTP", {email});
+      console.log("🚀 ~ handleSubmit ~ data:", data)
+      if(data.status === 200){
+        SuccessToaster(data.message[0])
+        sessionStorage.setItem("email", email);
+        setLoading(false)
+        navigate("/verify-otp");
+      }
+      else{
+        ErrorToaster(data.message[0])
+        setLoading(false)
+      }
+    }catch(error){
+      ErrorToaster(error.message)
+      setLoading(false)
+    }
   };
 
   return (
@@ -31,6 +53,7 @@ const VerifyEmail = () => {
                     required
                     className="w-full text-sm border border-gray-300 px-4 py-3 rounded-md outline-none"
                     placeholder="Enter email"
+                    onChange={(e)=>setEmail(e.target.value)}
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -55,8 +78,9 @@ const VerifyEmail = () => {
 
               <div className="!mt-4">
                 <button
+                disabled={loading}
                   type="button"
-                  onClick={handleNavigate}
+                  onClick={handleSubmit}
                   className={`w-full shadow-xl py-2.5 px-4 text-sm font-semibold rounded-md text-white ${styles.bgColor} hover:opacity-85 focus:outline-none`}
                 >
                   Send OTP
