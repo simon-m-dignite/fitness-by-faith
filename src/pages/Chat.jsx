@@ -1,15 +1,100 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ChatBox from '../components/Chat/ChatBox'
 import ChatList from '../components/Chat/ChatList'
 import { TbMenu2 } from "react-icons/tb";
 import MobileChatList from '../components/Chat/MobileChatList';
+import {db} from "../firebase/firebase";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import Axios from "../axios"
+import { ErrorToaster } from '../components/Global/Toaster';
+import { AuthContext } from '../context/AuthContext';
 
 const Chat = () => {
+  const {uid} = useContext(AuthContext);
   const [showChatList, setShowChatList] = useState(false);
+  const [loading, setLoading] = useState(true)
   
   const handleShowList = ()=>{
     setShowChatList(!showChatList);
   }
+
+  const [messages, setMessages] = useState([]);
+  const [messageLoading, setMessageLoading] = useState(false);
+  const [chatCollection , setChatCollection] = useState("");
+  const [messageText , setMessageText] = useState("");
+  const [update, setUpdate] = useState("")
+  const [chatId , setChatId] = useState("")
+  const [chatUser , setChatUser] = useState({image: "", name:""})
+
+  const sendMessage = async() => {
+   let messageData = {
+    "message" : messageText,
+    "chatId" : chatId
+    }
+    try {
+      const {data} = await Axios.post('support/chat/admin/send', messageData);
+      if (data.status === 200) {
+        console.log("data==> ", data)
+        setMessageText("")
+        setUpdate(data?.status)
+      }
+      else{
+        ErrorToaster(data.message[0])
+      }
+    } catch (error) {
+      console.error('Error is-> ', error);
+    }
+  };
+ 
+  const chatData = async()=>{
+    try {
+      const { data } = await Axios.get("support/chat/admin");
+      if(data.status === 200){
+        setChatCollection(data?.data)
+        setLoading(false);
+      }else{
+        ErrorToaster(data?.message[0])
+      } 
+    } catch (error) {
+      console.log("Error:", error);
+      ErrorToaster(error?.message)
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(()=>{
+    chatData()
+  },[])
+
+  useEffect(() => {
+    if (chatId !== null) {
+      try {
+        setMessageLoading(true);
+
+        const docRef = collection(db, "chat", chatId, "messages");
+
+        const orderedQuery = query(docRef);
+
+        const unsubscribe = onSnapshot(orderedQuery, (querySnapshot) => {
+          const documentsArray = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          setMessages(documentsArray);
+
+          setMessageLoading(false);
+        });
+
+        return () => {
+          unsubscribe();
+        };
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }, [chatId, update]);
+
 
   return (
     <div className='w-full relative lg:h-[85vh]'>
@@ -17,10 +102,10 @@ const Chat = () => {
       <MobileChatList onclick={handleShowList} showChatList={showChatList}/> */}
       <div className="w-full h-full grid grid-cols-3 gap-6">
         <div className="col-span-3 lg:col-span-2">
-            <ChatBox/>
+            <ChatBox messages={messages} setMessageText={setMessageText} chatUser={chatUser} uid={uid} sendMessage={sendMessage}/>
         </div>
         <div className="col-span-0 lg:col-span-1 hidden lg:block">
-            <ChatList/>
+            <ChatList chatCollection={chatCollection} loading={loading} setChatId={setChatId} chatId={chatId} setChatUser={setChatUser}/>
         </div>
       </div>
     </div>

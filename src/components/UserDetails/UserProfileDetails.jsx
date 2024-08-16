@@ -1,16 +1,19 @@
 import React from "react";
+import { ImagePlaceHolder } from "../../assets/export";
 
 const UserProfileDetails = ({data}) => {
   console.log("🚀 ~ UserProfileDetails ~ data:", data)
   return (
     <div className="flex flex-col gap-6 bg-white p-6 lg:p-10 rounded-xl w-full lg:w-1/2">
-
       <div className="flex items-center gap-4">
+        {!data?.image ? 
+        <img src={ImagePlaceHolder} alt="" className="block rounded-full w-20 h-20 object-cover"/> :
         <img
           src={data?.image}
           alt="user"
-          className="block rounded-full w-20 h-20 object-cover"
+          className="block rounded-full w-24 h-20 object-cover"
         />
+        }
         <div className="w-full flex items-center justify-between">
         <h1 className="text-base font-medium">{data?.fullName}</h1>
         <span className="text-xs bg-emerald-100 px-3 py-1 rounded-full font-medium text-emerald-600">{data?.target}</span>

@@ -11,7 +11,6 @@ const Users = () => {
   const [loading, setLoading] = useState(false)
 
   const getAllUsers = async (pageNumber = 1, rows = 10) => {
-    console.log("🚀 ~ getWorkouts ~ pageNumber: ", pageNumber, "🚀 rows: ",rows)
     try {
       setLoading(true);
       const { data } = await Axios.get(`users/getAll`);

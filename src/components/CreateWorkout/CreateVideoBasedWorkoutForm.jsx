@@ -135,17 +135,11 @@ const VideoWorkoutForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const errors = {};
-    // exerciseList.forEach((exercise, index) => {
-    //   if (!exercise.image) {
-    //     errors[index] = "Please upload an image for this exercise.";
-    //   }
-    // });
-
-    // if (Object.keys(errors).length > 0) {
-    //   setImageErrors(errors);
-    //   return; 
-    // }
+    if (!selectedCategory|| !videoTitle || !subCategory|| !selectedBodyPart|| !videoDescription|| 
+      !imgAddress|| !instructions|| !videoAddress) {
+      ErrorToaster("All fields are required");
+      return;
+    }
 
     const videoData = {
       title: videoTitle,
@@ -157,7 +151,6 @@ const VideoWorkoutForm = () => {
       "instructions" : instructions,
       "url" : videoAddress,
     };
-    
 
     try {
       setBtnLoading(true);

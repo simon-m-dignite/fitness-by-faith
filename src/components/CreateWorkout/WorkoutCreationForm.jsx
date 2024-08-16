@@ -9,10 +9,6 @@ import Uploader from "../Global/Uploader";
 
 const WorkoutCreationForm = () => {
   const navigate = useNavigate() 
-  const [workoutTitle, setWorkoutTitle] = useState("");
-  const [workoutDescription, setWorkoutDescription] = useState("");
-  const [duration, setDuration] = useState("");
-  const [calorieBurn, setCalorieBurn] = useState("");
   const [imgAddress, setImgAddress] = useState('');
   
   const [imgLoading, setImgLoading] = useState(false);
@@ -23,12 +19,30 @@ const WorkoutCreationForm = () => {
   const [categoryErr,setCategoryErr] = useState(null)
   const [bodyErr,SetBodyErr] = useState(null) 
 
+  //Fields
+  const [formData, setFormData] = useState({
+    workoutTitle: "",
+    workoutDescription: "",
+    duration: "",
+    calorieBurn: "",
+    numExercises: 1,
+    restBetween: 1,
+  });
+ 
+  // Handle Function
+  const handleFieldChange = (fieldName, value) => {
+  
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldName]: value,
+    }));
+  };
+
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   
   const [numExercises, setNumExercises] = useState(1);
-  const [restBetween, setRestBetween] = useState(1);
   const [exerciseForms, setExerciseForms] = useState([{
     title: '', sets: 3, time: '', reps: '', isTimeBased: false, imagePreview: '', 
   }]);
@@ -138,8 +152,11 @@ const WorkoutCreationForm = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    if (!selectedCategory) {
-      setCategoryErr("Please select a category.");
+
+    if (!selectedCategory || formData?.workoutTitle || formData?.workoutDescription || formData?.duration
+      || formData?.calorieBurn || formData.restBetween
+    ) {
+      ErrorToaster("All fields are required")
       return;
     }
     if ((selectedCategory === "Lifting" || selectedCategory === "Cardio") && !selectedSubCategory) {
@@ -155,14 +172,14 @@ const WorkoutCreationForm = () => {
     
     const workoutData = {
       category: selectedCategory,
-      title: workoutTitle,
-      subCategory: subCategory,
+      title: formData.workoutTitle,
+      subCategory: selectedCategory === "Yoga" ? "Gym" :subCategory,
       bodyPart: selectedBodyPart || "Chest", 
-      description: workoutDescription,
+      description: formData.workoutDescription,
       sets: 3, 
-      totalTime: duration,
-      breakTime: restBetween,
-      calorieburn: calorieBurn,
+      totalTime: formData.duration,
+      breakTime: formData.restBetween,
+      calorieburn: formData.calorieBurn,
       thumbnail: imgAddress,
       exercises: exerciseForms.map(({ title, sets, time, reps, image }) => ({
         "name":title,
@@ -175,22 +192,22 @@ const WorkoutCreationForm = () => {
         "isActive": true,
       }))
     };
-
+    
     try {
       setBtnLoading(true)
       const {data} = await Axios.post("workout/create", workoutData);
       if (data.status === 200) {
-        SuccessToaster(data.message[0])
+        SuccessToaster(data?.message[0])
         setBtnLoading(false)
         navigate("/workout-plans")
       }
       else{
         setBtnLoading(false)
-        ErrorToaster(data.message[0])
+        ErrorToaster(data?.message[0])
       }
     } catch (error) {
       console.error("Failed to create workout:", error);
-      ErrorToaster("There was an error submitting the form. Please try again.");
+      ErrorToaster(error?.message);
     }
   };
 
@@ -269,8 +286,8 @@ const WorkoutCreationForm = () => {
           <input
             type="text"
             className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={workoutTitle}
-            onChange={(e) => setWorkoutTitle(e.target.value)}
+            value={formData.workoutTitle}
+            onChange={(e) => handleFieldChange("workoutTitle", e.target.value)}
           />
         </div>
 
@@ -278,7 +295,7 @@ const WorkoutCreationForm = () => {
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Workout Category</label>
             <select
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${categoryErr && "ring-red-600 border-red-600 outline-red-600"} focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]`}
               value={selectedCategory}
               onChange={handleCategoryChange}
             >
@@ -342,8 +359,8 @@ const WorkoutCreationForm = () => {
             <input
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={calorieBurn}
-              onChange={(e) => setCalorieBurn(e.target.value)}
+              value={formData.calorieBurn}
+              onChange={(e) => handleFieldChange("calorieBurn", e.target.value)}
               min={1}
             />
           </div>
@@ -354,8 +371,8 @@ const WorkoutCreationForm = () => {
             <input
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
+              value={formData.duration}
+              onChange={(e) => handleFieldChange("duration", e.target.value)}
               min={1}
             />
           </div>
@@ -365,9 +382,9 @@ const WorkoutCreationForm = () => {
           <label className="text-sm font-medium">Workout Description</label>
           <textarea
             className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-            value={workoutDescription}
+            value={formData.workoutDescription}
             rows={"5"}
-            onChange={(e) => setWorkoutDescription(e.target.value)}
+            onChange={(e) => handleFieldChange("workoutDescription", e.target.value)}
           ></textarea>
         </div>
 
@@ -378,8 +395,8 @@ const WorkoutCreationForm = () => {
               type="number"
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               id="numExercises"
-              value={numExercises}
-              onChange={(e)=>handleNumExercisesChange(e)}
+              value={formData.numExercises}
+              onChange={(e) => handleFieldChange("numExercises", e.target.value)}
               min={1}
             />
           </div>
@@ -390,8 +407,8 @@ const WorkoutCreationForm = () => {
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
               id="restBetween"
               placeholder="Enter time in seconds"
-              value={restBetween}
-              onChange={(e)=>setRestBetween(e.target.value)}
+              value={formData.restBetween}
+              onChange={(e) => handleFieldChange("restBetween", e.target.value)}
               min={1}
             />
           </div>

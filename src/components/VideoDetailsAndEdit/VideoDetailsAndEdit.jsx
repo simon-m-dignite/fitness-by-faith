@@ -4,6 +4,8 @@ import { FiTrash } from "react-icons/fi";
 import Axios from "../../axios";
 import Loader from "../Global/Loader";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
+import { ImagePlaceHolder } from "../../assets/export";
+import Uploader from "../Global/Uploader";
 
 const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
   const [videoTitle, setVideoTitle] = useState("");
@@ -23,6 +25,8 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
   const [loading, setLoading] = useState(false)
   const [btnLoading, setBtnLoading] = useState(false);
+  const [videoErr, setVideoErr] = useState(false)
+  const [videoLoading, setVideoLoading] = useState(false)
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
@@ -65,9 +69,39 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
     }
   };
 
-  const handleVideoChange = (event) => {
-    setVideoFile(event.target.files[0]);
+  const handleVideoChange = async(e) => {
+    setVideoFile(e.target.files[0]);
+    const file = e.target.files[0];
+  if (file) {
+    setVideoFile(file);
+    
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      setVideoLoading(true);
+      setVideoErr(false)
+      const { data } = await Axios.post("media/upload/video", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (data?.status === 200) {
+        setVideoFile(data?.data?.fileAddress);
+        setVideoErr(false)
+      } else {
+        setVideoErr(true)
+        console.error("Upload failed:", data?.message);
+      }
+    } catch (error) {
+      setVideoErr(true)
+      console.error("Error->", error.response ? error.response.data : error.message);
+    } finally {
+      setVideoLoading(false);
+    }
   };
+}
 
   const handleInstructionChange = (index, field, value) => {
     const updatedInstructions = [...instructions];
@@ -87,18 +121,11 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // const errors = {};
-    // exerciseList.forEach((exercise, index) => {
-    //   if (!exercise.image) {
-    //     errors[index] = "Please upload an image for this exercise.";
-    //   }
-    // });
-
-    // if (Object.keys(errors).length > 0) {
-    //   setImageErrors(errors);
-    //   return; 
-    // }
+    if (!selectedCategory|| !videoTitle || !subCategory|| !selectedBodyPart||
+       !videoDescription|| !imgAddress|| !instructions|| !videoFile) {
+      ErrorToaster("All fields are required");
+      return;
+    }
 
     const videoData = {
       title: videoTitle,
@@ -188,13 +215,15 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
               onChange={handleThumbnailChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
-            {imgAddress && (
+            <div className="flex justify-center items-center w-full">
+            {imgAddress ? (
               <img
-                className="mt-2 w-40"
+                className="mt-2 w-[220px]"
                 src={imgAddress}
                 alt="Thumbnail Preview"
               />
-            )}
+            ):(<img src={ImagePlaceHolder} alt="" className="block w-[200px] object-cover"/>)}
+            </div>
           </div>
           <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Workout video</label>
@@ -205,11 +234,22 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
               onChange={handleVideoChange}
               className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
             />
-            {videoFile && (
-              <video className="mt-2" width="320" height="240" controls>
-                <source src={videoFile} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            {videoLoading ? (
+              <Uploader/>
+            ) : (
+              <>
+                {videoFile && (
+                  <video className="mt-2" width="320" height="240" controls>
+                  <source src={videoFile} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+                )}
+                {videoErr && (
+                  <p className="text-red-700 text-[12px] pl-1">
+                    Upload failed: Make sure correct file type
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>

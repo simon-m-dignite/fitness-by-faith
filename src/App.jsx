@@ -7,7 +7,7 @@ import { useContext } from "react";
 
 function App() {
   const { token } = useContext(AuthContext);
-
+  
   return (
     <Routes>
       <Route element={token ? <Outlet /> : <Navigate to="/login" />}>

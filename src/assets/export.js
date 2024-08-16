@@ -6,7 +6,7 @@ import LoginImage from "./login.png";
 import EmailVerificationMockup from "./email-verification.png";
 import OTPMockup from "./otp-mockup.png";
 import ResetPasswordMockup from "./reset-password.png";
-
+import ImagePlaceHolder from "./imgPlaceholder.png"
 export {
   Logo,
   Workout,
@@ -16,4 +16,5 @@ export {
   EmailVerificationMockup,
   OTPMockup,
   ResetPasswordMockup,
+  ImagePlaceHolder
 };
