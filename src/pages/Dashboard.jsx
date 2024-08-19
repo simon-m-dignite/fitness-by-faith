@@ -1,15 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Analytics from "../components/Dashbaord/Analytics";
 import AnalyticalChart from "../components/Dashbaord/AnalyticalChart";
 import RecentUsersList from "../components/Dashbaord/RecentUsersList";
 import { IoCalendarOutline } from "react-icons/io5";
 import FilterCalendar from "../components/Dashbaord/FilterCalendar";
+import { ErrorToaster } from "../components/Global/Toaster";
+import Axios from "../axios"
 
 const Dashboard = () => {
+  const [usersData, setUsersData] = useState([])
+  const [loading, setLoading] = useState(false)
+
   const [showCalendar, setShowCalendar] = useState(false);
   const handleShowCalendar = () => {
     setShowCalendar(!showCalendar);
   };
+
+  const getAllUsers = async () => {
+    try {
+      setLoading(true);
+      const { data } = await Axios.get(`users/recent?limit=5&page=1&pagination=true`);
+      setUsersData(data?.data[0]?.user);
+    } catch (error) {
+      ErrorToaster(error?.message)
+      console.log("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(()=>{
+    getAllUsers()
+  },[])
 
   return (
     <div className="flex flex-col items-start gap-6">
@@ -26,7 +48,9 @@ const Dashboard = () => {
       </div>
       <Analytics />
       <AnalyticalChart />
-      <RecentUsersList />
+      {usersData &&
+      <RecentUsersList usersData={usersData} loading={loading}/>
+      }
     </div>
   );
 };

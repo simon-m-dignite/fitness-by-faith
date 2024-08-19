@@ -33,7 +33,6 @@ const VerifyOtp = () => {
     try{
       setLoading(true);
       const {data} = await Axios.post("auth/sendPassOTP", {email});
-      console.log("🚀 ~ handleSubmit ~ data:", data)
       if(data.status === 200){
         SuccessToaster(data.message[0])
         setLoading(false)
@@ -54,7 +53,6 @@ const VerifyOtp = () => {
     try{
       setLoading(true);
       const {data} = await Axios.post("auth/validatePassOTP", {email,"code":otp});
-      console.log("🚀 ~ handleSubmit ~ data:", data)
       if(data.status === 200){
         SuccessToaster(data.message[0])
         setLoading(false)

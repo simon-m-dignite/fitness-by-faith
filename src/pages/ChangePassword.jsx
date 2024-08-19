@@ -20,7 +20,7 @@ const ChangePassword = () => {
   const handleNewPasswordChange = (e) => {
     setPassword(e.target.value);
     if (confirmPassword && e.target.value !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("Password does not match");
     } else {
       setPasswordError("");
     }
@@ -29,7 +29,7 @@ const ChangePassword = () => {
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     if (password && e.target.value !== password) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("Password does not match");
     } else {
       setPasswordError("");
     }
@@ -149,10 +149,10 @@ const ChangePassword = () => {
               )}
             </span>
           </div>
-        </div>
-        {passwordError && (
+          {passwordError && (
           <p className="text-red-600 text-xs ">{passwordError}</p>
           )}
+        </div>
         <div>
           <button
           disabled={btnLoading}

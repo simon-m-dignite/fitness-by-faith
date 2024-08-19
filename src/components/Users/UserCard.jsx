@@ -14,7 +14,7 @@ const UserCard = ({id, fullName, email, image, target, age, chest, gender, heigh
         className="block rounded-full w-20 h-20 object-cover"
       />)}
       <div className="w-full flex flex-col items-center gap-1">
-        <h1 className="text-sm font-medium">{fullName}</h1>
+        <h1 className="text-sm font-medium text-center">{fullName}</h1>
         <p className="text-xs font-normal text-gray-400">{email}</p>
       </div>
       <p className="text-xs font-normal text-gray-400 mt-2">{target}</p>

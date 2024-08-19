@@ -1,24 +1,54 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { styles } from "../styles/styles";
 import { LuImagePlus } from "react-icons/lu";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Axios from "../axios";
 import Loader from "../components/Global/Loader";
 import {FiTrash } from "react-icons/fi";
 import { ErrorToaster, SuccessToaster } from "../components/Global/Toaster";
 import Uploader from "../components/Global/Uploader";
+import ConfirmationDialog from "../components/Global/ConfirmationDialog";
 
 const MealDetailsPage = () => { 
   const { id } = useParams();
+  const navigate = useNavigate()
   const [image, setImage] = useState(null);
-  console.log("🚀 ~ MealDetailsPage ~ image:", image)
   const [imgAddress, setImgAddress] = useState("");
-  console.log("🚀 ~ MealDetailsPage ~ imgAddress:", imgAddress)
 
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
+  const [deleteLoad, setDeleteLoad] = useState(false)
+
+  const [showModal, setShowModal] = useState(false);
+  const handleModal = (e) => {
+    e.preventDefault()
+    setShowModal(!showModal);
+  };
+
+  const handleDelete = async (e) =>{
+    e.preventDefault()
+    try {
+      setDeleteLoad(true)
+      const { data } = await Axios.delete(`meal/delete/${id}`);
+      if (data.status === 200) {
+        SuccessToaster(data?.message[0])
+        setShowModal(false)
+        navigate("/meal-plans")
+        setDeleteLoad(false)
+      } else {
+        ErrorToaster(data?.message[0]);
+        setDeleteLoad(false)
+      }
+    } catch (error) {
+      setDeleteLoad(false)
+      ErrorToaster(error.message);
+      console.log("Error-> : ", error);
+    } finally {
+      setDeleteLoad(false)
+    }
+  }
 
   const [instructions, setInstructions] = useState([""]);
 
@@ -82,27 +112,10 @@ const [ingredients, setIngredients] = useState([""]);
     }
   };
 
-  const convertImageToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        const base64String = reader.result.split(",")[1]; // Get base64 string without data:image part
-        resolve(base64String);
-      };
-
-      reader.onerror = (error) => {
-        reject(error);
-      };
-
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleFormSubmit = async(e) => {
     e.preventDefault();
     const apiData={ 
-      "url" : image,
+      "url" : imgAddress,
       "title" : mealDetails.title,
       // "description": mealDetails.description,
       "serving" : "1",
@@ -164,11 +177,6 @@ const [ingredients, setIngredients] = useState([""]);
     });
   };
 
-  const handleUpdateMeal = () => {
-    console.log("Meal updated:", mealDetails);
-    setEditable(false);
-  };
-
   const getMealDetail = async (workoutId) => {
     try {
       setLoading(true);
@@ -191,7 +199,7 @@ const [ingredients, setIngredients] = useState([""]);
         });
         setInstructions(mealData.instructions)
         setIngredients(mealData.ingredients)
-        setImage(mealData.url)
+        setImgAddress(mealData.url)
         setLoading(false)
       }
     }
@@ -207,6 +215,7 @@ const [ingredients, setIngredients] = useState([""]);
 
   return (
     <div className="">
+      <ConfirmationDialog showModal={showModal} onclick={handleModal} action={handleDelete} loading={deleteLoad} title="Are you sure?" text="You Won't be able to revert this"/>
       {editable ? (
         <h1 className="text-xl font-semibold mb-4">Edit Meal</h1>
       ) : (
@@ -220,7 +229,7 @@ const [ingredients, setIngredients] = useState([""]);
           className="w-full bg-white p-6 rounded-xl"
         >
           <div className="w-full">
-          {editable ? (
+            {editable ? (
               <Fragment>
                 {imgLoading ? (
                   <Uploader />
@@ -239,7 +248,7 @@ const [ingredients, setIngredients] = useState([""]);
                       onChange={(e) => handleProfileChange(e)}
                     />
                     <img
-                      src={imgAddress?imgAddress:image}
+                      src={imgAddress ? imgAddress : image}
                       className="w-full h-full rounded-xl object-contain"
                     />
                   </div>
@@ -247,7 +256,7 @@ const [ingredients, setIngredients] = useState([""]);
               </Fragment>
             ) : (
               <img
-                src={image}
+                src={imgAddress ? imgAddress : image}
                 alt="workout-image"
                 className="w-full h-60 md:h-80 rounded-xl object-contain"
               />
@@ -499,21 +508,38 @@ const [ingredients, setIngredients] = useState([""]);
           <div className="flex items-center justify-between">
             <div className="w-full">
               {editable ? (
-                <button
-                  disabled={btnLoading}
-                  type="submit"
-                  className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
-                >
-                  {btnLoading ? "Updating... " : "Update Meal"}
-                </button>
+                <div className="w-full flex justify-end bg-white rounded-b-xl items-center gap-4 py-2">
+                  <button
+                    disabled={btnLoading}
+                    type="submit"
+                    className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
+                  >
+                    {btnLoading ? "Updating... " : "Update Meal"}
+                  </button>
+                  <button
+                    onClick={() => setEditable(false)}
+                    className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
+                  >
+                    Cancel
+                  </button>
+                </div>
               ) : (
-                <button
-                  type="button"
-                  className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
-                  onClick={(e) => toggleEditable(e)}
-                >
-                  Edit Meal
-                </button>
+                <div className="w-full flex justify-end py-2">
+                  <button
+                    disabled={deleteLoad}
+                    onClick={(e) => handleModal(e)}
+                    className={`bg-red-600 text-white px-4 mr-2 font-medium py-2 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
+                  >
+                    Delete
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.bgColor} text-white font-medium py-2 px-4 rounded-lg text-sm focus:outline-none focus:shadow-outline float-end`}
+                    onClick={(e) => toggleEditable(e)}
+                  >
+                    Edit Meal
+                  </button>
+                </div>
               )}
             </div>
           </div>

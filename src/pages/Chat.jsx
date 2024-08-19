@@ -32,11 +32,10 @@ const Chat = () => {
     "chatId" : chatId
     }
     try {
+      setMessageText("")
       const {data} = await Axios.post('support/chat/admin/send', messageData);
       if (data.status === 200) {
-        console.log("data==> ", data)
         setMessageText("")
-        setUpdate(data?.status)
       }
       else{
         ErrorToaster(data.message[0])
@@ -67,13 +66,13 @@ const Chat = () => {
   },[])
 
   useEffect(() => {
-    if (chatId !== null) {
+    if (chatId) {
       try {
         setMessageLoading(true);
 
         const docRef = collection(db, "chat", chatId, "messages");
 
-        const orderedQuery = query(docRef);
+        const orderedQuery = query(docRef, orderBy("createdAt"));
 
         const unsubscribe = onSnapshot(orderedQuery, (querySnapshot) => {
           const documentsArray = querySnapshot.docs.map((doc) => ({
@@ -93,7 +92,7 @@ const Chat = () => {
         console.log(err);
       }
     }
-  }, [chatId, update]);
+  }, [chatId]);
 
 
   return (
@@ -102,7 +101,7 @@ const Chat = () => {
       <MobileChatList onclick={handleShowList} showChatList={showChatList}/> */}
       <div className="w-full h-full grid grid-cols-3 gap-6">
         <div className="col-span-3 lg:col-span-2">
-            <ChatBox messages={messages} setMessageText={setMessageText} chatUser={chatUser} uid={uid} sendMessage={sendMessage}/>
+            <ChatBox messageLoading={messageLoading} messages={messages} messageText={messageText} setMessageText={setMessageText} chatUser={chatUser} uid={uid} sendMessage={sendMessage}/>
         </div>
         <div className="col-span-0 lg:col-span-1 hidden lg:block">
             <ChatList chatCollection={chatCollection} loading={loading} setChatId={setChatId} chatId={chatId} setChatUser={setChatUser}/>

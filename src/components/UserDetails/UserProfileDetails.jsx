@@ -2,7 +2,7 @@ import React from "react";
 import { ImagePlaceHolder } from "../../assets/export";
 
 const UserProfileDetails = ({data}) => {
-  console.log("🚀 ~ UserProfileDetails ~ data:", data)
+  
   return (
     <div className="flex flex-col gap-6 bg-white p-6 lg:p-10 rounded-xl w-full lg:w-1/2">
       <div className="flex items-center gap-4">

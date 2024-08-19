@@ -34,6 +34,14 @@ const CreateNotificationModal = ({ showModal, onclick }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(!title){
+      setErrors({title: 'Title is required'})
+      return;
+    }
+    if(!description){
+      setErrors({description: 'Description is required'})
+      return;
+    }
     const payload = {
       title: title,
       message: description,
@@ -82,7 +90,7 @@ const CreateNotificationModal = ({ showModal, onclick }) => {
             onChange={handleTitleChange}
           />
           {errors.title && (
-            <p className="text-red-500 text-xs">{errors.title}</p>
+            <p className="text-red-500 text-xs -mt-4">{errors.title}</p>
           )}
           <div className="w-full flex flex-col gap-1">
             <label htmlFor="description" className="text-sm font-medium">

@@ -57,7 +57,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/workout-plans", "WorkoutPlans")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "WorkoutPlans" || currentLoc[1] === "workout"
+              activeLink === "WorkoutPlans" || currentLoc[1] === "workout" || currentLoc[1] === "create-workout" || currentLoc[1] === "workout-plans"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -81,7 +81,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/meal-plans", "MealPlans")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "MealPlans" || currentLoc[1] === "meal"
+              activeLink === "MealPlans" || currentLoc[1] === "meal" || currentLoc[1]=== "create-meal-plan" || currentLoc[1]=== "meal-plans"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -93,7 +93,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/users", "Users")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "Users" || currentLoc[1] === "user"
+              activeLink === "Users" || currentLoc[1] === "user" || currentLoc[1] === "users"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}

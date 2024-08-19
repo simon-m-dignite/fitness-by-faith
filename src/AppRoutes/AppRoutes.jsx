@@ -1,3 +1,4 @@
+import { Navigate } from "react-router-dom";
 import Layout from "../components/Global/Layout";
 import ChangePassword from "../pages/ChangePassword";
 import Chat from "../pages/Chat";
@@ -23,6 +24,7 @@ import Videos from "../pages/Videos";
 import WorkoutDetails from "../pages/WorkoutDetails";
 import WorkoutPlans from "../pages/WorkoutPlans";
 import Auth from "./Auth";
+import PageNotFound from "../pages/PageNotFound";
 
 export const routes = [
   {
@@ -119,5 +121,15 @@ export const routes = [
     title: "Help & Support Page",
     url: "/help-and-support",
     page: <Layout pages={<Chat />} />,
+  },
+  {
+    title: "Not found",
+    url: "*",
+    page: <Navigate to="/404" />
+  },
+  {
+    title: "Not found",
+    url: "/404",
+    page: <PageNotFound />,
   },
 ];

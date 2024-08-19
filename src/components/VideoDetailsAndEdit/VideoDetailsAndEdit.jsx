@@ -6,8 +6,11 @@ import Loader from "../Global/Loader";
 import { ErrorToaster, SuccessToaster } from "../Global/Toaster";
 import { ImagePlaceHolder } from "../../assets/export";
 import Uploader from "../Global/Uploader";
+import { useNavigate } from "react-router-dom";
+import ConfirmationDialog from "../Global/ConfirmationDialog";
 
 const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
+  const navigate = useNavigate()
   const [videoTitle, setVideoTitle] = useState("");
   // const [exerciseName, setExerciseName] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
@@ -18,15 +21,45 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
   ]);
 
   const [imgAddress, setImgAddress] = useState("");
-  console.log("🚀 ~ VideoDetailsAndEdit ~ imgAddress:", imgAddress)
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
+
   const [loading, setLoading] = useState(false)
   const [btnLoading, setBtnLoading] = useState(false);
   const [videoErr, setVideoErr] = useState(false)
   const [videoLoading, setVideoLoading] = useState(false)
+  const [deleteLoad, setDeleteLoad] = useState(false)
+
+  const [showModal, setShowModal] = useState(false);
+  const handleModal = (e) => {
+    e.preventDefault()
+    setShowModal(!showModal);
+  };
+
+  const handleDelete = async (e) =>{
+    e.preventDefault()
+    try {
+      setDeleteLoad(true)
+      const { data } = await Axios.delete(`video/delete/${id}`);
+      if (data.status === 200) {
+        SuccessToaster(data?.message[0])
+        setShowModal(false)
+        navigate("/videos")
+        setDeleteLoad(false)
+      } else {
+        ErrorToaster(data?.message[0]);
+        setDeleteLoad(false)
+      }
+    } catch (error) {
+      setDeleteLoad(false)
+      ErrorToaster(error.message);
+      console.log("Error-> : ", error);
+    } finally {
+      setDeleteLoad(false)
+    }
+  }
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
@@ -167,7 +200,6 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
       if (data.status === 200) {
         setVideoDetail(data?.data);
         const {_id,title, description, category, subCategory, bodyPart, thumbnail, url, instructions} = data?.data;
-        console.log("🚀 ~ getVideoDetail ~ bodyPart:", bodyPart)
         setVideoFile(url)
         setImgAddress(thumbnail)
         setSelectedCategory(category);
@@ -199,6 +231,7 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
 
   return (
     <div className="w-full p-6 bg-white rounded-xl">
+      <ConfirmationDialog showModal={showModal} onclick={handleModal} action={handleDelete} loading={deleteLoad} title="Are you sure?" text="You Won't be able to revert this"/>
       {loading?
       <Loader/>:
       <form
@@ -421,7 +454,7 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
                 {btnLoading ? "Updating... " : "Update Video"}
               </button>
               <button
-                onClick={() => setEditable(false)}
+                onClick={(e) => {e.preventDefault();setEditable(false)}}
                 className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
               >
                 Cancel
@@ -438,6 +471,13 @@ const VideoDetailsAndEdit = ({id, editable, setEditable}) => {
               >
                 Edit Video
               </button>
+              <button
+                    disabled={deleteLoad}
+                    onClick={(e) => handleModal(e)}
+                    className={`bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium mt-2 mr-2 float-end`}
+                  >
+                    Delete
+                  </button>
             </div>
           )}
           

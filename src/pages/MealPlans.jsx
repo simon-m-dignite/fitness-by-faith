@@ -92,7 +92,7 @@ const MealPlans = () => {
         ))}
       </div>
       <div className="w-full flex justify-center mt-4">
-        <Pagination page={pageDetails?.page} totalPages={pageDetails.pageCount} rowsPerPage={pageDetails.pageSize} selectedFilter={selectedFilter} onPageChange={getMeals}/>
+        <Pagination page={pageDetails?.page} totalPages={pageDetails?.pageCount} rowsPerPage={pageDetails?.pageSize} selectedFilter={selectedFilter} onPageChange={getMeals}/>
       </div>
       </Fragment>
       )}

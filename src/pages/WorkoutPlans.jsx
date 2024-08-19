@@ -101,8 +101,8 @@ const WorkoutPlans = () => {
           <div className="w-full flex justify-center mt-4">
             <Pagination
               page={pageDetails?.page}
-              totalPages={pageDetails.pageCount}
-              rowsPerPage={pageDetails.pageSize}
+              totalPages={pageDetails?.pageCount}
+              rowsPerPage={pageDetails?.pageSize}
               selectedFilter={selectedFilter}
               onPageChange={getWorkouts}
             />

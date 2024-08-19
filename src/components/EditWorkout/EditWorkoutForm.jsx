@@ -305,7 +305,6 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
 
   const handleDelete = async (e) =>{
     e.preventDefault()
-    console.log("Delete call")
     try {
       setDeleteLoad(true)
       const { data } = await Axios.delete(`workout/delete/${id}`);
@@ -711,10 +710,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
                 {btnLoading ? "Updating... " : "Update Workout"}
               </button>
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setEditable(false);
-                }}
+                onClick={(e) => {e.preventDefault();setEditable(false)}}
                 className={`bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg`}
               >
                 Cancel
