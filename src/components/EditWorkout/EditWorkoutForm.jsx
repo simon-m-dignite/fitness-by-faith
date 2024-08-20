@@ -250,9 +250,19 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
     e.preventDefault();
 
     const errors = {};
+    
     exerciseList.forEach((exercise, index) => {
       if (!exercise.image) {
         errors[index] = "Please upload an image for this exercise.";
+      }
+      if(!exercise.title){
+        errors[index] = "Exercise title required";
+      }
+      if(!exercise.calorieburn){
+        errors[index] = "Calories burn required";
+      }
+      if(!exercise.reps){
+        errors[index] = "No. of reps required";
       }
     });
 

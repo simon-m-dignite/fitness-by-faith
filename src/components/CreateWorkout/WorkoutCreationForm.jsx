@@ -18,6 +18,7 @@ const WorkoutCreationForm = () => {
   const [subCategoryErr,setSubCategoryErr] = useState(null)
   const [categoryErr,setCategoryErr] = useState(null)
   const [bodyErr,SetBodyErr] = useState(null)
+  const [imageErrors, setImageErrors] = useState({});
 
   const [workError, setWorkError] = useState({
     imgErr: '',
@@ -116,10 +117,11 @@ const WorkoutCreationForm = () => {
       [event.target.name]: event.target.value,
     };
     setExerciseForms(updatedForms);
+    setImageErrors({})
   };
 
   const handleExerciseImage = async (exerciseIndex, event) => {
-    setWorkError({});
+    setImageErrors({});
     const updatedForms = [...exerciseForms];
     const file = event.target.files[0];
     const formData = new FormData();
@@ -172,6 +174,28 @@ const WorkoutCreationForm = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
+
+    const mapError = {};
+    
+    exerciseForms.forEach((exercise, index) => {
+      if (!exercise.image) {
+        mapError[index] = "Please upload an image for exercise: "+ (index+1);
+      }
+      if(!exercise.reps){
+        mapError[index] = "No. reps required for exercise: " + (index+1);
+      }
+      if(!exercise.calorieburn){
+        mapError[index] = "Calories burn required for exercise: " + (index+1);
+      }
+      if(!exercise.title){
+        mapError[index] = "Title required for exercise: " + (index+1);
+      }
+    });
+
+    if (Object.keys(mapError).length > 0) {
+      setImageErrors(mapError);
+      return; 
+    }
 
     // if (!selectedCategory || formData?.workoutTitle || formData?.workoutDescription || formData?.duration
     //   || formData?.calorieBurn || formData.restBetween
@@ -479,6 +503,7 @@ const WorkoutCreationForm = () => {
 
         {exerciseForms.map((exercise, index) => (
           <div key={index} className="w-full flex flex-col items-start gap-4">
+            <span className="-mb-2">Exercise {index + 1}</span>
             <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="w-full flex flex-col gap-1 items-start">
                 <label className="text-sm font-medium flex items-center justify-start gap-4">
@@ -615,7 +640,7 @@ const WorkoutCreationForm = () => {
                     </Fragment>
                   )}
                 </div>
-              {workError?.ExImgErr && (<p className="text-red-600 text-xs ">{workError?.ExImgErr}</p>)}
+              {imageErrors[index] && (<p className="text-red-600 text-xs ">{imageErrors[index]}</p>)}
               </div>
             </div>
           </div>

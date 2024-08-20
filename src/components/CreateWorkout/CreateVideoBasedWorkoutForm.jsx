@@ -29,6 +29,7 @@ const VideoWorkoutForm = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
+  const [instructionErrors ,setInstructionErrors] = useState("")
 
   const [videoError, setVideoError] = useState({
     imgErr: '',
@@ -132,6 +133,7 @@ const VideoWorkoutForm = () => {
   };
 
   const handleInstructionChange = (index, field, value) => {
+    setInstructionErrors({})
     const updatedInstructions = [...instructions];
     updatedInstructions[index][field] = value;
     setInstructions(updatedInstructions);
@@ -149,6 +151,22 @@ const VideoWorkoutForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const mapError = {};
+    
+    instructions.forEach((instruction, index) => {
+      if(!instruction.description){
+        mapError[index] = "Content required";
+      }
+      if (!instruction.title) {
+        mapError[index] = "Title required";
+      }
+    });
+
+    if (Object.keys(mapError).length > 0) {
+      setInstructionErrors(mapError);
+      return; 
+    }
 
     const fieldsToValidate = [
       { field: "imgErr", value: imgAddress, message: "Upload Image" },
@@ -378,6 +396,7 @@ const VideoWorkoutForm = () => {
           <label className="text-sm font-medium">Video Instructions</label>
 
           {instructions.map((instruction, index) => (
+            <>
             <div
               key={index}
               className="w-full flex items-center justify-between gap-6 lg:gap-3"
@@ -419,6 +438,8 @@ const VideoWorkoutForm = () => {
                 </button>
               )}
             </div>
+          {instructionErrors[index] && (<p className="text-red-600 text-xs ">{instructionErrors[index]}</p>)}
+          </>
           ))}
         </div>
         <button
