@@ -5,7 +5,7 @@ import { getFirestore } from "firebase/firestore";
 // Import the functions you need from the SDKs you need
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBiu-Ox3i1wdym6rt7Dex0P0LP8sY9TYEo",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "fitness-by-faith.firebaseapp.com",
   projectId: "fitness-by-faith",
   storageBucket: "fitness-by-faith.appspot.com",

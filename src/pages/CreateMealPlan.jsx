@@ -52,6 +52,7 @@ const CreateMealPlan = () => {
   const [category, setCategory] = useState("");
 
   const handleCategoryChange = (e) => {
+    setMealError({})
     setCategory(e.target.value);
   };
   
@@ -91,82 +92,36 @@ const CreateMealPlan = () => {
 
   const handleFormSubmit = async(e) => {
     e.preventDefault();
-    const errors = {
-    imgErr: '',
-    titleErr: '',
-    categoryErr: '',
-    prepTimeErr: '',
-    servingSizeErr: '',
-    numServingErr: '',
-    carbsErr: '',
-    fatErr: '',
-    proteinErr: '',
-    caloriesErr: '',
-    ingredient:'',
-    instruction:''
-  };
 
-  let hasError = false;
+    const fieldsToValidate = [
+      { field: "imgErr", value: imgAddress, message: "Upload Image" },
+      { field: "titleErr", value: mealDetails.title, message: "Title required"},
+      { field: "ingredient", value: ingredients[0], message: "Ingredients required" },
+      {field: "instruction", value: instructions[0], message: "Instruction required" },
+      { field: "categoryErr", value: category, message: "Category required" },
+      { field: "prepTimeErr", value: mealDetails.prepTime, message: "Preparation time required" },
+      { field: "servingSizeErr", value: mealDetails.servingSize, message: "Serving size required" },
+      { field: "carbsErr", value: mealDetails.carbs, message: "Carbohydrates value required" },
+      { field: "fatErr", value: mealDetails.fat, message: "Fat value required" },
+      { field: "proteinErr", value: mealDetails.protein, message: "Protein value required" },
+      { field: "caloriesErr", value: mealDetails.calories, message: "Calories value required", },
+      { field: "numServingErr", value: mealDetails.numServing, message: "Number of servings required" },
+    ];
 
-  if (!imgAddress) {
-    errors.imgErr = "Upload Image";
-    hasError = true;
-  }
+    const errors = { ...mealError };
+    let hasError = false;
 
-  if (!mealDetails.title) {
-    errors.titleErr = "Title required";
-    hasError = true;
-  }
+    fieldsToValidate.forEach(({ field, value, message }) => {
+      if (!value) {
+        errors[field] = message;
+        hasError = true;
+      }
+    });
 
-  // if (!mealDetails.description) {
-  //   errors.descriptionErr = "Description required";
-  //   hasError = true;
-  // }
-
-  if (!category) {
-    errors.categoryErr = "Category required";
-    hasError = true;
-  }
-  if (!mealDetails.prepTime) {
-    errors.prepTimeErr = "Preparation time required";
-    hasError = true;
-  }
-  if (!mealDetails.servingSize) {
-    errors.servingSizeErr = "Serving size required";
-    hasError = true;
-  }
-  if (!mealDetails.numServing) {
-    errors.numServingErr = "Number of servings required";
-    hasError = true;
-  }
-  if (!mealDetails.carbs) {
-    errors.carbsErr = "Carbohydrates value required";
-    hasError = true;
-  }
-  if (!mealDetails.fat) {
-    errors.fatErr = "Fat value required";
-    hasError = true;
-  }
-  if (!mealDetails.protein) {
-    errors.proteinErr = "Protein value required";
-    hasError = true;
-  }
-  if (!mealDetails.calories) {
-    errors.caloriesErr = "Calories value required";
-    hasError = true;
-  }
-  if (!ingredients[0]) {
-    errors.ingredient = "Ingredients required";
-    hasError = true;
-  }
-  if (!instructions[0]) {
-    errors.instruction = "Instruction required";
-    hasError = true;
-  }
-  if (hasError) {
-    setMealError(errors);
-    return;
-  }
+    if (hasError) {
+      setMealError(errors);
+      return;
+    }
 
     const apiData={ 
       "url" : imgAddress,
@@ -259,7 +214,7 @@ const CreateMealPlan = () => {
               <input
                 ref={fileInputRef}
                 id="cat-image-add"
-                className="w-full hidden h-10 rounded-full text-sm  outline-none border-none px-4"
+                className={`w-full hidden h-10 rounded-full text-sm ${mealError.imgErr? "ring-red-600 border-red-600 outline-red-600" : "outline-none border-none"}  px-4`}
                 type="file"
                 accept="image/png, image/jpeg"
                 onChange={(e) => handleProfileChange(e)}
@@ -292,6 +247,7 @@ const CreateMealPlan = () => {
                 value={mealDetails.title}
                 onChange={handleInputChange}
                 name="title"
+                error={mealError.titleErr}
               />
               {mealError.titleErr && (<p className="text-red-600 text-xs ">{mealError.titleErr}</p>)}
             </div>
@@ -302,7 +258,8 @@ const CreateMealPlan = () => {
               <select
                 name="meal-category"
                 id="meal-category"
-                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                className={`w-full border rounded-lg px-3 py-3 text-sm ${mealError?.categoryErr ? "ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
                 value={category}
                 onChange={handleCategoryChange}
               >
@@ -342,8 +299,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.prepTime}
                 onChange={handleInputChange}
                 placeholder="10 mins"
+                error={mealError?.prepTimeErr}
               />
-              {mealError.prepTimeErr && (<p className="text-red-600 text-xs ">{mealError.prepTimeErr}</p>)}
+              {mealError?.prepTimeErr && (<p className="text-red-600 text-xs ">{mealError.prepTimeErr}</p>)}
             </div>
             <div className="col-span-2 md:col-span-1">
               <TextField
@@ -353,8 +311,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.servingSize}
                 onChange={handleInputChange}
                 placeholder="1 Plate"
+                error={mealError?.servingSizeErr}
               />
-              {mealError.servingSizeErr && (<p className="text-red-600 text-xs ">{mealError.servingSizeErr}</p>)}
+              {mealError?.servingSizeErr && (<p className="text-red-600 text-xs ">{mealError.servingSizeErr}</p>)}
             </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -366,8 +325,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.numServing}
                 onChange={handleInputChange}
                 placeholder="2,3,4..."
+                error={mealError?.numServingErr}
               />
-              {mealError.numServingErr && (<p className="text-red-600 text-xs ">{mealError.numServingErr}</p>)}
+              {mealError?.numServingErr && (<p className="text-red-600 text-xs ">{mealError.numServingErr}</p>)}
             </div>
             <div className="col-span-2 md:col-span-1">
               <TextField
@@ -377,8 +337,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.carbs}
                 onChange={handleInputChange}
                 placeholder="31.1 g"
+                error={mealError?.carbsErr}
               />
-              {mealError.carbsErr && (<p className="text-red-600 text-xs ">{mealError.carbsErr}</p>)}
+              {mealError?.carbsErr && (<p className="text-red-600 text-xs ">{mealError.carbsErr}</p>)}
             </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -390,8 +351,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.fat}
                 onChange={handleInputChange}
                 placeholder="31.1g"
+                error={mealError?.fatErr}
               />
-              {mealError.fatErr && (<p className="text-red-600 text-xs ">{mealError.fatErr}</p>)}
+              {mealError?.fatErr && (<p className="text-red-600 text-xs ">{mealError.fatErr}</p>)}
             </div>
             <div className="col-span-2 md:col-span-1">
               <TextField
@@ -401,8 +363,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.protein}
                 onChange={handleInputChange}
                 placeholder="31.1g"
+                error={mealError?.proteinErr}
               />
-              {mealError.proteinErr && (<p className="text-red-600 text-xs ">{mealError.proteinErr}</p>)}
+              {mealError?.proteinErr && (<p className="text-red-600 text-xs ">{mealError.proteinErr}</p>)}
             </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
@@ -414,8 +377,9 @@ const CreateMealPlan = () => {
                 value={mealDetails.calories}
                 onChange={handleInputChange}
                 placeholder="100 kcal"
+                error={mealError?.caloriesErr}
               />
-              {mealError.caloriesErr && (<p className="text-red-600 text-xs ">{mealError.caloriesErr}</p>)}
+              {mealError?.caloriesErr && (<p className="text-red-600 text-xs ">{mealError.caloriesErr}</p>)}
             </div>
           </div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">

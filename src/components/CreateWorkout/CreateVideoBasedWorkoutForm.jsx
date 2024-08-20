@@ -30,7 +30,20 @@ const VideoWorkoutForm = () => {
   const [subCategory, setSubCategory] = useState("");
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
 
+  const [videoError, setVideoError] = useState({
+    imgErr: '',
+    videoTitleErr: '',
+    videoDescriptionErr: '',
+    videoFileErr: '',
+    videoAddressErr: '',
+    instructionErr: '',
+    selectedCategoryErr: '',
+    selectedSubCategoryErr: '',
+    selectedBodyPartErr: ''
+  });  
+
   const handleCategoryChange = (event) => {
+    setVideoError({selectedCategoryErr: ''})
     setSelectedCategory(event.target.value);
     setSelectedSubCategory("");
   };
@@ -44,6 +57,7 @@ const VideoWorkoutForm = () => {
   const subCategories = categories[selectedCategory] || [];
 
   const handleSubCategory = (e) => {
+    setVideoError({selectedSubCategoryErr: ''})
     setSelectedSubCategory(e.target.value);
     if (e.target.value === "Bodyweight Cardio")
       return setSubCategory("BodyWeight");
@@ -57,7 +71,7 @@ const VideoWorkoutForm = () => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('file', file);
-    
+    setVideoError({imgErr: ''})
     if (file) {
       try {
         setSnippetErr(false)
@@ -83,6 +97,7 @@ const VideoWorkoutForm = () => {
   };
 
   const handleVideoChange = async (e) => {
+    setVideoError({videoAddressErr: ''})
     setVideoFile(e.target.files[0]);
     const file = e.target.files[0];
   if (file) {
@@ -135,9 +150,30 @@ const VideoWorkoutForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedCategory|| !videoTitle || !subCategory|| !selectedBodyPart|| !videoDescription|| 
-      !imgAddress|| !instructions|| !videoAddress) {
-      ErrorToaster("All fields are required");
+    const fieldsToValidate = [
+      { field: "imgErr", value: imgAddress, message: "Upload Image" },
+      { field: "videoTitleErr", value: videoTitle, message: "Title required" },
+      { field: "videoDescriptionErr", value: videoDescription, message: "Description required" },
+      { field: "videoFileErr", value: videoFile, message: "Video file required" },
+      { field: "videoAddressErr", value: videoAddress, message: "Video required" },
+      { field: "instructionErr", value: instructions[0]?.title, message: "Instruction required" },
+      { field: "selectedCategoryErr", value: selectedCategory, message: "Category required" },
+      { field: "selectedSubCategoryErr", value: selectedSubCategory, message: "Sub-category required" },
+      { field: "selectedBodyPartErr", value: selectedBodyPart, message: "Body part selection required" },
+    ];
+    
+    const errors = { ...videoError };
+    let hasError = false;
+    
+    fieldsToValidate.forEach(({ field, value, message }) => {
+      if (!value) {
+        errors[field] = message;
+        hasError = true;
+      }
+    });
+    
+    if (hasError) {
+      setVideoError(errors);
       return;
     }
 
@@ -184,7 +220,8 @@ const VideoWorkoutForm = () => {
               type="file"
               accept="image/*"
               onChange={handleThumbnailChange}
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.imgErr ? "ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
             />
             {imgLoading ? (
               <Uploader/>
@@ -202,6 +239,7 @@ const VideoWorkoutForm = () => {
                     Upload failed: Make sure correct file type
                   </p>
                 )}
+                {videoError?.imgErr && (<p className="text-red-600 text-xs">{videoError.imgErr}</p>)}
               </Fragment>
             )}
           </div>
@@ -211,7 +249,8 @@ const VideoWorkoutForm = () => {
               type="file"
               accept="video/*"
               onChange={handleVideoChange}
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.videoAddressErr ? "ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
             />
             {videoLoading ? (
               <Uploader/>
@@ -226,11 +265,8 @@ const VideoWorkoutForm = () => {
                     Your browser does not support the video tag.
                   </video>
                 )}
-                {videoErr && (
-                  <p className="text-red-700 text-[12px] pl-1">
-                    Upload failed: Make sure correct file type
-                  </p>
-                )}
+                {videoErr && ( <p className="text-red-700 text-[12px] pl-1"> Upload failed: Make sure correct file type </p> )}
+                {videoError?.videoAddressErr && (<p className="text-red-600 text-xs">{videoError?.videoAddressErr}</p>)}
               </>
             )}
           </div>
@@ -240,10 +276,12 @@ const VideoWorkoutForm = () => {
             <label className="text-sm font-medium">Video Title</label>
             <input
               type="text"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.videoTitleErr ? "ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
               value={videoTitle}
-              onChange={(e) => setVideoTitle(e.target.value)}
+              onChange={(e) => {setVideoTitle(e.target.value);setVideoError({videoTitleErr: ''})}}
             />
+            {videoError?.videoTitleErr && (<p className="text-red-600 text-xs">{videoError?.videoTitleErr}</p>)}
           </div>
           {/* <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Exercise Name</label>
@@ -264,7 +302,8 @@ const VideoWorkoutForm = () => {
               id="subCategory"
               value={selectedCategory}
               onChange={handleCategoryChange}
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.selectedCategoryErr ? "ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
             >
               <option value="">Select Category</option>
               {Object.keys(categories).map((category) => (
@@ -273,6 +312,7 @@ const VideoWorkoutForm = () => {
                 </option>
               ))}
             </select>
+            {videoError?.selectedCategoryErr && (<p className="text-red-600 text-xs">{videoError?.selectedCategoryErr}</p>)}
           </div>
           <div className="w-full flex flex-col items-start gap-1">
             <label htmlFor="subCategory" className="text-sm font-medium">
@@ -283,7 +323,7 @@ const VideoWorkoutForm = () => {
               id="subCategory"
               value={selectedSubCategory}
               onChange={(e) => handleSubCategory(e)}
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]`}
             >
               <option value="">Select Subcategory</option>
               {subCategories.map((subCategory) => (
@@ -292,6 +332,7 @@ const VideoWorkoutForm = () => {
                 </option>
               ))}
             </select>
+            {/* {videoError?.selectedSubCategoryErr && (<p className="text-red-600 text-xs">{videoError?.selectedSubCategoryErr}</p>)} */}
           </div>
         </div>
 
@@ -301,9 +342,10 @@ const VideoWorkoutForm = () => {
             <div className="w-full flex flex-col items-start gap-1">
               <label className="text-sm font-medium">Sub-category</label>
               <select
-                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.selectedBodyPartErr ? "ring-red-600 border-red-600 outline-red-600":
+                  "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
                 value={selectedBodyPart}
-                onChange={(e) => setSelectedBodyPart(e.target.value)}
+                onChange={(e) => {setSelectedBodyPart(e.target.value);setVideoError({selectedBodyPartErr:""})}}
               >
                 <option value="">Select Body Part</option>
                 <option value="Biceps">Biceps</option>
@@ -313,6 +355,7 @@ const VideoWorkoutForm = () => {
                 <option value="Shoulder">Shoulders</option>
                 <option value="Legs">Legs</option>
               </select>
+              {videoError?.selectedBodyPartErr && (<p className="text-red-600 text-xs">{videoError?.selectedBodyPartErr}</p>)}
             </div>
           </div>
         ) : (
@@ -322,11 +365,13 @@ const VideoWorkoutForm = () => {
         <div className="w-full flex flex-col items-start gap-1">
           <label className="text-sm font-medium">Video Description</label>
           <textarea
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+          className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.videoDescriptionErr ? "ring-red-600 border-red-600 outline-red-600":
+            "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
             value={videoDescription}
             rows={"5"}
-            onChange={(e) => setVideoDescription(e.target.value)}
+            onChange={(e) => {setVideoDescription(e.target.value);setVideoError({videoDescriptionErr:""})}}
           ></textarea>
+          {videoError?.videoDescriptionErr && (<p className="text-red-600 text-xs">{videoError?.videoDescriptionErr}</p>)}
         </div>
 
         <div className="w-full flex flex-col items-start gap-1">

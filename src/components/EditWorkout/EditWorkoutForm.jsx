@@ -38,7 +38,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
   };
 
   const [exerciseList, setExerciseList] = useState([
-    { id: "", title: "", sets: 3, reps: "", restBetweenSets: "", image: null },
+    { id: "", title: "", sets: 3, reps: "", restBetweenSets: "", calorieburn:"", image: null },
   ]);
 
   const handleCategoryChange = (event) => {
@@ -270,16 +270,16 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
       sets: 3,
       totalTime: duration,
       breakTime: restBetween,
-      calorieburn: calorieBurn,
+      // calorieburn: calorieBurn,
       thumbnail: imgAddress,
-      exercises: exerciseList?.map(({ title, sets, time, reps, image }) => ({
+      exercises: exerciseList?.map(({ title, sets, time, reps, image, calorieburn }) => ({
         name: title,
         sets: 3,
         // time,
         ...(reps ? { reps: +reps } : { time: +time }),
         url: image,
         category: "Legs",
-        calorieburn: 100,
+        calorieburn: +calorieburn,
         isActive: true,
       })),
     };
@@ -364,6 +364,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
           sets: ex.totalSets || "",
           reps: ex.reps || "",
           time: ex.time || "",
+          calorieburn: ex.calorieburn,
           restBetweenSets: ex.restBetweenSets || "",
           image: ex.url || null,
           isTimeBased: !!ex.time,
@@ -513,8 +514,8 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
             ></textarea>
           </div>
 
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+          <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
+            {/* <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
               <label className="text-sm font-medium">
                 Estimated Calorie Burn
               </label>
@@ -526,7 +527,8 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
                 placeholder="500"
                 onChange={(e) => setCalorieBurn(e.target.value)}
               />
-            </div>
+            </div> */}
+            
             <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
               <label className="text-sm font-medium">
                 Duration{" "}
@@ -647,8 +649,24 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
                   </div>
                 </div>
 
-                {/* Exercise Image */}
+                {/* Calories */}
                 <div className="w-full flex flex-col gap-1 items-start">
+                  <label className="text-sm font-medium">Calories Burn</label>
+                  <input
+                    type="number"
+                    className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                    value={exercise.calorieburn}
+                    disabled={!editable}
+                    placeholder="3"
+                    onChange={(e) =>
+                      handleExerciseChange(index, "calorieburn", e.target.value)
+                    }
+                  />
+                </div>
+                {/* Exercise Image */}
+              </div>
+              <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
+              <div className="w-full flex flex-col gap-1 items-start">
                   <label className="text-sm font-medium">Exercise Image</label>
                   <div className="w-full flex justify-between ">
                     <input

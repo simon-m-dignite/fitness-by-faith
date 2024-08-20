@@ -9,15 +9,28 @@ import Uploader from "../Global/Uploader";
 
 const WorkoutCreationForm = () => {
   const navigate = useNavigate() 
-  const [imgAddress, setImgAddress] = useState('');
+  const [imgAddress, setImgAddress] = useState('')
   
-  const [imgLoading, setImgLoading] = useState(false);
+  const [imgLoading, setImgLoading] = useState(false)
   const [btnLoading, setBtnLoading] = useState(false)
-  const [snippetLoading, setSnippetLoading] = useState({});
+  const [snippetLoading, setSnippetLoading] = useState({})
   const [snippetErr, setSnippetErr] = useState({})
   const [subCategoryErr,setSubCategoryErr] = useState(null)
   const [categoryErr,setCategoryErr] = useState(null)
-  const [bodyErr,SetBodyErr] = useState(null) 
+  const [bodyErr,SetBodyErr] = useState(null)
+
+  const [workError, setWorkError] = useState({
+    imgErr: '',
+    workoutTitleErr: '',
+    workoutDescriptionErr: '',
+    durationErr: '',
+    numExercisesErr: '',
+    restBetweenErr: '',
+    subCategoryErr: '',
+    categoryErr: '',
+    bodyErr: '',
+    ExImgErr:''
+});
 
   //Fields
   const [formData, setFormData] = useState({
@@ -31,7 +44,10 @@ const WorkoutCreationForm = () => {
  
   // Handle Function
   const handleFieldChange = (fieldName, value) => {
-  
+    if(fieldName === "numExercises"){
+      handleNumExercisesChange(value)
+    }
+    setWorkError({})
     setFormData((prevData) => ({
       ...prevData,
       [fieldName]: value,
@@ -44,9 +60,9 @@ const WorkoutCreationForm = () => {
   
   const [numExercises, setNumExercises] = useState(1);
   const [exerciseForms, setExerciseForms] = useState([{
-    title: '', sets: 3, time: '', reps: '', isTimeBased: false, imagePreview: '', 
+    title: '', sets: 3, time: '', reps: '', calorieburn:'' ,isTimeBased: false, imagePreview: '', 
   }]);
-
+  
   const [subCategory, setSubCategory] = useState("");
 
   const categories = {
@@ -58,6 +74,7 @@ const WorkoutCreationForm = () => {
   const subCategories = categories[selectedCategory] || [];
 
   const handleSubCategory = (e) =>{
+    setWorkError({})
     setSubCategoryErr(null)
     setSelectedSubCategory(e.target.value)
     if (e.target.value === "Bodyweight Cardio") return setSubCategory("BodyWeight") ;
@@ -67,13 +84,14 @@ const WorkoutCreationForm = () => {
   }
   
   const handleCategoryChange = (event) => {
+    setWorkError({})
     setSelectedCategory(event.target.value);
     setSelectedSubCategory(""); 
     setCategoryErr(null)
   };
 
-  const handleNumExercisesChange = (event) => {
-    const newNumExercises = parseInt(event.target.value);
+  const handleNumExercisesChange = (value) => {
+    const newNumExercises = parseInt(value);
     setNumExercises(newNumExercises);
     if (newNumExercises >= 1 && newNumExercises <= 25 ) {
       setExerciseForms(
@@ -83,6 +101,7 @@ const WorkoutCreationForm = () => {
           sets: 3,
           reps: "",
           restBetweenSets: "",
+          calorieburn:"",
           image: null,
           time: "",
         })
@@ -100,6 +119,7 @@ const WorkoutCreationForm = () => {
   };
 
   const handleExerciseImage = async (exerciseIndex, event) => {
+    setWorkError({});
     const updatedForms = [...exerciseForms];
     const file = event.target.files[0];
     const formData = new FormData();
@@ -153,22 +173,50 @@ const WorkoutCreationForm = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
 
-    if (!selectedCategory || formData?.workoutTitle || formData?.workoutDescription || formData?.duration
-      || formData?.calorieBurn || formData.restBetween
-    ) {
-      ErrorToaster("All fields are required")
-      return;
-    }
-    if ((selectedCategory === "Lifting" || selectedCategory === "Cardio") && !selectedSubCategory) {
-      setSubCategoryErr("Please select a sub-category.");
-      return;
-    }
-    if (selectedSubCategory === "Free Weight" || selectedSubCategory === "Gym") {
-      if (!selectedBodyPart) {
-        SetBodyErr("Please select a body part.");
-        return;
+    // if (!selectedCategory || formData?.workoutTitle || formData?.workoutDescription || formData?.duration
+    //   || formData?.calorieBurn || formData.restBetween
+    // ) {
+    //   ErrorToaster("All fields are required")
+    //   return;
+    // }
+    // if ((selectedCategory === "Lifting" || selectedCategory === "Cardio") && !selectedSubCategory) {
+    //   setSubCategoryErr("Please select a sub-category.");
+    //   return;
+    // }
+    // if (selectedSubCategory === "Free Weight" || selectedSubCategory === "Gym") {
+    //   if (!selectedBodyPart) {
+    //     SetBodyErr("Please select a body part.");
+    //     return;
+    //   }
+    // }
+
+    const fieldsToValidate = [
+      { field: "imgErr", value: imgAddress, message: "Upload Image" },
+      { field: "workoutTitleErr", value: formData.workoutTitle, message: "Title required" },
+      { field: "workoutDescriptionErr", value: formData?.workoutDescription, message: "Description required" },
+      { field: "durationErr", value: formData.duration, message: "Duration required" },
+      { field: "numExercisesErr", value: numExercises, message: "Number of exercises required" },
+      { field: "restBetweenErr", value: formData?.restBetween, message: "Rest between sets required" },
+      { field: "categoryErr", value: selectedCategory, message: "Category required" },
+      { field: "subCategoryErr", value: subCategory, message: "SubCategory required" },
+      { field: "bodyErr", value: selectedBodyPart, message: "Body part selection required" },
+      { field: "ExImgErr", value: exerciseForms[0]?.image, message: "Upload image" },
+  ];
+  
+  let errors = { ...workError };
+  let hasError = false;
+  
+  fieldsToValidate.forEach(({ field, value, message }) => {
+      if (!value) {
+          errors[field] = message;
+          hasError = true;
       }
-    }
+  });
+  
+  if (hasError) {
+      setWorkError(errors);
+      return;
+  }
     
     const workoutData = {
       category: selectedCategory,
@@ -179,16 +227,16 @@ const WorkoutCreationForm = () => {
       sets: 3, 
       totalTime: formData.duration,
       breakTime: formData.restBetween,
-      calorieburn: formData.calorieBurn,
+      // calorieburn: formData.calorieBurn,
       thumbnail: imgAddress,
-      exercises: exerciseForms.map(({ title, sets, time, reps, image }) => ({
+      exercises: exerciseForms.map(({ title, sets, time, reps, image,calorieburn }) => ({
         "name":title,
         "sets":3,
         // time,
         ...(reps ? { "reps": +reps } : { "time": +time }),
         "url":image,
         "category": "Legs",
-        "calorieburn":100,
+        "calorieburn":+calorieburn,
         "isActive": true,
       }))
     };
@@ -217,6 +265,7 @@ const WorkoutCreationForm = () => {
   };
 
   const handleProfileChange = async (e) => {
+    setWorkError({})
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append('file', file);
@@ -279,23 +328,25 @@ const WorkoutCreationForm = () => {
               )}
             </div>
           )}
+          {workError.imgErr && (<p className="text-red-600 text-xs ">{workError?.imgErr}</p>)}
         </div>
 
         <div className="w-full flex flex-col items-start gap-1">
           <label className="text-sm font-medium">Workout Title</label>
           <input
             type="text"
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+            className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.workoutTitleErr && "ring-red-600 border-red-600 outline-red-600"} focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]`}
             value={formData.workoutTitle}
             onChange={(e) => handleFieldChange("workoutTitle", e.target.value)}
           />
+          {workError?.workoutTitleErr && (<p className="text-red-600 text-xs ">{workError?.workoutTitleErr}</p>)}
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Workout Category</label>
             <select
-              className={`w-full border rounded-lg px-3 py-3 text-sm ${categoryErr && "ring-red-600 border-red-600 outline-red-600"} focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]`}
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.categoryErr && "ring-red-600 border-red-600 outline-red-600"} focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]`}
               value={selectedCategory}
               onChange={handleCategoryChange}
             >
@@ -306,12 +357,13 @@ const WorkoutCreationForm = () => {
                 </option>
               ))}
             </select>
-            {categoryErr && <p className="text-[12px] text-red-700">{categoryErr}</p>}
+            {workError?.categoryErr && (<p className="text-red-600 text-xs ">{workError?.categoryErr}</p>)}
           </div>
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Sub-Category</label>
             <select
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.subCategoryErr ?"ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
               value={selectedSubCategory}
               onChange={(e) => handleSubCategory(e)}
             >
@@ -322,7 +374,7 @@ const WorkoutCreationForm = () => {
                 </option>
               ))}
             </select>
-            {subCategoryErr && <p className="text-[12px] text-red-700">{subCategoryErr}</p>}
+            {workError?.subCategoryErr && (<p className="text-red-600 text-xs ">{workError?.subCategoryErr}</p>)}
           </div>
         </div>
 
@@ -332,7 +384,8 @@ const WorkoutCreationForm = () => {
             <div className="w-full flex flex-col items-start gap-1">
               <label className="text-sm font-medium">Sub-category</label>
               <select
-                className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.bodyErr ?"ring-red-600 border-red-600 outline-red-600":
+                  "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
                 value={selectedBodyPart}
                 onChange={(e) => {setSelectedBodyPart(e.target.value); SetBodyErr(null)}}
               >
@@ -344,7 +397,7 @@ const WorkoutCreationForm = () => {
                 <option value="Shoulder">Shoulders</option>
                 <option value="Legs">Legs</option>
               </select>
-              {bodyErr && <p className="text-[12px] text-red-700">{bodyErr}</p>}
+              {workError?.bodyErr && (<p className="text-red-600 text-xs ">{workError?.bodyErr}</p>)}
             </div>
           </div>
         ) : (
@@ -352,43 +405,64 @@ const WorkoutCreationForm = () => {
         )}
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
+          {/* <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">
               Estimated Calorie Burn
             </label>
             <input
               type="number"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.calorieBurnErr ?"ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
               value={formData.calorieBurn}
               onChange={(e) => handleFieldChange("calorieBurn", e.target.value)}
               min={1}
             />
+            {workError?.calorieBurnErr && (<p className="text-red-600 text-xs ">{workError?.calorieBurnErr}</p>)}
+          </div> */}
+          <div className="w-full col-span-2 md:col-span-1 flex flex-col gap-1 items-start">
+            <label className="text-sm font-medium">Rest Between Sets</label>
+            <input
+              type="number"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.restBetweenErr?"ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
+              id="restBetween"
+              placeholder="Enter time in seconds"
+              value={formData.restBetween}
+              onChange={(e) => handleFieldChange("restBetween", e.target.value)}
+              min={1}
+            />
+            {workError?.restBetweenErr && (<p className="text-red-600 text-xs ">{workError?.restBetweenErr}</p>)}
           </div>
+
           <div className="col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">
               Duration <span className="text-xs text-gray-400">(minutes)</span>
             </label>
             <input
               type="number"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.durationErr?"ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
               value={formData.duration}
               onChange={(e) => handleFieldChange("duration", e.target.value)}
               min={1}
             />
+            {workError?.durationErr && (<p className="text-red-600 text-xs ">{workError?.durationErr}</p>)}
           </div>
         </div>
 
         <div className="w-full flex flex-col items-start gap-1">
           <label className="text-sm font-medium">Workout Description</label>
           <textarea
-            className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+            className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.workoutDescriptionErr?"ring-red-600 border-red-600 outline-red-600":
+              "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
             value={formData.workoutDescription}
             rows={"5"}
             onChange={(e) => handleFieldChange("workoutDescription", e.target.value)}
           ></textarea>
+          {workError?.workoutDescriptionErr && (<p className="text-red-600 text-xs ">{workError?.workoutDescriptionErr}</p>)}
         </div>
 
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
           <div className="w-full col-span-2 md:col-span-1 flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Total Exercises</label>
             <input
@@ -399,18 +473,7 @@ const WorkoutCreationForm = () => {
               onChange={(e) => handleFieldChange("numExercises", e.target.value)}
               min={1}
             />
-          </div>
-          <div className="w-full col-span-2 md:col-span-1 flex flex-col gap-1 items-start">
-            <label className="text-sm font-medium">Rest Between Sets</label>
-            <input
-              type="number"
-              className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
-              id="restBetween"
-              placeholder="Enter time in seconds"
-              value={formData.restBetween}
-              onChange={(e) => handleFieldChange("restBetween", e.target.value)}
-              min={1}
-            />
+            {workError.numExercisesErr && (<p className="text-red-600 text-xs ">{workError.numExercisesErr}</p>)}
           </div>
         </div>
 
@@ -512,6 +575,19 @@ const WorkoutCreationForm = () => {
                 </div>
               </div>
               <div className="w-full flex flex-col gap-1 items-start">
+                <label className="text-sm font-medium">Calories Burn</label>
+                <input
+                  type="number"
+                  className="w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"
+                  name="calorieburn"
+                  onChange={(event) => handleExerciseChange2(index, event)}
+                  value={exercise.calorieburn || ""}
+                  min={1}
+                />
+              </div>
+            </div>
+            <div className="w-full grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div className="w-full flex flex-col gap-1 items-start">
                 <label className="text-sm font-medium">Exercise Image</label>
                 <div className="w-full flex justify-between ">
                   <input
@@ -539,6 +615,7 @@ const WorkoutCreationForm = () => {
                     </Fragment>
                   )}
                 </div>
+              {workError?.ExImgErr && (<p className="text-red-600 text-xs ">{workError?.ExImgErr}</p>)}
               </div>
             </div>
           </div>
