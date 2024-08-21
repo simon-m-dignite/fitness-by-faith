@@ -10,7 +10,9 @@ const WorkoutDetails = () => {
   return (
     <div className="w-full flex flex-col items-start">
       <div className="w-full flex itmes-center justify-between mb-6">
-        <h1 className="text-xl font-semibold">Workout details</h1>
+        {editable?(<h1 className="text-xl font-semibold">Edit Workout</h1>)
+        :(<h1 className="text-xl font-semibold">Workout details</h1>)
+        }
       </div>
       <EditWorkoutForm id={id} editable={editable} setEditable={setEditable} />
 

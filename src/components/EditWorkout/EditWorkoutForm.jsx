@@ -353,7 +353,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
         setSelectedSubCategory(() =>
           subCategory === "BodyWeight"? "Bodyweight Cardio"
             : subCategory === "Equipment"? "Equipment-Based Cardio"
-            : subCategory === "Free Weight"? "FreeWeight"
+            : subCategory === "FreeWeight"? "Free Weight"
             : subCategory
         );
         setSubCategory(subCategory);

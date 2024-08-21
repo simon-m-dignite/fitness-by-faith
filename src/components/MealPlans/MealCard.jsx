@@ -6,7 +6,7 @@ const MealCard = ({id, title, instructions, numServing, prepTime, servingSize, u
   
   return (
     <Link to={`/meal/${id}`}>
-      <div className="w-full h-auto md:h-[265px] p-4 rounded-2xl flex flex-col md:flex-row gap-y-4 bg-white">
+      <div className="w-full h-auto md:h-auto lg:h-[265px] p-4 rounded-2xl flex flex-col md:flex-row gap-y-4 bg-white">
         <img src={url} alt="" className="h-[265px] md:h-full w-full md:w-[180px] object-cover" />
         <div className="h-full px-4 flex flex-col justify-center gap-3">
           <p className="text-xs font-normal text-[#64B5AC]">{category}</p>

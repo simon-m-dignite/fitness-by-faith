@@ -204,7 +204,7 @@ const [ingredients, setIngredients] = useState([""]);
       }
     }
     catch(error){
-      console.log("🚀 ~ getWorkoutDetail ~ error:", error)
+      console.log(" getWorkoutDetail ~ error:", error)
       setLoading(false)
     }
   }

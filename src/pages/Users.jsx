@@ -11,12 +11,10 @@ const Users = () => {
   const [pageDetails, setPageDetails] = useState({})
   const [loading, setLoading] = useState(false)
 
-  const getAllUsers = async (pageNumber = 1, rows = 8) => {
+  const getAllUsers = async (pageNumber = 1, rows = 12) => {
     try {
       setLoading(true);
       const { data } = await Axios.get(`users/getAll?pagination=true&page=${pageNumber}&limit=${rows}`);
-
-      console.log("🚀 ~ getAllUsers ~ data:", data)
       setUsersData(data?.data?.user);
       setPageDetails(data?.data?.pageDetails);
     } catch (error) {
@@ -47,7 +45,7 @@ const Users = () => {
         ))}
       </div>}
       <div className="w-full flex justify-center mt-4">
-        <Pagination page={pageDetails?.page} totalPages={pageDetails.pageCount} rowsPerPage={pageDetails.pageSize} onPageChange={getAllUsers}/>
+        {!loading && (<Pagination page={pageDetails?.page} totalPages={pageDetails.pageCount} rowsPerPage={pageDetails.pageSize} onPageChange={getAllUsers}/>)}
       </div>
     </div>
   )

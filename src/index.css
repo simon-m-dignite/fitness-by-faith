@@ -35,3 +35,11 @@
 .message-container::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

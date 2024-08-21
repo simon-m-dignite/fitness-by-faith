@@ -27,8 +27,8 @@ const VideoWorkoutForm = () => {
   const [imgLoading, setImgLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
-  const [selectedBodyPart, setSelectedBodyPart] = useState("");
+  const [subCategory, setSubCategory] = useState("BodyWeight");
+  const [selectedBodyPart, setSelectedBodyPart] = useState("Chest");
   const [instructionErrors ,setInstructionErrors] = useState("")
 
   const [videoError, setVideoError] = useState({
@@ -93,10 +93,6 @@ const VideoWorkoutForm = () => {
     }
   };
 
-  const handleProfileChange = async (e) => {
-    
-  };
-
   const handleVideoChange = async (e) => {
     setVideoError({videoAddressErr: ''})
     setVideoFile(e.target.files[0]);
@@ -133,7 +129,7 @@ const VideoWorkoutForm = () => {
   };
 
   const handleInstructionChange = (index, field, value) => {
-    setInstructionErrors({})
+    setInstructionErrors("")
     const updatedInstructions = [...instructions];
     updatedInstructions[index][field] = value;
     setInstructions(updatedInstructions);
@@ -152,34 +148,19 @@ const VideoWorkoutForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const mapError = {};
-    
-    instructions.forEach((instruction, index) => {
-      if(!instruction.description){
-        mapError[index] = "Content required";
-      }
-      if (!instruction.title) {
-        mapError[index] = "Title required";
-      }
-    });
-
-    if (Object.keys(mapError).length > 0) {
-      setInstructionErrors(mapError);
-      return; 
-    }
-
     const fieldsToValidate = [
       { field: "imgErr", value: imgAddress, message: "Upload Image" },
       { field: "videoTitleErr", value: videoTitle, message: "Title required" },
       { field: "videoDescriptionErr", value: videoDescription, message: "Description required" },
       { field: "videoFileErr", value: videoFile, message: "Video file required" },
       { field: "videoAddressErr", value: videoAddress, message: "Video required" },
-      { field: "instructionErr", value: instructions[0]?.title, message: "Instruction required" },
       { field: "selectedCategoryErr", value: selectedCategory, message: "Category required" },
-      { field: "selectedSubCategoryErr", value: selectedSubCategory, message: "Sub-category required" },
+      { field: "selectedSubCategoryErr", value: subCategory, message: "Sub-category required" },
       { field: "selectedBodyPartErr", value: selectedBodyPart, message: "Body part selection required" },
     ];
-    
+
+    const mapError = {};
+
     const errors = { ...videoError };
     let hasError = false;
     
@@ -193,6 +174,21 @@ const VideoWorkoutForm = () => {
     if (hasError) {
       setVideoError(errors);
       return;
+    }
+    
+    instructions.forEach((instruction, index) => {
+      
+      if(!instruction.description){
+        mapError[index] = "Content required";
+      }
+      if (!instruction.title) {
+        mapError[index] = "Title required";
+      }
+    });
+
+    if (Object.keys(mapError).length > 0) {
+      setInstructionErrors(mapError);
+      return; 
     }
 
     const videoData = {

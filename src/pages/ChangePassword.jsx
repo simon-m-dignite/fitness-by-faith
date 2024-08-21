@@ -73,7 +73,7 @@ const ChangePassword = () => {
       <h1 className="text-xl font-semibold">Update your password</h1>
       <form
         onSubmit={handleSubmit}
-        className="w-full md:w-1/2 bg-white rounded-xl p-6 flex flex-col gap-6 mt-6"
+        className="w-full md:w-2/3 bg-white rounded-xl p-6 flex flex-col gap-6 mt-6"
       >
         <div className="w-full flex flex-col items-start gap-1">
           <label htmlFor="current-password" className="text-sm font-medium">

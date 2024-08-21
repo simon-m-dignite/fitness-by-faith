@@ -376,7 +376,7 @@ const CreateMealPlan = () => {
                 name="calories"
                 value={mealDetails.calories}
                 onChange={handleInputChange}
-                placeholder="100 kcal"
+                placeholder="100 cal"
                 error={mealError?.caloriesErr}
               />
               {mealError?.caloriesErr && (<p className="text-red-600 text-xs ">{mealError.caloriesErr}</p>)}

@@ -100,10 +100,10 @@ const Chat = () => {
       {/* <button className='mb-4 float-end absolute top-[-22px] right-0' onClick={handleShowList}><TbMenu2 className='text-xl'/></button>
       <MobileChatList onclick={handleShowList} showChatList={showChatList}/> */}
       <div className="w-full h-full grid grid-cols-3 gap-6">
-        <div className="col-span-3 lg:col-span-2">
+        <div className="col-span-2 lg:col-span-2">
             <ChatBox messageLoading={messageLoading} messages={messages} messageText={messageText} setMessageText={setMessageText} chatUser={chatUser} uid={uid} sendMessage={sendMessage}/>
         </div>
-        <div className="col-span-0 lg:col-span-1 hidden lg:block">
+        <div className="col-span-1 lg:col-span-1 lg:block">
             <ChatList chatCollection={chatCollection} loading={loading} setChatId={setChatId} chatId={chatId} setChatUser={setChatUser}/>
         </div>
       </div>

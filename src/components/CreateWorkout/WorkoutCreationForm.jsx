@@ -55,7 +55,7 @@ const WorkoutCreationForm = () => {
     }));
   };
 
-  const [selectedBodyPart, setSelectedBodyPart] = useState("");
+  const [selectedBodyPart, setSelectedBodyPart] = useState("Chest");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   
@@ -64,7 +64,7 @@ const WorkoutCreationForm = () => {
     title: '', sets: 3, time: '', reps: '', calorieburn:'' ,isTimeBased: false, imagePreview: '', 
   }]);
   
-  const [subCategory, setSubCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("Gym");
 
   const categories = {
     Yoga: [],
@@ -175,28 +175,6 @@ const WorkoutCreationForm = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
 
-    const mapError = {};
-    
-    exerciseForms.forEach((exercise, index) => {
-      if (!exercise.image) {
-        mapError[index] = "Please upload an image for exercise: "+ (index+1);
-      }
-      if(!exercise.reps){
-        mapError[index] = "No. reps required for exercise: " + (index+1);
-      }
-      if(!exercise.calorieburn){
-        mapError[index] = "Calories burn required for exercise: " + (index+1);
-      }
-      if(!exercise.title){
-        mapError[index] = "Title required for exercise: " + (index+1);
-      }
-    });
-
-    if (Object.keys(mapError).length > 0) {
-      setImageErrors(mapError);
-      return; 
-    }
-
     // if (!selectedCategory || formData?.workoutTitle || formData?.workoutDescription || formData?.duration
     //   || formData?.calorieBurn || formData.restBetween
     // ) {
@@ -224,7 +202,7 @@ const WorkoutCreationForm = () => {
       { field: "categoryErr", value: selectedCategory, message: "Category required" },
       { field: "subCategoryErr", value: subCategory, message: "SubCategory required" },
       { field: "bodyErr", value: selectedBodyPart, message: "Body part selection required" },
-      { field: "ExImgErr", value: exerciseForms[0]?.image, message: "Upload image" },
+      // { field: "ExImgErr", value: exerciseForms[0]?.image, message: "Upload image" },
   ];
   
   let errors = { ...workError };
@@ -241,6 +219,28 @@ const WorkoutCreationForm = () => {
       setWorkError(errors);
       return;
   }
+
+  const mapError = {};
+    
+    exerciseForms.forEach((exercise, index) => {
+      if (!exercise.image) {
+        mapError[index] = "Please upload an image for exercise: "+ (index+1);
+      }
+      if(!exercise.reps){
+        mapError[index] = "No. reps required for exercise: " + (index+1);
+      }
+      if(!exercise.calorieburn){
+        mapError[index] = "Calories burn required for exercise: " + (index+1);
+      }
+      if(!exercise.title){
+        mapError[index] = "Title required for exercise: " + (index+1);
+      }
+    });
+
+    if (Object.keys(mapError).length > 0) {
+      setImageErrors(mapError);
+      return; 
+    }
     
     const workoutData = {
       category: selectedCategory,

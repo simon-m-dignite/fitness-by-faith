@@ -8,7 +8,8 @@ const VideoDetailsPage = () => {
 
   return (
     <div className="w-full flex flex-col items-start gap-6 min-h-screen">
-      <h1 className="text-xl font-semibold">Video Details</h1>
+      {editable?<h1 className="text-xl font-semibold">Edit Video</h1>
+      :<h1 className="text-xl font-semibold">Video Details</h1>}
       <VideoDetailsAndEdit id={id} editable={editable} setEditable={setEditable}/>
     </div>
   );
