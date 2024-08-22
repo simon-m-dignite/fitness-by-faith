@@ -30,6 +30,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [selectedBodyPart, setSelectedBodyPart] = useState("");
+  console.log("🚀 ~ EditWorkoutForm ~ selectedBodyPart:", selectedBodyPart)
 
   const [showModal, setShowModal] = useState(false);
   const handleModal = (e) => {
@@ -503,7 +504,7 @@ const EditWorkoutForm = ({ id, editable, setEditable }) => {
                   <option value="Triceps">Triceps</option>
                   <option value="Chest">Chest</option>
                   <option value="Back">Back</option>
-                  <option value="Shoulders">Shoulders</option>
+                  <option value="Shoulder">Shoulders</option>
                   <option value="Legs">Legs</option>
                 </select>
               </div>

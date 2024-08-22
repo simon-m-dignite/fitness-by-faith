@@ -27,7 +27,8 @@ const VideoWorkoutForm = () => {
   const [imgLoading, setImgLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("BodyWeight");
+  const [subCategory, setSubCategory] = useState("");
+  console.log("🚀 ~ VideoWorkoutForm ~ subCategory:", subCategory)
   const [selectedBodyPart, setSelectedBodyPart] = useState("Chest");
   const [instructionErrors ,setInstructionErrors] = useState("")
 
@@ -47,6 +48,7 @@ const VideoWorkoutForm = () => {
     setVideoError({selectedCategoryErr: ''})
     setSelectedCategory(event.target.value);
     setSelectedSubCategory("");
+    setSubCategory("")
   };
 
   const categories = {
@@ -155,7 +157,7 @@ const VideoWorkoutForm = () => {
       { field: "videoFileErr", value: videoFile, message: "Video file required" },
       { field: "videoAddressErr", value: videoAddress, message: "Video required" },
       { field: "selectedCategoryErr", value: selectedCategory, message: "Category required" },
-      { field: "selectedSubCategoryErr", value: subCategory, message: "Sub-category required" },
+      { field: "selectedSubCategoryErr", value: selectedCategory === "Yoga"? "Gym" : subCategory , message: "Sub-category required" },
       { field: "selectedBodyPartErr", value: selectedBodyPart, message: "Body part selection required" },
     ];
 
@@ -337,7 +339,8 @@ const VideoWorkoutForm = () => {
               id="subCategory"
               value={selectedSubCategory}
               onChange={(e) => handleSubCategory(e)}
-              className={`w-full border rounded-lg px-3 py-3 text-sm focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]`}
+              className={`w-full border rounded-lg px-3 py-3 text-sm ${videoError?.selectedSubCategoryErr ? "ring-red-600 border-red-600 outline-red-600":
+                "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
             >
               <option value="">Select Subcategory</option>
               {subCategories.map((subCategory) => (
@@ -346,7 +349,7 @@ const VideoWorkoutForm = () => {
                 </option>
               ))}
             </select>
-            {/* {videoError?.selectedSubCategoryErr && (<p className="text-red-600 text-xs">{videoError?.selectedSubCategoryErr}</p>)} */}
+            {videoError?.selectedSubCategoryErr && (<p className="text-red-600 text-xs">{videoError?.selectedSubCategoryErr}</p>)}
           </div>
         </div>
 

@@ -15,9 +15,6 @@ const WorkoutCreationForm = () => {
   const [btnLoading, setBtnLoading] = useState(false)
   const [snippetLoading, setSnippetLoading] = useState({})
   const [snippetErr, setSnippetErr] = useState({})
-  const [subCategoryErr,setSubCategoryErr] = useState(null)
-  const [categoryErr,setCategoryErr] = useState(null)
-  const [bodyErr,SetBodyErr] = useState(null)
   const [imageErrors, setImageErrors] = useState({});
 
   const [workError, setWorkError] = useState({
@@ -64,7 +61,8 @@ const WorkoutCreationForm = () => {
     title: '', sets: 3, time: '', reps: '', calorieburn:'' ,isTimeBased: false, imagePreview: '', 
   }]);
   
-  const [subCategory, setSubCategory] = useState("Gym");
+  const [subCategory, setSubCategory] = useState("");
+  console.log("🚀 ~ WorkoutCreationForm ~ subCategory:", subCategory)
 
   const categories = {
     Yoga: [],
@@ -76,10 +74,9 @@ const WorkoutCreationForm = () => {
 
   const handleSubCategory = (e) =>{
     setWorkError({})
-    setSubCategoryErr(null)
     setSelectedSubCategory(e.target.value)
     if (e.target.value === "Bodyweight Cardio") return setSubCategory("BodyWeight") ;
-    if (e.target.value === "Equipment-based cardio") return setSubCategory("Equipment");
+    if (e.target.value === "Equipment-Based Cardio") return setSubCategory("Equipment");
     if (e.target.value === "Free Weight") return setSubCategory("FreeWeight");
     if (e.target.value === "Gym") return setSubCategory("Gym");
   }
@@ -87,8 +84,8 @@ const WorkoutCreationForm = () => {
   const handleCategoryChange = (event) => {
     setWorkError({})
     setSelectedCategory(event.target.value);
-    setSelectedSubCategory(""); 
-    setCategoryErr(null)
+    setSelectedSubCategory("");
+    setSubCategory("");
   };
 
   const handleNumExercisesChange = (value) => {
@@ -175,23 +172,6 @@ const WorkoutCreationForm = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
 
-    // if (!selectedCategory || formData?.workoutTitle || formData?.workoutDescription || formData?.duration
-    //   || formData?.calorieBurn || formData.restBetween
-    // ) {
-    //   ErrorToaster("All fields are required")
-    //   return;
-    // }
-    // if ((selectedCategory === "Lifting" || selectedCategory === "Cardio") && !selectedSubCategory) {
-    //   setSubCategoryErr("Please select a sub-category.");
-    //   return;
-    // }
-    // if (selectedSubCategory === "Free Weight" || selectedSubCategory === "Gym") {
-    //   if (!selectedBodyPart) {
-    //     SetBodyErr("Please select a body part.");
-    //     return;
-    //   }
-    // }
-
     const fieldsToValidate = [
       { field: "imgErr", value: imgAddress, message: "Upload Image" },
       { field: "workoutTitleErr", value: formData.workoutTitle, message: "Title required" },
@@ -200,7 +180,7 @@ const WorkoutCreationForm = () => {
       { field: "numExercisesErr", value: numExercises, message: "Number of exercises required" },
       { field: "restBetweenErr", value: formData?.restBetween, message: "Rest between sets required" },
       { field: "categoryErr", value: selectedCategory, message: "Category required" },
-      { field: "subCategoryErr", value: subCategory, message: "SubCategory required" },
+      { field: "subCategoryErr", value: selectedCategory==="Yoga"? "Gym":subCategory, message: "SubCategory required" },
       { field: "bodyErr", value: selectedBodyPart, message: "Body part selection required" },
       // { field: "ExImgErr", value: exerciseForms[0]?.image, message: "Upload image" },
   ];
@@ -225,9 +205,6 @@ const WorkoutCreationForm = () => {
     exerciseForms.forEach((exercise, index) => {
       if (!exercise.image) {
         mapError[index] = "Please upload an image for exercise: "+ (index+1);
-      }
-      if(!exercise.reps){
-        mapError[index] = "No. reps required for exercise: " + (index+1);
       }
       if(!exercise.calorieburn){
         mapError[index] = "Calories burn required for exercise: " + (index+1);
@@ -257,7 +234,7 @@ const WorkoutCreationForm = () => {
         "name":title,
         "sets":3,
         // time,
-        ...(reps ? { "reps": +reps } : { "time": +time }),
+        ...(time ?  { "time": +time } : { "reps": +reps }),
         "url":image,
         "category": "Legs",
         "calorieburn":+calorieburn,
@@ -411,7 +388,7 @@ const WorkoutCreationForm = () => {
                 className={`w-full border rounded-lg px-3 py-3 text-sm ${workError?.bodyErr ?"ring-red-600 border-red-600 outline-red-600":
                   "focus:ring-[#64B5AC] focus:border-[#64B5AC] outline-[#64B5AC]"}`}
                 value={selectedBodyPart}
-                onChange={(e) => {setSelectedBodyPart(e.target.value); SetBodyErr(null)}}
+                onChange={(e) => {setSelectedBodyPart(e.target.value);}}
               >
                 <option value="">Select Body Part</option>
                 <option value="Biceps">Biceps</option>

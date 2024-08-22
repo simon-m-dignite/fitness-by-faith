@@ -140,6 +140,7 @@ const CreateMealPlan = () => {
     }
 
     try {
+      setBtnLoading(true)
       const {data} = await Axios.post('meal/create', apiData);
       if (data.status === 200) {
         SuccessToaster(data.message[0])
@@ -209,12 +210,13 @@ const CreateMealPlan = () => {
           ) : (
             <div
               onClick={handleProfileImg}
-              className="w-full h-60 md:h-80 bg-white border border-[#eaeaea] cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center"
+              className={`w-full h-60 md:h-80 ${mealError.imgErr? "border border-red-600" : 
+                "bg-white border border-[#eaeaea]"} cursor-pointer rounded-xl flex flex-col gap-1 justify-center items-center`}
             >
               <input
                 ref={fileInputRef}
                 id="cat-image-add"
-                className={`w-full hidden h-10 rounded-full text-sm ${mealError.imgErr? "ring-red-600 border-red-600 outline-red-600" : "outline-none border-none"}  px-4`}
+                className={`w-full hidden h-10 rounded-full text-sm "outline-none border-none" px-4`}
                 type="file"
                 accept="image/png, image/jpeg"
                 onChange={(e) => handleProfileChange(e)}
