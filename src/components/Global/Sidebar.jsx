@@ -22,6 +22,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const {pathname} = useLocation()
   let currentLoc = pathname.split("/")
+  console.log("🚀 ~ Sidebar ~ currentLoc:", currentLoc)
   
   const [activeLink, setActiveLink] = useState("Dashboard");
 
@@ -129,7 +130,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/support-requests", "Tickets")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "Tickets"
+              activeLink === "Tickets" || currentLoc[1] === "support-requests"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}
@@ -141,7 +142,7 @@ const Sidebar = () => {
           <button
             onClick={() => navigateToLink("/help-and-support", "Chat")}
             className={`text-sm flex items-center gap-3 font-medium w-full py-3 px-6 rounded-lg ${
-              activeLink === "Chat"
+              activeLink === "Chat" || currentLoc[1] === "help-and-support"
                 ? `text-white ${styles.bgColor}`
                 : `bg-transparent text-black hover:${styles.bgColor} hover:text-white transition-all duration-300`
             }`}

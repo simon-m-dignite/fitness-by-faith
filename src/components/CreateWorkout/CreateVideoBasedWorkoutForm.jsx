@@ -28,7 +28,6 @@ const VideoWorkoutForm = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
-  console.log("🚀 ~ VideoWorkoutForm ~ subCategory:", subCategory)
   const [selectedBodyPart, setSelectedBodyPart] = useState("Chest");
   const [instructionErrors ,setInstructionErrors] = useState("")
 
@@ -96,6 +95,7 @@ const VideoWorkoutForm = () => {
   };
 
   const handleVideoChange = async (e) => {
+    console.log("function call")
     setVideoError({videoAddressErr: ''})
     setVideoFile(e.target.files[0]);
     const file = e.target.files[0];
@@ -196,7 +196,7 @@ const VideoWorkoutForm = () => {
     const videoData = {
       title: videoTitle,
       category: selectedCategory,
-      subCategory: subCategory,
+      subCategory: selectedCategory==="Yoga" ? "Gym" :subCategory,
       bodyPart: selectedBodyPart || "Chest",
       description: videoDescription,
       thumbnail: imgAddress,
@@ -255,9 +255,9 @@ const VideoWorkoutForm = () => {
                     Upload failed: Make sure correct file type
                   </p>
                 )}
-                {videoError?.imgErr && (<p className="text-red-600 text-xs">{videoError.imgErr}</p>)}
               </Fragment>
             )}
+            {videoError?.imgErr && (<p className="text-red-600 text-xs">{videoError.imgErr}</p>)}
           </div>
           <div className="w-full flex flex-col items-start gap-1">
             <label className="text-sm font-medium">Workout video</label>

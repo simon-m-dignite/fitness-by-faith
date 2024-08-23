@@ -39,7 +39,7 @@ const WorkoutCreationForm = () => {
     numExercises: 1,
     restBetween: 1,
   });
- 
+ console.log(formData)
   // Handle Function
   const handleFieldChange = (fieldName, value) => {
     if(fieldName === "numExercises"){
@@ -62,7 +62,6 @@ const WorkoutCreationForm = () => {
   }]);
   
   const [subCategory, setSubCategory] = useState("");
-  console.log("🚀 ~ WorkoutCreationForm ~ subCategory:", subCategory)
 
   const categories = {
     Yoga: [],
@@ -163,10 +162,18 @@ const WorkoutCreationForm = () => {
   ]);
 
   const removeExerciseField = (id) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      numExercises: prevFormData.numExercises - 1
+    }));
     const updatedExerciseList = exerciseList.filter(
-      (exercise, index) => index+1 !== id
+      (exercise, index) => index+1 !== id+1
+    );
+    const updatedExerciseForm = exerciseForms.filter(
+      (exercise, index) => index+1 !== id+1
     );
     setExerciseList(updatedExerciseList);
+    setExerciseForms(updatedExerciseForm)
   };
 
   const handleSubmit = async(e) => {
