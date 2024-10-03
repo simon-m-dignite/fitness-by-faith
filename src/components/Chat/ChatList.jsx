@@ -62,14 +62,18 @@ const ChatList = ({chatCollection, setChatId, chatId, setChatUser, loading}) => 
                       className="w-10 h-10 rounded-full"
                     />
                   )}
-                  <div className="flex flex-col overflow-x-hidden">
+                  <div className="flex flex-col overflow-x-hidden w-[75%]">
                     <h1 className="text-sm font-medium">
                       {chat?.chatData?.userName}
                     </h1>
                     <p className="text-xs font-normal text-gray-400">
-                      {chat?.messages?.[0]?.text}
+                      {chat?.messages[0]?.text}
                     </p>
                   </div>
+                  {chat?.unreadMessagesCount ?
+                  <div className="flex justify-end items-center "><span className="bg-[#64B5AC] text-white text-xs rounded-full h-5 w-5 flex ml-6 items-center justify-center">
+                  {chat?.unreadMessagesCount}
+                </span></div> : ""}
                 </div>
               ))}
             </div>

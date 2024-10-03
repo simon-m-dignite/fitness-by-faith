@@ -9,12 +9,12 @@ import ChatLoader from "./ChatLoader";
 const ChatBox = ({messages, messageText, setMessageText, chatUser, uid, sendMessage, messageLoading}) => {
 
 const groupMessagesByDate = (messages) => {
-  return messages.reduce((groups, message) => {
+  return messages?.reduce((groups, message) => {
     const date = new Date(message?.createdAt?.seconds * 1000).toDateString(); 
     if (!groups[date]) {
       groups[date] = [];
     }
-    groups[date].push(message);
+    groups[date]?.push(message);
     return groups;
   }, {});
 };
@@ -61,10 +61,10 @@ const groupedMessages = groupMessagesByDate(messages);
                   <div className="flex items-center justify-center my-2">
                   <hr className="h-px my-1 w-[20%] bg-gray-100 border-0"/>
                   <div className="text-center text-xs text-gray-400 mx-2 w-auto">
-                    {new Date(date).toDateString() === new Date().toDateString()
+                    {new Date(date)?.toDateString() === new Date()?.toDateString()
                       ? "Today"
-                      : new Date(date).toDateString() ===
-                        new Date(Date.now() - 86400000).toDateString()
+                      : new Date(date)?.toDateString() ===
+                        new Date(Date.now() - 86400000)?.toDateString()
                       ? "Yesterday"
                       : date}
                   </div>

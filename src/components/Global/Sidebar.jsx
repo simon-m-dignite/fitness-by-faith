@@ -22,7 +22,6 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const {pathname} = useLocation()
   let currentLoc = pathname.split("/")
-  console.log("🚀 ~ Sidebar ~ currentLoc:", currentLoc)
   
   const [activeLink, setActiveLink] = useState("Dashboard");
 

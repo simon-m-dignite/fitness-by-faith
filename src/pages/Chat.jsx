@@ -65,9 +65,20 @@ const Chat = () => {
     chatData()
   },[])
 
+  const messageRead=async()=>{
+    console.log("function Call==+")
+    const { data } = await Axios.put("support/chat/read", {chatId:chatId});
+    if(data.status === 200){
+      chatData()
+    }else{
+      console.log(data?.message[0])
+    } 
+  }
+
   useEffect(() => {
     if (chatId) {
       try {
+        messageRead()
         setMessageLoading(true);
 
         const docRef = collection(db, "chat", chatId, "messages");
@@ -83,6 +94,7 @@ const Chat = () => {
           setMessages(documentsArray);
 
           setMessageLoading(false);
+
         });
 
         return () => {

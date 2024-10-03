@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GoDotFill } from "react-icons/go";
 import {
   ComposedChart,
@@ -14,45 +14,55 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "",
-    uv: 1520,
-    pv: 1108,
-    amt: 1100,
-    cnt: 460,
-  },
-  {
-    name: "Users",
-    uv: 590,
-    pv: 800,
-    amt: 902,
-    cnt: 490,
-  },
-  {
-    name: "Revenue",
-    uv: 868,
-    pv: 967,
-    amt: 1506,
-    cnt: 590,
-  },
-  {
-    name: "Workout Plans Sold",
-    uv: 1397,
-    pv: 1098,
-    amt: 989,
-    cnt: 350,
-  },
-  {
-    name: "Meal Plans Sold",
-    uv: 1480,
-    pv: 1200,
-    amt: 1228,
-    cnt: 480,
-  },
-];
+const AnalyticalChart = ({graphData, stats}) => {
+  
+  const [chartData, setChartData] = useState([
+    { name: "", uv: 0, pv: 0, amt: 0, cnt: 0 },
+    { name: "Users", uv: 0, pv: 0, amt: 0, cnt: 0 },
+    { name: "Revenue", uv: 0, pv: 0, amt: 0, cnt: 0 },
+    { name: "Basic Plans Sold", uv: 0, pv: 0, amt: 0, cnt: 0 },
+    { name: "Premium Plans Sold", uv: 0, pv: 0, amt: 0, cnt: 0 },
+  ]);
 
-const AnalyticalChart = () => {
+  console.log("🚀 ~ AnalyticalChart ~ chartData:", chartData)
+  useEffect(() => {
+    if (stats) {
+      const updatedData = [
+        { name: "", uv: 0, pv: 0, amt: 0, cnt: 0 },
+        {
+          name: "Users",
+          uv: stats?.totallUsers,
+          pv: stats?.totallUsers,
+          amt: stats?.totallUsers,
+          cnt: stats?.totallUsers,
+        },
+        {
+          name: "Revenue",
+          uv: parseFloat(stats?.totallRevenue?.toFixed(2)), 
+          pv: parseFloat(stats?.totallRevenue?.toFixed(2)),
+          amt: parseFloat(stats?.totallRevenue?.toFixed(2)),
+          cnt: parseFloat(stats?.totallRevenue?.toFixed(2)),
+        },
+        {
+          name: "Basic Plans Sold",
+          uv: stats?.totallBasicPlans,
+          pv: stats?.totallBasicPlans,
+          amt: stats?.totallBasicPlans,
+          cnt: stats?.totallBasicPlans,
+        },
+        {
+          name: "Premium Plans Sold",
+          uv: stats?.totallPrimiumPlan,
+          pv: stats?.totallPrimiumPlan,
+          amt: stats?.totallPrimiumPlan,
+          cnt: stats?.totallPrimiumPlan,
+        },
+      ];
+
+      setChartData(updatedData);
+    }
+  }, [stats]);
+  
   return (
     <div className="w-full flex flex-col gap-6 items-start p-0 md:p-6 bg-white rounded-xl">
       <div className="w-full flex flex-col lg:flex-row lg:items-center items-start justify-between p-4 md:p-0">
@@ -86,7 +96,7 @@ const AnalyticalChart = () => {
           <ComposedChart
             width={'100%'}
             height={'100%'}
-            data={data}
+            data={chartData}
             margin={{
               top: 0,
               right: 0,

@@ -17,10 +17,17 @@ instance.interceptors.request.use((request) => {
 });
 
 instance.interceptors.response.use((response) => {
-  if (response) {
-    return response
+  if(response?.data?.status === 401){
+    localStorage.clear()
+    window.location.href="/login"
+  }
+  else{
+    if (response) {
+      return response
+    }
   }
 }, function (error) {
+  console.log("🚀 ~ instance.interceptors.response.use ~ error:", error)
   // *For unAuthorized 
   // if (error.response.status === 401) {
   //   localStorage.clear()

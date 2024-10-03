@@ -100,10 +100,7 @@ const Login = () => {
                     className="w-full text-sm py-3 outline-none"
                     placeholder="Enter password"
                   />
-                  <button onClick={(e) => {
-                      e.preventDefault();
-                      setShowPass(!showPass);
-                    }}
+                  <button type="button" onClick={(e) => {setShowPass(!showPass);}}
                   >
                     {showPass ? (
                       <LuEyeOff className="text-lg text-gray-400" />
