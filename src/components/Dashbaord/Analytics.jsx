@@ -28,7 +28,7 @@ const Analytics = ({stats}) => {
       <div className="w-full rounded-xl px-6 py-8 flex items-center justify-between gap-2.5 bg-white">
         <div className="flex flex-col gap-1">
           <h3 className="text-sm font-medium text-gray-400">
-            Standard Plans Sold
+            Basic Plans Sold
           </h3>
           <h1 className="text-3xl font-medium">{stats?.totallBasicPlans?.toFixed(2)}</h1>
         </div>

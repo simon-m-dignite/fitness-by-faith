@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import Loader from "../Global/Loader";
+import { ImagePlaceHolder } from "../../assets/export";
 
 const RecentUsersList = ({usersData, loading}) => {
   
@@ -14,21 +15,16 @@ const RecentUsersList = ({usersData, loading}) => {
             <table className="w-full border-collapse text-left text-sm text-gray-500">
               <thead className="">
                 <tr className="">
-                  <th
-                    scope="col"
-                    className="px-6 lg:px-4 xl:px-0 py-4 font-medium text-base"
+                  <th scope="col" className="px-6 lg:px-4 xl:px-0 py-4 font-medium text-base"
                   >
                     Name
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 lg:px-4 xl:px-0 py-4 font-medium text-base"
+                  <th scope="col" className="px-6 lg:px-4 xl:px-0 py-4 font-medium text-base"
                   >
                     Gender
                   </th>
                   <th
-                    scope="col"
-                    className="px-6 lg:px-4 xl:px-0 py-4 font-medium text-base"
+                    scope="col" className="px-6 lg:px-4 xl:px-0 py-4 font-medium text-base"
                   >
                     Plan
                   </th>
@@ -60,7 +56,7 @@ const RecentUsersList = ({usersData, loading}) => {
                       <div className="relative h-10 w-10">
                         <img
                           className="h-full w-full rounded-full object-cover object-center"
-                          src={user?.profilePicture}
+                          src={user?.profilePicture || ImagePlaceHolder}
                           alt="user"
                         />
                       </div>

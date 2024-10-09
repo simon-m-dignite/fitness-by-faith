@@ -7,9 +7,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
   Scatter,
   ResponsiveContainer,
 } from "recharts";
@@ -79,13 +76,13 @@ const AnalyticalChart = ({graphData, stats}) => {
           <div className="flex items-center gap-1 border rounded-lg px-3 py-1.5">
             <GoDotFill className="text-xs text-yellow-500" />
             <span className="text-[11px] font-medium text-gray-500">
-              Workout Plans
+              Basic Plans
             </span>
           </div>
           <div className="flex items-center gap-1 border rounded-lg px-3 py-1.5">
             <GoDotFill className="text-xs text-green-500" />
             <span className="text-[11px] font-medium text-gray-500">
-              Meal Plans
+              Premium Plans
             </span>
           </div>
         </div>
